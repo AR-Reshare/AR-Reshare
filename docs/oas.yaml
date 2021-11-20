@@ -34,8 +34,6 @@ paths:
 paths:
   /admin/: # TODO: a standard authentication method
 
-
-
   ## -----> listing related paths
   /admin/listing/view:
     get:
@@ -96,9 +94,91 @@ paths:
   /admin/site/manipulate:
   /admin/site/monitor:
  
-############################################################################################################
 
 
+################################### ACCOUNT ##########################################################
+paths:
+  /account/creation/:
+    post:
+      description: Creates an account with request arguments
+      responses: ...
+      parameters: ...
+  
+  /account/deletion:
+    post:
+      description: "Deletes" the current account
+      responses: ...
+      parameters: ...
+
+  /account/login/:
+    get:
+      description: Login in to the requested account using request arguments
+      responses: ...
+      parameters: ...
+    
+  /account/modify/password:
+    post:
+      description: Modifies the password of the current account
+      responses: ...
+      parameters: ...
+  
+  /account/modify/email:
+    post:
+      description: Modifies the email of the current account
+      responses: ...
+      parameters: ...
+  
+  /account/modify/name:
+    post:
+      description: Modifies the name of the current account
+      responses: ...
+      parameters: ...
+  
+
+  
+
+####################################### CONVERSATION ###################################
+
+# A conversation is uniquely created by the set {buyerID, listingID}
+# -> sellerID is implied from listingID,
+# -> buyerID is defined by the account currenlty signed in
+
+# Once a converstaion has been created, a conversationID,
+# -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
+
+paths:
+  /conversation/start:
+    post:
+      description: Initiates a converstaion with the seller based on a unique listingID
+      responses: ...0
+      parameters: ...
+  
+  /conversation/end:
+    post:
+      description: Deletes a converstaion with the seller based on a unique conversationID
+      responses: ...
+      parameters: ...
+
+  /conversations:
+    get:
+      description: Returns descriptors conversation that the user still has open
+      responses: ...
+      parameters: ...
+
+  /conversation/message:
+    post:
+      description: Sends a message to a conversation via it's conversationID
+      responses: ...
+      parameters: ...
+
+  /conversation:
+    get:
+      description: Returns the conversation for a given conversationID
+      responses: ...
+      parameters: ...
+    
+    
+    
 
 
 components:
