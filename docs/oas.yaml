@@ -14,87 +14,150 @@ info:
     description: The url will be filled out as we push through development
 
 
-# TODO: complete paths
 # WAITING: I'm still waiting on each person to provide their own set of urls
-
 paths:
   /index:
     get:
       description: Returns the index page of the Application
       responses:
         '200':
-          description: # Not completed
+          description: ...
 
   /:
     $ref: '#/paths/index'
 
 
-
-
 ########################################### ADMIN ##########################################################
 paths:
   /admin/: # TODO: a standard authentication method
+    post:
+      description: Authenticates in order to access the admin console
+      responses:
+        '200':
+          description: The admin has authenticated with the admin console
+          $ref: '#/components/responses/post'
+        '403':
+          description: The user did not authenticate with the correct credentials with the admin console
+          $ref: '#/components/responses/post'
+      requestBody:
+        $ref: '#/components/requestBodies/account-login'
 
-  ## -----> listing related paths
   /admin/listing/view:
     get:
       description: Returns the listing which matches the value of the parameter "listingId"
       responses:
         '200':
-          # TODO
+          description: The listing exists and it is returned
+          $ref: '#/components/responses/listing'
+        '404':
+          description: The listing does not exist
+          $ref: '#/components/responses/listing'
       parameters:
-        $ref: '#/components/parameters/view'
-      # params = [ListingId]
+        listingID:
+          $ref: '#/components/parameters/listingID'
 
 
   /admin/listing/search:
     get:
-      description: Retunrs the listings that matches the criteria provided by the requests parameter
+      description: Returns the listings that matches the criteria provided by the requests parameter
       responses:
         '200':
-          # TODO
+          description: Returns all available listings with the parameters required
+          $ref: '#/components/responses/listings'
       parameters:
-        $ref: '#/components/parameters/search'
-      # params = [UserId, Category]
+        maxResults:
+          $ref: '#/components/parameters/maxResults'
+        endResults:
+          $ref: '#/components/parameters/endResults'
+        startResults:
+          $ref: '#/components/parameters/startResults'
+        query:
+          $ref: '#/components/parameters/queryString'
+        
 
-  /admin/listing/manipulate: ## TODO
+  /admin/listing/modification:
+    post:
+      description: Modifies the listings
+      responses:
+      '200':
+        description: The listing has been modified successfully
+        $ref: '#/components/responses/post'
+      '403':
+        description: The user is not authorized to modify the listing
+        $ref: '#/components/responses/post'
+      requestBody:
+        $ref: '#/components/requestBodies/listing-modification'
 
 
-
-  ## -----> user related paths
   /admin/user/view:
     get:
     description: Returns the listing which matches the value of the parameter "userID"
     responses:
       '200':
-        # TODO
+        description: Returns the user-view
+        $ref: '#/components/responses/admin-user-view'
     parameters:
-      $ref: '#/components/parameters/view'
-    # params = [userId]
+      userID:
+        $ref: '#/components/parameters/userID'
 
   /admin/user/search:
     get:
       description: Retunrs the listings that matches the criteria provided by the requests parameter
       responses:
         '200':
-          # TODO
+          description: The server processed the request succesfully and returns candidate listings
+          $ref: '#/components/responses/'
       parameters:
-        $ref: '#/components/parameters/search'
-      # params = [UserId, Category]
+        userID:
+          $ref: '#/components/parameters/userID'
+        category:
+          $ref: '#/components/parameters/category'
 
 
-
-  # params = [listingId, category]
+  # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
   /admin/user/manipulate:
-  # params = TODO
+    post:
+      description: Modifies the user's values
+      responses:
+        '200':
+          description: The server has successfully modified user details
+          $ref: '#/components/responses/user-manipulate'
+        '403':
+          description: The user is not privileged enough to modify details
+          $ref: '#/components/responses/user-manipulate'
+    requestBody:
+      $ref: '#/components/requestBodies/user-manipulate'
 
-
+  # NOTE: The below paths do not seem neccessary
 
   # site related paths (This isn't neccessarily required)
   # This may include monitoring and modification functionality
   /admin/site/manipulate:
+    post:
+      description: ...
+      responses:
+        '200':
+          description: ...
+          $ref: ...
+        '403':
+          description: ...
+          $ref: ...
+    requestBody:
+      $ref: ...
+
+
   /admin/site/monitor:
- 
+    post:
+      description: ...
+      responses:
+        '200':
+          description: ...
+          $ref: ...
+        '403':
+          description: ...
+          $ref: ...
+    requestBody:
+      $ref: ...
 
 
 ################################### ACCOUNT ##########################################################
@@ -211,10 +274,10 @@ paths:
   /conversation/message:
     post:
       description: Sends a message to a conversation via it's conversationID
-        '2xx':
+        '200':
           description: The message has been successfully delivered
           $ref: '#/components/responses/conversation-message'
-        '5xx':
+        '500':
           description: The message has not been delivered
           $ref: '#/components/responses/conversation-message'
       requestBody:
@@ -314,19 +377,49 @@ components:
      
     conversation-end:
       description: Returns whether the converstaion was deleted successfully
-      $ref: '#/components/schemas/post'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/post'
 
     conversation-message:
       description: Returns whether a message was successfully delivered
-      $ref: '#/components/schemas/post'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/post'
 
     conversation:
       description: Returns the conversation of a given conversationID
-      $ref: '#/components/schemas/conversation'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/conversation'
     
 
   ###################### ADMIN RESPONSES ########################
+    admin-user-view:
+      description: Returns a view of the user
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/user-view'
 
+  ###################### LISTING RESPONSES ######################
+    listings:
+      description: Returns a set of listings
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/listings'
+
+    listing:
+      description: Returns a listing
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/listing'
+  
 
 
   ################### ACCOUNT REQUESTBODIES #####################
@@ -363,7 +456,6 @@ components:
 
           
   #################### COMMS REQUEST BODIES #######################
-  requestBodies:
     conversation-end:
       content:
         'application/json':
@@ -394,11 +486,62 @@ components:
         'application/json'
           schema:
             $ref: '#/components/schema/message'
-              
+
+
+  ################# LISTINGS REQUEST BODIES ######################
+    listing-modification:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schema/listing-modification'
 
   ######################### SCHEMAS ##############################
 
   schemas:
+    # There are potentially more properties to be modified by the admin
+    user-view:
+      type: object
+      required:
+      - name
+      - dob
+      - email
+      properties:
+        name:
+          $ref: '#/components/schemas/name'
+        dob:
+          $ref: '#/components/schemas/dob'
+        email:
+          $ref: '#/components/schemas/email'
+
+
+
+    listing-modification:
+      type: object
+      required:
+      - password
+      - modifiedDetails
+      properties:
+        password:
+          $ref: '#/components/schemas/password'
+        variable-modification:
+          $ref: '#/components/schemas/listing-modifiedDetails'
+    
+    listing-modifiedDetails:
+      type: object
+      optional:
+      - description
+      - location
+      - category
+      - media
+      properties:
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        category:
+          $ref: '#/components/schemas/category'
+        media:
+          $ref: '#/components/schemas/media'
 
     account-modification:
       type: object
@@ -491,7 +634,11 @@ components:
 
 
   ########################### MID-LEVEL COMPONENTS ########################
-
+    listings:
+      type: array
+      items:
+        $ref: '#/components/schemas/listing'
+      
 
 
     listing:
@@ -635,7 +782,9 @@ components:
       type: string
       format: email
     
-
+    category:
+      type: string
+      format: enum
 
   ################################# HEADERS COMPONENTS ######################################
 
@@ -677,6 +826,24 @@ components:
       schema:
         type: integer
         format: int32
+    
+    queryString:
+      name: q
+      in: query
+      description: The search query that is provided to the search operation
+      required: true
+      schema:
+        type: string
+        format: string
+
+    listingID:
+      name: listingID
+      in: query
+      description: The id used to identify any listing
+      required: true
+      schema:
+        type: string
+        format: string
 
     
     
