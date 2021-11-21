@@ -101,39 +101,58 @@ paths:
   /account/creation/:
     post:
       description: Creates an account with request arguments
-      responses: ...
-      parameters: ...
-  
+      responses:
+        '201':
+          description: The account has been created successfully
+          $ref: '#/components/responses/account-creation'
+        '403':
+          description: The account requested already exists
+          $ref: '#/components/responses/account-creation'
+      requestBody:
+        $ref: '#/components/requestBodies/account-signup'
+      
+          
   /account/deletion:
-    post:
-      description: "Deletes" the current account
-      responses: ...
-      parameters: ...
+    post: # not delete
+      description: "Deletes" the current account (some info is required by law to be retained)
+      responses:
+        '200':
+          description: The account has been queued for deletion - the user no longer has access
+          $ref: '#/components/responses/account-deletion'
+        '403':
+          description: The account cannot be deleted (e.g. not authenticated)
+          $ref: '#/components/responses/account-deletion'
+      requestBody:
+        $ref: '#/components/requestBodies/account-deletion'
+  
 
   /account/login/:
-    get:
+    post:
       description: Login in to the requested account using request arguments
-      responses: ...
-      parameters: ...
+      responses:
+        '200':
+          description: Logs into the requested account
+          $ref: '#/components/responses/account-login'
+        '403':
+          description: Failed to log into request account
+          $ref: '#/components/responses/account-login'
+      requestBody:
+        $ref '#/components/requestBodies/account-login'
     
-  /account/modify/password:
-    post:
-      description: Modifies the password of the current account
-      responses: ...
-      parameters: ...
+  /account/modification/:
+    put:
+      description: Modifies the details of the current account
+      responses:
+        '200':
+          description: The details has been successfully modified
+          $ref: '#/components/responses/account-modification'
+        '403':
+          description: The details has unsuccessfully been modified
+          $ref: '#/components/responses/account-modification'
+      requestBody:
+        $ref: '#/components/requestBodies/account-modification'
   
-  /account/modify/email:
-    post:
-      description: Modifies the email of the current account
-      responses: ...
-      parameters: ...
-  
-  /account/modify/name:
-    post:
-      description: Modifies the name of the current account
-      responses: ...
-      parameters: ...
-  
+  #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
   
 
@@ -150,7 +169,7 @@ paths:
   /conversation/start:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
-      responses: ...0
+      responses: ...
       parameters: ...
   
   /conversation/end:
@@ -182,7 +201,128 @@ paths:
 
 
 components:
+
+  responses:
+
+    #NOTE: Error message is subject to change soon
+    post:
+      description: The response to a post request
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - success
+            optional:
+            - error
+            properties:
+              success: boolean
+              error: errorMsg
+            examples:
+              post-success:
+                success: true
+              post-failure:
+                success: false
+                error: this is an error message
+
+
+    ################### ACCOUNT RESPONSES #####################
+
+    account-deletion:
+      description: The account was requested to be deleted
+      $ref: '#/components/responses/post'
+
+    account-creation:
+      description: The account was requested to be created
+      $ref: '#/components/responses/post'
+
+    # TODO: I believe authentication information can be removed from here and put into a seperate security component
+    account-signin:
+      description: The account was sign in
+      content:
+        'application/json':
+          schema:
+            type: object
+      headers:
+        auth-token:
+          $ref: '#/components/headers/auth-token'
+
+    account-modification:
+      description: Returns whether an account detail was modified successfully
+      $ref: '#/components/responses/post'
+
+  ####################### ADMIN RESPONES ########################
+
+
+
+  ################### ACCOUNT REQUESTBODIES #####################
+
+  requestBodies:
+    account-signup:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schema/account-signup'
+    
+    account-login:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schema/account-login'
+
+    account-modification:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schema/account-modification'
+       examples:
+        single-var-change:
+          password: current_password
+          newDetails:
+            name: new_name
+        multi-var-change:
+          password: current_password
+          newDetails:
+            name: new_name
+            email: new_email_address@example.com
+            password: new_password
+
+          
+  #################### ADMIN REQUESTBODIES #######################
+
+
+  ######################### SCHEMAS ##############################
+
   schemas:
+    account-modification:
+      type: object
+      required:
+      - password
+      - newDetails
+      properties:
+        password:
+          $ref: '#/components/schemas/password'
+        variable-modification:
+          $ref: '#/components/schemas/newDetails'
+
+    newDetails:
+      type: object
+      optional:
+      - name
+      - email
+      - dob
+      - password
+      properties:
+        name:
+          $ref: '#/components/schemas/name'
+        email:
+          $ref: '#/components/schemas/email'
+        dob:
+          $ref: '#/components/schemas/dob'
+        password:
+          $ref: '#/components/schemas/password'
+      
+
     listing:
       type: object
       # these are the required parameters
@@ -229,27 +369,38 @@ components:
           $ref: '#/components/schemas/media'
     
     # formally called account schmema -- this won't be transferred between client and server (so I've split it up into objects where data would be transferred)
-    signup:
+    
+
+
+    account-signup:
       type: object
       required:
-      - userId
+      - name
       - email
       - password
-      - DoB
+      - dob # DoB (keeping lowecase for consistency on naming)
       - address
       properties:
         userId:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/name'
         email:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-        DoB:
+        dob:
           $ref: '#/components/schemas/date'
         address:
           $ref: '#/components/schemas/address'
+      example:
+        name: Sam Sepiol
+        email: sspeiol@protonmail.org
+        dob: '1986-09-17'
+        address:
+          $ref: '#/components/schemas/address/example'
+        
 
-    login:
+
+    account-login:
       type: object
       required:
       - userId
@@ -347,7 +498,11 @@ components:
         type: string
         format: url
 
-
+  headers:
+    auth-token:
+      description: Used to authenticate requests
+      schema:
+        type: JWT Token # Room for change
 
 
 
