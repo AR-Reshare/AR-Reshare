@@ -1,3 +1,4 @@
+# NOTE: There are returns that have unneccessary information in them
 openapi: 3.1.0
 
 info:
@@ -165,39 +166,72 @@ paths:
 # Once a converstaion has been created, a conversationID,
 # -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
 
+# NOTE: All of these will be using some authentication token (e.g. jwt)
+
 paths:
   /conversation/start:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
-      responses: ...
-      parameters: ...
+      responses:
+        '200':
+          description: The conversation has been initiated
+          $ref: '#/components/responses/conversation-start'
+        '409':
+          description: The converstaion already exists
+          $ref: '#/components/responses/conversation-start'
+      requestBody:
+        $ref: '#/components/requestBodies/conversation-start'
   
   /conversation/end:
     post:
       description: Deletes a converstaion with the seller based on a unique conversationID
-      responses: ...
-      parameters: ...
+        '200':
+          description: The conversation has been ended
+          $ref: '#/components/responses/conversation-end'
+        '409':
+          description: The conversation did not exist (so can not be deleted)
+          $ref: '#/components/responses/conversation-end'
+      requestBody:
+        $ref: '#/components/requestBodies/conversation-end'
 
   /conversations:
     get:
       description: Returns descriptors conversation that the user still has open
-      responses: ...
-      parameters: ...
-
+        '200':
+          description: Returns a set of the descriptors of the most recent converstaions
+          $ref: '#/components/responses/conversation-descriptors'
+      parameters:
+        start:
+          $ref: '#/components/parameters/startResults'
+        end:
+          $ref: '#/components/parameters/endResults'
+        max:
+          $ref: '#/components/parameters/maxResults'
+      
   /conversation/message:
     post:
       description: Sends a message to a conversation via it's conversationID
-      responses: ...
-      parameters: ...
+        '2xx':
+          description: The message has been successfully delivered
+          $ref: '#/components/responses/conversation-message'
+        '5xx':
+          description: The message has not been delivered
+          $ref: '#/components/responses/conversation-message'
+      requestBody:
+        $ref: '#/components/requestBodies/conversation-message'
 
   /conversation:
     get:
-      description: Returns the conversation for a given conversationID
-      responses: ...
-      parameters: ...
-    
-    
-    
+      description: Returns the conversation of a given conversationID
+      '200':
+        description: The conversation exists and it has been returned
+        $ref: '#/components/responses/conversation'
+      '404':
+        description: The conversation does not exist
+        $ref: '#/components/responses/conversation'     
+    parameters:
+      conversationID:
+        $ref: '#/components/schema/id'
 
 
 components:
@@ -251,7 +285,47 @@ components:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
 
-  ####################### ADMIN RESPONES ########################
+
+  ####################### COMMS RESPONSES #######################
+    conversation-descriptors:
+      description: Returns a list of conversation descriptors
+      content:
+        'application/json':
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/conversation-descriptor'
+
+    conversation-start:
+      description: Returns the converstaion-descriptor if successful
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - success
+            optional:
+            - conversation
+            properties:
+              conversation:
+                $ref: '#/components/schemas/conversation-descriptor'
+              success:
+                type: boolean
+     
+    conversation-end:
+      description: Returns whether the converstaion was deleted successfully
+      $ref: '#/components/schemas/post'
+
+    conversation-message:
+      description: Returns whether a message was successfully delivered
+      $ref: '#/components/schemas/post'
+
+    conversation:
+      description: Returns the conversation of a given conversationID
+      $ref: '#/components/schemas/conversation'
+    
+
+  ###################### ADMIN RESPONSES ########################
 
 
 
@@ -278,34 +352,66 @@ components:
        examples:
         single-var-change:
           password: current_password
-          newDetails:
+          modifiedDetails:
             name: new_name
         multi-var-change:
           password: current_password
-          newDetails:
+          modifiedDetails:
             name: new_name
             email: new_email_address@example.com
             password: new_password
 
           
-  #################### ADMIN REQUESTBODIES #######################
+  #################### COMMS REQUEST BODIES #######################
+  requestBodies:
+    conversation-end:
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - conversationID
+            properties:
+              conversationID:
+                $ref: '#/components/schemas/conversationID'
+      
+    conversation-start:
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - receiverID  # this can be derived from listingID
+            - listingID
+            properties:
+              receiverID:
+                $ref: '#/components/schemas/id'
+              listingID:
+                $ref: '#/components/schemas/id'
 
+    conversation-message:
+      content:
+        'application/json'
+          schema:
+            $ref: '#/components/schema/message'
+              
 
   ######################### SCHEMAS ##############################
 
   schemas:
+
     account-modification:
       type: object
       required:
       - password
-      - newDetails
+      - modifiedDetails
       properties:
         password:
           $ref: '#/components/schemas/password'
         variable-modification:
-          $ref: '#/components/schemas/newDetails'
+          $ref: '#/components/schemas/account-modifiedDetails'
 
-    newDetails:
+    account-modifiedDetails:
       type: object
       optional:
       - name
@@ -321,7 +427,72 @@ components:
           $ref: '#/components/schemas/dob'
         password:
           $ref: '#/components/schemas/password'
-      
+
+    # formally called account schmema -- this won't be transferred between client and server (so I've split it up into objects where data would be transferred)
+    
+    account-signup:
+      type: object
+      required:
+      - name
+      - email
+      - password
+      - dob # DoB (keeping lowecase for consistency on naming)
+      - address
+      properties:
+        userId:
+          $ref: '#/components/schemas/name'
+        email:
+          $ref: '#/components/schemas/email'
+        password:
+          $ref: '#/components/schemas/password'
+        dob:
+          $ref: '#/components/schemas/date'
+        address:
+          $ref: '#/components/schemas/address'
+      example:
+        name: Sam Sepiol
+        email: sspeiol@protonmail.org
+        dob: '1986-09-17'
+        address:
+          $ref: '#/components/schemas/address/example'
+        
+    account-login:
+      type: object
+      required:
+      - userId
+      - password
+      properties:
+        userId:
+          $ref: '#/components/schemas/id'
+        password:
+          $ref: '#/components/schemas/password'
+
+    # TODO: There may be media links such as user profile picture to be included here
+    conversation-descriptor:
+      type: object
+      required:
+      - conversationID
+      - receiver
+      - listing
+      properties:
+        conversationID:
+          $ref: '#/components/schemas/id'
+        listing-descriptor:
+          $ref: '#/components/schemas/listing'
+        receiver-descriptor:
+          $ref: '#/components/schemas/user'
+
+    conversation:
+      type: array
+      items:
+        $ref: '#/components/schemas/message'
+
+
+
+
+  ########################### MID-LEVEL COMPONENTS ########################
+
+
 
     listing:
       type: object
@@ -350,6 +521,24 @@ components:
           $ref: '#/components/schemas/date'
         media:
           $ref: '#/components/schemas/media'
+    
+
+    message:
+      type: object
+      required:
+      - senderId
+      - receiverId
+      - datetime
+      - content
+      properties:
+        senderId:
+          $ref: '#/components/schemas/id'
+        receiverId:
+          $ref: '#/components/schemas/id'
+        datetime:
+          $ref: '#/components/schemas/datetime'
+        content:
+          $ref: '#/components/schemas/content'
 
     user:
       type: object
@@ -367,71 +556,6 @@ components:
           $ref: '#/components/schemas/description'
         profilePics:
           $ref: '#/components/schemas/media'
-    
-    # formally called account schmema -- this won't be transferred between client and server (so I've split it up into objects where data would be transferred)
-    
-
-
-    account-signup:
-      type: object
-      required:
-      - name
-      - email
-      - password
-      - dob # DoB (keeping lowecase for consistency on naming)
-      - address
-      properties:
-        userId:
-          $ref: '#/components/schemas/name'
-        email:
-          $ref: '#/components/schemas/email'
-        password:
-          $ref: '#/components/schemas/password'
-        dob:
-          $ref: '#/components/schemas/date'
-        address:
-          $ref: '#/components/schemas/address'
-      example:
-        name: Sam Sepiol
-        email: sspeiol@protonmail.org
-        dob: '1986-09-17'
-        address:
-          $ref: '#/components/schemas/address/example'
-        
-
-
-    account-login:
-      type: object
-      required:
-      - userId
-      - password
-      properties:
-        userId:
-          $ref: '#/components/schemas/id'
-        password:
-          $ref: '#/components/schemas/password'
-
-      
-    message:
-      type: object
-      required:
-      - messageId
-      - senderId
-      - receiverId
-      - datetime
-      - content
-      properties:
-        messageId:
-          $ref: '#/components/schemas/id'
-        senderId:
-          $ref: '#/components/schemas/id'
-        receiverId:
-          $ref: '#/components/schemas/id'
-        datetime:
-          $ref: '#/components/schemas/datetime'
-        content:
-          $ref: '#/components/schemas/content'
-
 
     # TODO: This schema's structure is very likely to be changed in the near future
     content:
@@ -457,14 +581,33 @@ components:
       - street # which would include door number
       properties:
         country:
-          type: string
+          $ref: '#/components/schemas/country'
         city:
-          type: string
+          $ref: '#/components/schemas/city'
         zipcode:
-          type: string
+          $ref: '#/components/schemas/zipcode'
         street:
-          type: string
+          $ref: '#/components/schemas/street'
 
+    media: # i.e media = ["url1", "url2", ...]
+      type: array
+      items:
+        type: string
+        format: url
+
+
+    ############################## LOW-LEVEL COMPONENTS ###############################
+    country:
+      type: string
+
+    city:
+      type: string
+
+    zipcode:
+      type: string
+
+    street:
+      type: string
 
     ## we'll define formats for these types below soon (e.g. sizes and other attributes)
     id:
@@ -492,11 +635,11 @@ components:
       type: string
       format: email
     
-    media: # i.e media = ["url1", "url2", ...]
-      type: array
-      items:
-        type: string
-        format: url
+
+
+  ################################# HEADERS COMPONENTS ######################################
+
+
 
   headers:
     auth-token:
@@ -507,8 +650,36 @@ components:
 
 
 ######################################### Parameter Objects #################################################
-  parameter:
-    view
+  parameters:
+    maxResults:
+      name: max
+      in: query
+      description: Returns <= maxResults results
+      required: true
+      schema:
+        type: integer
+        format: int32
+      
+    startResults:
+      name: start
+      in: query
+      description: Returns results starting and including from the nth result
+      required: true
+      schema:
+        type: integer
+        format: int32
+    
+    endResults:
+      name: end
+      in: query
+      description: Returns results up to but not including the nth result
+      required: false
+      schema:
+        type: integer
+        format: int32
+
+    
+    
     
 
     
