@@ -306,7 +306,7 @@ paths:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
-        '200':
+        '201':
           description: The conversation has been initiated
           $ref: '#/components/responses/conversation-start'
         '400': # Bad Request
