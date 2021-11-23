@@ -36,7 +36,10 @@ paths:
         '200':
           description: The admin has authenticated with the admin console
           $ref: '#/components/responses/post'
-        '403':
+        '400': # Bad Request
+          description: The request did not include the required parameters
+          $ref: '#/components/responses/listing'
+        '401': # Unauthorised (distinct to 403 Forbidden)
           description: The user did not authenticate with the correct credentials with the admin console
           $ref: '#/components/responses/post'
       requestBody:
@@ -49,7 +52,16 @@ paths:
         '200':
           description: The listing exists and it is returned
           $ref: '#/components/responses/listing'
-        '404':
+        '400': # Bad Request
+          description: The request did not include a "listingID" parameter
+          $ref: '#/components/responses/listing'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/listing'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: '#/components/responses/listing'
+        '404': # Not Found
           description: The listing does not exist
           $ref: '#/components/responses/listing'
       parameters:
@@ -59,11 +71,18 @@ paths:
 
   /admin/listing/search:
     get:
-      description: Returns the listings that matches the criteria provided by the requests parameter
+      description: Returns the listings that match the criteria provided by the requests parameter
       responses:
         '200':
           description: Returns all available listings with the parameters required
           $ref: '#/components/responses/listings'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/listings'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: '#/components/responses/listings'
+        # no 404 included - I assume that if no listings match, the reponse will still be 200 but will be empty
       parameters:
         maxResults:
           $ref: '#/components/parameters/maxResults'
@@ -79,33 +98,54 @@ paths:
     post:
       description: Modifies the listings
       responses:
-      '200':
-        description: The listing has been modified successfully
-        $ref: '#/components/responses/post'
-      '403':
-        description: The user is not authorized to modify the listing
-        $ref: '#/components/responses/post'
+        '200':
+          description: The listing has been modified successfully
+          $ref: '#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/post'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: '#/components/responses/post'
       requestBody:
         $ref: '#/components/requestBodies/listing-modification'
 
 
   /admin/user/view:
     get:
-    description: Returns the listing which matches the value of the parameter "userID"
-    responses:
-      '200':
-        description: Returns the user-view
-        $ref: '#/components/responses/admin-user-view'
-    parameters:
-      userID:
-        $ref: '#/components/parameters/userID'
+      description: Returns the user which matches the value of the parameter "userID"
+      responses:
+        '200':
+          description: Returns the user-view
+          $ref: '#/components/responses/admin-user-view'
+        '400': # Bad Request
+          description: The request did not include a "userID" parameter
+          $ref: '#/components/responses/admin-user-view'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/admin-user-view'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: '#/components/responses/admin-user-view'
+        '404': # Not Found
+          description: The user does not exist
+          $ref: '#/components/responses/admin-user-view'
+      parameters:
+        userID:
+          $ref: '#/components/parameters/userID'
 
   /admin/user/search:
     get:
-      description: Retunrs the listings that matches the criteria provided by the requests parameter
+      description: Returns the users that match the criteria provided by the requests parameter
       responses:
         '200':
-          description: The server processed the request succesfully and returns candidate listings
+          description: The server processed the request succesfully and returns candidate user-views
+          $ref: '#/components/responses/' # !!! should probably have something after the /, no?
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
           $ref: '#/components/responses/'
       parameters:
         userID:
@@ -122,21 +162,34 @@ paths:
         '200':
           description: The server has successfully modified user details
           $ref: '#/components/responses/user-manipulate'
-        '403':
-          description: The user is not privileged enough to modify details
+        '400': # Bad Request
+          description: The request did not include a "userID" parameter
+          $ref: '#/components/responses/user-manipulate'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#/components/responses/user-manipulate'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: '#/components/responses/user-manipulate'
+        '404': # Not Found
+          description: The user does not exist
           $ref: '#/components/responses/user-manipulate'
     requestBody:
-      $ref: '#/components/requestBodies/user-manipulate'
+      $ref: '#/components/requestBodies/user-manipulate' # !!! this is not described elsewhere in the document, I assume it contains at least a userID
 
   # NOTE: The below paths do not seem neccessary
 
   # site related paths (This isn't neccessarily required)
   # This may include monitoring and modification functionality
+  # !!! I was thinking these could include adding/removing categories or language packs for future-proofing
   /admin/site/manipulate:
     post:
       description: ...
       responses:
         '200':
+          description: ...
+          $ref: ...
+        '401':
           description: ...
           $ref: ...
         '403':
@@ -151,6 +204,9 @@ paths:
       description: ...
       responses:
         '200':
+          description: ...
+          $ref: ...
+        '401':
           description: ...
           $ref: ...
         '403':
@@ -169,8 +225,14 @@ paths:
         '201':
           description: The account has been created successfully
           $ref: '#/components/responses/account-creation'
-        '403':
-          description: The account requested already exists
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/account-creation'
+        '409': # Conflict
+          description: The email address specified is already registered to an account
+          $ref: '#/components/responses/account-creation'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
           $ref: '#/components/responses/account-creation'
       requestBody:
         $ref: '#/components/requestBodies/account-signup'
@@ -178,13 +240,16 @@ paths:
           
   /account/deletion:
     post: # not delete
-      description: "Deletes" the current account (some info is required by law to be retained)
+      description: "Deletes" the current account (some info is required by law to be retained). The "current" account is the one the user is logged in as.
       responses:
         '200':
           description: The account has been queued for deletion - the user no longer has access
           $ref: '#/components/responses/account-deletion'
-        '403':
-          description: The account cannot be deleted (e.g. not authenticated)
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: '#/components/responses/account-deletion'
+        '409': # Conflict
+          description: The account is already queued for deletion
           $ref: '#/components/responses/account-deletion'
       requestBody:
         $ref: '#/components/requestBodies/account-deletion'
@@ -197,8 +262,11 @@ paths:
         '200':
           description: Logs into the requested account
           $ref: '#/components/responses/account-login'
-        '403':
-          description: Failed to log into request account
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/account-login'
+        '401': # Unauthorised
+          description: Failed to log into requested account
           $ref: '#/components/responses/account-login'
       requestBody:
         $ref '#/components/requestBodies/account-login'
@@ -210,12 +278,14 @@ paths:
         '200':
           description: The details has been successfully modified
           $ref: '#/components/responses/account-modification'
-        '403':
-          description: The details has unsuccessfully been modified
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
           $ref: '#/components/responses/account-modification'
       requestBody:
         $ref: '#/components/requestBodies/account-modification'
   
+  # !!! one for a password reset?
+
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
   
@@ -239,29 +309,59 @@ paths:
         '200':
           description: The conversation has been initiated
           $ref: '#/components/responses/conversation-start'
-        '409':
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/conversation-start'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: '#/components/responses/conversation-start'
+        '403': # Forbidden
+          description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
+          $ref: '#/components/responses/conversation-start'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: '#/components/responses/conversation-start'
+        '409': # Conflict
           description: The converstaion already exists
+          $ref: '#/components/responses/conversation-start'
+        '410': # Gone
+          description: The listing is closed
           $ref: '#/components/responses/conversation-start'
       requestBody:
         $ref: '#/components/requestBodies/conversation-start'
   
   /conversation/end:
     post:
-      description: Deletes a converstaion with the seller based on a unique conversationID
+      description: Closes a converstaion with the seller based on a unique conversationID
         '200':
           description: The conversation has been ended
           $ref: '#/components/responses/conversation-end'
-        '409':
-          description: The conversation did not exist (so can not be deleted)
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/conversation-end'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: '#/components/responses/conversation-end'
+        '404': # Not Found
+          description: The conversation does not exist
+          $ref: '#/components/responses/conversation-end'
+        '409': # Conflict
+          description: The conversation is already closed
           $ref: '#/components/responses/conversation-end'
       requestBody:
         $ref: '#/components/requestBodies/conversation-end'
 
   /conversations:
     get:
-      description: Returns descriptors conversation that the user still has open
+      description: Returns descriptors of conversations that the user still has open
         '200':
           description: Returns a set of the descriptors of the most recent converstaions
+          $ref: '#/components/responses/conversation-descriptors'
+        '400': # Bad Request
+          description: The parameters sent in the request were badly formatted
+          $ref: '#/components/responses/conversation-descriptors'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
           $ref: '#/components/responses/conversation-descriptors'
       parameters:
         start:
@@ -277,8 +377,20 @@ paths:
         '200':
           description: The message has been successfully delivered
           $ref: '#/components/responses/conversation-message'
-        '500':
-          description: The message has not been delivered
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/conversation-message'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: '#/components/responses/conversation-message'
+        '403': # Forbidden
+          description: The user does not have permission to send this message (for example, because the seller has blocked them)
+          $ref: '#/components/responses/conversation-message'
+        '404': # Not Found
+          description: The conversation does not exist, or this user is not part of it
+          $ref: '#/components/responses/conversation-message'
+        '410': # Gone
+          description: The conversation is closed
           $ref: '#/components/responses/conversation-message'
       requestBody:
         $ref: '#/components/requestBodies/conversation-message'
@@ -286,12 +398,18 @@ paths:
   /conversation:
     get:
       description: Returns the conversation of a given conversationID
-      '200':
-        description: The conversation exists and it has been returned
-        $ref: '#/components/responses/conversation'
-      '404':
-        description: The conversation does not exist
-        $ref: '#/components/responses/conversation'     
+        '200':
+          description: The conversation exists and it has been returned
+          $ref: '#/components/responses/conversation'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: '#/components/responses/conversation'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: '#/components/responses/conversation'
+        '404': # Not Found
+          description: The conversation does not exist, or this user is not part of it
+          $ref: '#/components/responses/conversation'     
     parameters:
       conversationID:
         $ref: '#/components/schema/id'
@@ -360,7 +478,7 @@ components:
               $ref: '#/components/schemas/conversation-descriptor'
 
     conversation-start:
-      description: Returns the converstaion-descriptor if successful
+      description: Returns the conversation-descriptor if successful
       content:
         'application/json':
           schema:
@@ -376,7 +494,7 @@ components:
                 type: boolean
      
     conversation-end:
-      description: Returns whether the converstaion was deleted successfully
+      description: Returns whether the conversation was closed successfully
       content:
         'application/json':
           schema:
@@ -602,7 +720,7 @@ components:
     account-login:
       type: object
       required:
-      - userId
+      - userId # !!! consider using an email address instead? It depends what userID ends up being
       - password
       properties:
         userId:
