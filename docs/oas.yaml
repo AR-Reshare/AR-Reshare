@@ -155,6 +155,32 @@ paths:
           $ref: '#/components/schemas/category'
 
 
+
+  /admin/user/manipulate:
+    ##
+  /admin/report/view: 
+    ##
+  /admin/report/search:
+    ##
+  /admin/report/close:
+    ##
+  /admin/sanctions/create:
+    ##
+  /admin/sanctions/delete:
+    ##
+  /admin/sanctions/view:
+    ##
+
+  ## for users
+
+  /account/sanctions/view:
+    ##
+  /account/sanctions/list:
+    ##
+  /account/sanctions/appeal:
+    ##
+
+
   # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
   /admin/user/manipulate:
     post:
@@ -289,6 +315,26 @@ paths:
   # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
   ## This overwrite can include a new password
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
+
+################################ LISTINGS ######################################################
+  /listings/view:
+    ##
+  /listings/search:
+    ##
+  /listings/create:
+    ##
+  /listings/close:
+    ##
+  /listings/modify:
+    ##
+  /listings/report:
+    ##
+  /accounts/report:
+    ##
+  
+
+
+
 
   
 
@@ -836,7 +882,6 @@ components:
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
       - closedDate
-      - archivedDate
       properties:
         listingId:
           $ref: '#/components/schemas/id'
@@ -851,8 +896,6 @@ components:
         modificationDate:
           $ref: '#/components/schemas/date'
         closedDate:
-          $ref: '#/components/schemas/date'
-        archivedDate:
           $ref: '#/components/schemas/date'
         media:
           $ref: '#/components/schemas/media'
