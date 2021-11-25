@@ -155,32 +155,6 @@ paths:
           $ref: '#/components/schemas/category'
 
 
-
-  /admin/user/manipulate:
-    ##
-  /admin/report/view: 
-    ##
-  /admin/report/search:
-    ##
-  /admin/report/close:
-    ##
-  /admin/sanctions/create:
-    ##
-  /admin/sanctions/delete:
-    ##
-  /admin/sanctions/view:
-    ##
-
-  ## for users
-
-  /account/sanctions/view:
-    ##
-  /account/sanctions/list:
-    ##
-  /account/sanctions/appeal:
-    ##
-
-
   # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
   /admin/user/manipulate:
     post:
@@ -203,6 +177,98 @@ paths:
           $ref: '#/components/responses/account-modification'
     requestBody:
       $ref: '#/components/requestBodies/account-modification'
+
+
+    /admin/report/view:
+      get:
+        description: Returns the report which matches the value of the parameter "reportID"
+        responses:
+          '200':
+            description: Returns the report
+            $ref: '#/components/responses/report'
+          '400': # Bad Request
+            description: The request did not include a "reportID" parameter
+            $ref: '#/components/responses/report'
+          '401': # Unauthorised
+            description: The user did not send an authentication token, or the authentication token does not match a valid account
+            $ref: '#/components/responses/report'
+          '403': # Forbidden
+            description: The user's authentication token does not correspond to an administrator account
+            $ref: '#/components/responses/report'
+          '404': # Not Found
+            description: The user does not exist
+            $ref: '#/components/responses/report'
+        parameters:
+          reportID:
+            $ref: '#/components/schemas/id'
+
+    /admin/report/search:
+      get:
+        description: Returns the reports that match the criteria provided by the requests parameter
+        responses:
+          '200':
+            description: The server processed the request succesfully and returns candidate reports
+            $ref: '#/components/responses/reports'
+          '401': # Unauthorised
+            description: The user did not send an authentication token, or the authentication token does not match a valid account
+            $ref: '#/components/responses/reports'
+          '403': # Forbidden
+            description: The user's authentication token does not correspond to an administrator account
+            $ref: '#/components/responses/reports'
+        parameters:
+          reportID:
+            $ref: '#/components/schemas/id'
+          category:
+            $ref: '#/components/schemas/category'
+
+     
+    /admin/report/close:
+      post:
+        description: After the admin has reviewed a report, they submit the outcome
+        responses:
+          '200':
+            description: The server processed the report review succesfully
+            $ref: '#/components/responses/post'
+        requestBody:
+          $ref: '#/components/requestBodies/report-review'
+
+
+
+
+    # NOTE: These urls (may) not exist -- this is because a sanction is included in the report section as an optional parameter
+    # This is because, in order to track sanctions and reasons, it would be unfair if an admin just hit the ban button without even filling out why
+    /admin/sanctions/create:
+      ##
+    /admin/sanctions/delete:
+      ##
+    /admin/sanctions/view:
+      ##
+
+  ## for users
+
+  /account/sanctions/view:
+    get:
+      '200':
+        description: ...
+
+    ##
+  /account/sanctions/list:
+    get:
+      description: ...
+      responses:
+        '200':
+          description: ...
+
+
+    ##
+  /account/sanctions/appeal:
+    get:
+      '200':
+        description: ...
+    ##
+
+
+
 
   # NOTE: The below paths do not seem neccessary
 
@@ -590,6 +656,23 @@ components:
             $ref: '#/components/schemas/listing'
   
 
+  #################### REPORT RESPONSES #######################
+    reports:
+      description: Returns a set of reports
+      content:
+        'application/json':
+          schmema:
+            type: object
+            items:
+            - $ref: '#/components/schemas/reports'
+
+    report:
+      description: Returns a report
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/report'
+
 
   ################### ACCOUNT REQUESTBODIES #####################
 
@@ -663,12 +746,26 @@ components:
             $ref: '#/components/schemas/message'
 
 
-  ################# LISTINGS REQUEST BODIES ######################
+  ################# LISTINGS REQUESTBODIES ######################
     listing-modification:
       content:
         'application/json':
           schema:
             $ref: '#/components/schemas/listing-modification'
+
+    listing-creation:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/listing-creation'
+
+
+  ################### REPORT REQUESTBODIES #######################
+    report-review:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/report-review'
 
   ######################### SCHEMAS ##############################
 
@@ -695,6 +792,26 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/user-view'
+
+    listing-creation:
+      type: object
+      required:
+      - description
+      - location
+      - category
+      - condition
+      - media ## this will encompass videos, photos and what other
+      properties:
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        category:
+          $ref: '#/components/schemas/category'
+        media:
+          $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition' 
 
     listing-modification:
       type: object
@@ -823,7 +940,50 @@ components:
         $ref: '#/components/schemas/message'
 
 
+    report:
+      type: object
+      required:
+      - incidentID
+      - reporterID
+      - offenderID
+      - location
+      - offenseType
+      - description
+      - status
+      - outcomes
+      properties:
+        incidentID:
+          $ref: '#/components/schemas/id'
+        offenderID:
+          $ref: '#/components/schemas/id'
+        victimID:
+          $ref: '#/components/schemas/id'
+        location:
+          type: string
+          format: enum(Conversation, Listing, Account)
+        offenseType:
+          type: string
+          format: enum(scam, illegal-content, malicious-language)
+        description:
+          $ref: '#/components/schemas/description'
+        status:
+          type: string
+          format: enum(reported, investigating, closed)
+        outcomes:
+          $ref: '#/components/schemas/outcomes'
 
+    reports:
+      type: array
+      items:
+      - $ref: '#/components/schemas/report' 
+
+    report-review:
+      type: object
+      required:
+      - outcomes
+      properties:
+        outcomes:
+          $ref: '#/components/schemas/outcomes'
 
   ########################### MID-LEVEL COMPONENTS ########################
     listings:
@@ -1051,6 +1211,10 @@ components:
       type: string
       format: enum
 
+    condition:
+      type: string
+      format: enum
+
     path:
       type: string
       format: path
@@ -1059,7 +1223,13 @@ components:
       type: string
       format: hex
 
+    outcomes:
+      type: array
+      items:
+        - type: string
+          format: enum(warning, temp-ban, perma-ban)
 
+    
 
   ################################# HEADERS COMPONENTS ######################################
 
