@@ -12,6 +12,13 @@ info:
   servers:
   - url: \#
     description: The url will be filled out as we push through development
+  security:
+    bearerAuth:
+    - /admin/[0-9A-Za-z/]+ ## Create better regex expression
+    - /account/deletion
+    - /account/modification
+    - /conversation
+    - /conversations/[0-9A-Za-z]*
 
 
 paths:
@@ -65,7 +72,6 @@ paths:
         listingID:
           $ref: '#/components/parameters/listingID'
 
-
   /admin/listing/search:
     get:
       description: Returns the listings that match the criteria provided by the requests parameter
@@ -90,7 +96,6 @@ paths:
         query:
           $ref: '#/components/parameters/queryString'
         
-
   /admin/listing/modification:
     post:
       description: Modifies the listings
@@ -106,7 +111,6 @@ paths:
           $ref: '#/components/responses/post'
       requestBody:
         $ref: '#/components/requestBodies/listing-modification'
-
 
   /admin/user/view:
     get:
@@ -195,7 +199,6 @@ paths:
     requestBody:
       $ref: ...
 
-
   /admin/site/monitor:
     post:
       description: ...
@@ -232,8 +235,7 @@ paths:
           $ref: '#/components/responses/account-creation'
       requestBody:
         $ref: '#/components/requestBodies/account-signup'
-      
-          
+               
   /account/deletion:
     post: # not delete
       description: "'Deletes' the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
@@ -250,7 +252,6 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/account-deletion'
   
-
   /account/login/:
     post:
       description: Login in to the requested account using request arguments
@@ -267,7 +268,6 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/account-login'
     
-
   /account/modification/:
     put:
       description: Modifies the details of the current account
@@ -282,10 +282,8 @@ paths:
         $ref: '#/components/requestBodies/account-modification'
 
 
-
   # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
   ## This overwrite can include a new password
-
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
   
@@ -461,7 +459,7 @@ components:
           schema:
             type: object
       headers:
-        auth-token:
+        Authorization:
           $ref: '#/components/headers/auth-token'
 
     account-modification:
@@ -1011,8 +1009,15 @@ components:
         format: string
 
 
-    
-    
+########################### SECURITY SCHEME OBJECT ##############################
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+
+
     
 
     
