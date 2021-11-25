@@ -1,0 +1,56 @@
+components:
+  parameters:
+    maxResults:
+      name: max
+      in: query
+      description: Returns <= maxResults results
+      required: true
+      schema:
+        type: integer
+        format: int32
+      
+    startResults:
+      name: start
+      in: query
+      description: Returns results starting and including from the nth result
+      required: true
+      schema:
+        type: integer
+        format: int32
+    
+    endResults:
+      name: end
+      in: query
+      description: Returns results up to but not including the nth result
+      required: false
+      schema:
+        type: integer
+        format: int32
+    
+    queryString:
+      name: q
+      in: query
+      description: The search query that is provided to the search operation
+      required: true
+      schema:
+        type: string
+        format: string
+
+    listingID:
+      name: listingID
+      in: query
+      description: The id used to identify any listing
+      required: true
+      schema:
+        type: string
+        format: string
+
+    category:
+      name: category
+      in: query
+      description: Describes the category when selecting results
+      required: false
+      schema:
+        type: string
+        format: string
+

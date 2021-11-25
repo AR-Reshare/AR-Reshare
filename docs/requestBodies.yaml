@@ -1,0 +1,102 @@
+
+components:
+  requestBodies:
+    ############################ ACCOUNT ############################
+    account-signup:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/account-signup'
+    
+    account-login:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/account-login'
+
+    account-deletion:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/account-deletion'
+
+    account-modification:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/account-modification'
+      examples:
+        single-var-change:
+          password: current_password
+          modifiedDetails:
+            name: new_name
+        multi-var-change:
+          password: current_password
+          modifiedDetails:
+            name: new_name
+            email: new_email_address@example.com
+            password: new_password
+
+          
+   #################### COMMUNICATIONS #######################
+    conversation-end:
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - conversationID
+            properties:
+              conversationID:
+                $ref: 'schemas.yaml#/components/parameters/id'
+      
+    conversation-start:
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - receiverID  # this can be derived from listingID
+            - listingID
+            properties:
+              receiverID:
+                $ref: 'schemas.yaml#/components/parameters/id'
+              listingID:
+                $ref: 'schemas.yaml#/components/parameters/id'
+
+    conversation-message:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/message'
+
+
+    ################# LISTINGS REQUESTBODIES ######################
+    listing-modification:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/listing-modification'
+
+    listing-creation:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/listing-creation'
+
+
+    ################### REPORT REQUESTBODIES #######################
+    report-review:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/report-review'
+    
+    report-submit:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/parameters/report-submit'        
+
+ 
+  

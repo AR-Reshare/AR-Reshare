@@ -39,15 +39,15 @@ paths:
       responses:
         '200':
           description: The admin has authenticated with the admin console
-          $ref: '#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include the required parameters
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
         '401': # Unauthorised (distinct to 403 Forbidden)
           description: The user did not authenticate with the correct credentials with the admin console
-          $ref: '#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
-        $ref: '#/components/requestBodies/account-login'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
 
   /admin/listing/view:
     get:
@@ -55,22 +55,22 @@ paths:
       responses:
         '200':
           description: The listing exists and it is returned
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
         '400': # Bad Request
           description: The request did not include a "listingID" parameter
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
         '404': # Not Found
           description: The listing does not exist
-          $ref: '#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing'
       parameters:
         listingID:
-          $ref: '#/components/parameters/listingID'
+          $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /admin/listing/search:
     get:
@@ -78,23 +78,23 @@ paths:
       responses:
         '200':
           description: Returns all available listings with the parameters required
-          $ref: '#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings'
         # no 404 included - I assume that if no listings match, the reponse will still be 200 but will be empty
       parameters:
         maxResults:
-          $ref: '#/components/parameters/maxResults'
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
         endResults:
-          $ref: '#/components/parameters/endResults'
+          $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
-          $ref: '#/components/parameters/startResults'
+          $ref: 'parameters.yaml#/components/parameters/startResults'
         query:
-          $ref: '#/components/parameters/queryString'
+          $ref: 'parameters.yaml#/components/parameters/queryString'
         
   /admin/listing/modification:
     post:
@@ -102,15 +102,15 @@ paths:
       responses:
         '200':
           description: The listing has been modified successfully
-          $ref: '#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
-        $ref: '#/components/requestBodies/listing-modification'
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modification'
 
   /admin/user/view:
     get:
@@ -118,22 +118,22 @@ paths:
       responses:
         '200':
           description: Returns the user-view
-          $ref: '#/components/responses/admin-user-view'
+          $ref: 'responses.yaml#/components/responses/admin-user-view'
         '400': # Bad Request
           description: The request did not include a "userID" parameter
-          $ref: '#/components/responses/admin-user-view'
+          $ref: 'responses.yaml#/components/responses/admin-user-view'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/admin-user-view'
+          $ref: 'responses.yaml#/components/responses/admin-user-view'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/admin-user-view'
+          $ref: 'responses.yaml#/components/responses/admin-user-view'
         '404': # Not Found
           description: The user does not exist
-          $ref: '#/components/responses/admin-user-view'
+          $ref: 'responses.yaml#/components/responses/admin-user-view'
       parameters:
         userID:
-          $ref: '#/components/schemas/id'
+          $ref: 'schemas.yaml#/components/schemas/id'
 
   /admin/user/search:
     get:
@@ -141,18 +141,18 @@ paths:
       responses:
         '200':
           description: The server processed the request succesfully and returns candidate user-views
-          $ref: '#/components/responses/admin-user-search'
+          $ref: 'responses.yaml#/components/responses/admin-user-search'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/admin-user-search'
+          $ref: 'responses.yaml#/components/responses/admin-user-search'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/admin-user-search'
+          $ref: 'responses.yaml#/components/responses/admin-user-search'
       parameters:
         userID:
-          $ref: '#/components/schemas/id'
+          $ref: 'schemas.yaml#/components/schemas/id'
         category:
-          $ref: '#/components/schemas/category'
+          $ref: 'schemas.yaml#/components/schemas/category'
 
 
   # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
@@ -162,21 +162,21 @@ paths:
       responses:
         '200':
           description: The server has successfully modified user details
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
         '400': # Bad Request
           description: The request did not include a "userID" parameter
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
         '404': # Not Found
           description: The user does not exist
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
     requestBody:
-      $ref: '#/components/requestBodies/account-modification'
+      $ref: 'requestBodies.yaml#/components/requestBodies/account-modification'
 
 
     /admin/report/view:
@@ -185,22 +185,22 @@ paths:
         responses:
           '200':
             description: Returns the report
-            $ref: '#/components/responses/report'
+            $ref: 'responses.yaml#/components/responses/report'
           '400': # Bad Request
             description: The request did not include a "reportID" parameter
-            $ref: '#/components/responses/report'
+            $ref: 'responses.yaml#/components/responses/report'
           '401': # Unauthorised
             description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: '#/components/responses/report'
+            $ref: 'responses.yaml#/components/responses/report'
           '403': # Forbidden
             description: The user's authentication token does not correspond to an administrator account
-            $ref: '#/components/responses/report'
+            $ref: 'responses.yaml#/components/responses/report'
           '404': # Not Found
             description: The user does not exist
-            $ref: '#/components/responses/report'
+            $ref: 'responses.yaml#/components/responses/report'
         parameters:
           reportID:
-            $ref: '#/components/schemas/id'
+            $ref: 'schemas.yaml#/components/schemas/id'
 
     /admin/report/search:
       get:
@@ -208,18 +208,18 @@ paths:
         responses:
           '200':
             description: The server processed the request succesfully and returns candidate reports
-            $ref: '#/components/responses/reports'
+            $ref: 'responses.yaml#/components/responses/reports'
           '401': # Unauthorised
             description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: '#/components/responses/reports'
+            $ref: 'responses.yaml#/components/responses/reports'
           '403': # Forbidden
             description: The user's authentication token does not correspond to an administrator account
-            $ref: '#/components/responses/reports'
+            $ref: 'responses.yaml#/components/responses/reports'
         parameters:
           reportID:
-            $ref: '#/components/schemas/id'
+            $ref: 'schemas.yaml#/components/schemas/id'
           category:
-            $ref: '#/components/schemas/category'
+            $ref: 'schemas.yaml#/components/schemas/category'
 
      
     /admin/report/close:
@@ -228,9 +228,9 @@ paths:
         responses:
           '200':
             description: The server processed the report review succesfully
-            $ref: '#/components/responses/post'
+            $ref: 'responses.yaml#/components/responses/post'
         requestBody:
-          $ref: '#/components/requestBodies/report-review'
+          $ref: 'requestBodies.yaml#/components/requestBodies/report-review'
 
 
 
@@ -315,18 +315,18 @@ paths:
       responses:
         '201':
           description: The account has been created successfully
-          $ref: '#/components/responses/account-creation'
+          $ref: 'responses.yaml#/components/responses/account-creation'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/account-creation'
+          $ref: 'responses.yaml#/components/responses/account-creation'
         '409': # Conflict
           description: The email address specified is already registered to an account
-          $ref: '#/components/responses/account-creation'
+          $ref: 'responses.yaml#/components/responses/account-creation'
         '422': # Unprocessable Entity
           description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
-          $ref: '#/components/responses/account-creation'
+          $ref: 'responses.yaml#/components/responses/account-creation'
       requestBody:
-        $ref: '#/components/requestBodies/account-signup'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
                
   /account/deletion:
     post: # not delete
@@ -334,15 +334,15 @@ paths:
       responses:
         '200':
           description: The account has been queued for deletion - the user no longer has access
-          $ref: '#/components/responses/account-deletion'
+          $ref: 'responses.yaml#/components/responses/account-deletion'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/account-deletion'
+          $ref: 'responses.yaml#/components/responses/account-deletion'
         '409': # Conflict
           description: The account is already queued for deletion
-          $ref: '#/components/responses/account-deletion'
+          $ref: 'responses.yaml#/components/responses/account-deletion'
       requestBody:
-        $ref: '#/components/requestBodies/account-deletion'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-deletion'
   
   /account/login/:
     post:
@@ -350,15 +350,15 @@ paths:
       responses:
         '200':
           description: Logs into the requested account
-          $ref: '#/components/responses/account-login'
+          $ref: 'responses.yaml#/components/responses/account-login'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/account-login'
+          $ref: 'responses.yaml#/components/responses/account-login'
         '401': # Unauthorised
           description: Failed to log into requested account
-          $ref: '#/components/responses/account-login'
+          $ref: 'responses.yaml#/components/responses/account-login'
       requestBody:
-        $ref: '#/components/requestBodies/account-login'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
      
   /account/modification/:
     put:
@@ -366,12 +366,12 @@ paths:
       responses:
         '200':
           description: The details has been successfully modified
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modification'
       requestBody:
-        $ref: '#/components/requestBodies/account-modification'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-modification'
 
   # TODO: 
   /account/reset/:
@@ -420,27 +420,27 @@ paths:
       responses:
         '201':
           description: The conversation has been initiated
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '403': # Forbidden
           description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '404': # Not Found
           description: The listing does not exist
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '409': # Conflict
           description: The converstaion already exists
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
         '410': # Gone
           description: The listing is closed
-          $ref: '#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-start'
       requestBody:
-        $ref: '#/components/requestBodies/conversation-start'
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-start'
   
   /conversation/end:
     post:
@@ -448,21 +448,21 @@ paths:
       responses:
         '200':
           description: The conversation has been ended
-          $ref: '#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-end'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-end'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-end'
         '404': # Not Found
           description: The conversation does not exist
-          $ref: '#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-end'
         '409': # Conflict
           description: The conversation is already closed
-          $ref: '#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-end'
       requestBody:
-        $ref: '#/components/requestBodies/conversation-end'
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-end'
 
   /conversations:
     get:
@@ -470,20 +470,20 @@ paths:
       responses:
         '200':
           description: Returns a set of the descriptors of the most recent converstaions
-          $ref: '#/components/responses/conversation-descriptors'
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
         '400': # Bad Request
           description: The parameters sent in the request were badly formatted
-          $ref: '#/components/responses/conversation-descriptors'
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/conversation-descriptors'
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
       parameters:
         start:
-          $ref: '#/components/parameters/startResults'
+          $ref: 'parameters.yaml#/components/parameters/startResults'
         end:
-          $ref: '#/components/parameters/endResults'
+          $ref: 'parameters.yaml#/components/parameters/endResults'
         max:
-          $ref: '#/components/parameters/maxResults'
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
       
   /conversation/message:
     post:
@@ -491,24 +491,24 @@ paths:
       responses:
         '200':
           description: The message has been successfully delivered
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
         '403': # Forbidden
           description: The user does not have permission to send this message (for example, because the seller has blocked them)
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
         '410': # Gone
           description: The conversation is closed
-          $ref: '#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/conversation-message'
       requestBody:
-        $ref: '#/components/requestBodies/conversation-message'
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
   /conversation:
     get:
@@ -516,792 +516,26 @@ paths:
       responses:
         '200':
           description: The conversation exists and it has been returned
-          $ref: '#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: '#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: '#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation'
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
-          $ref: '#/components/responses/conversation'     
+          $ref: 'responses.yaml#/components/responses/conversation'     
     parameters:
       conversationID:
-        $ref: '#/components/schemas/id'
+        $ref: 'schemas.yaml#/components/schemas/id'
 
 
-components:
 
-  responses:
 
-    #NOTE: Error message is subject to change soon
-    post:
-      description: The response to a post request
-      content:
-        'application/json':
-          schema:
-            type: object
-            required:
-            - success
-            optional:
-            - error
-            properties:
-              success: boolean
-              error: errorMsg
-            examples:
-              post-success:
-                success: true
-              post-failure:
-                success: false
-                error: this is an error message
-
-
-    ################### ACCOUNT RESPONSES #####################
-
-    account-deletion:
-      description: The account was requested to be deleted
-      $ref: '#/components/responses/post'
-
-    account-creation:
-      description: The account was requested to be created
-      $ref: '#/components/responses/post'
-
-    # TODO: I believe authentication information can be removed from here and put into a seperate security component
-    account-login:
-      description: The account was sign in
-      content:
-        'application/json':
-          schema:
-            type: object
-      headers:
-        Authorization:
-          $ref: '#/components/headers/auth-token'
-
-    account-modification:
-      description: Returns whether an account detail was modified successfully
-      $ref: '#/components/responses/post'
-
-
-  ####################### COMMS RESPONSES #######################
-    conversation-descriptors:
-      description: Returns a list of conversation descriptors
-      content:
-        'application/json':
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/conversation-descriptor'
-
-    conversation-start:
-      description: Returns the conversation-descriptor if successful
-      content:
-        'application/json':
-          schema:
-            type: object
-            required:
-            - success
-            optional:
-            - conversation
-            properties:
-              conversation:
-                $ref: '#/components/schemas/conversation-descriptor'
-              success:
-                type: boolean
-     
-    conversation:
-      description: Returns the conversation of a given conversationID
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/conversation'
-
-    conversation-end:
-      description: Returns whether the conversation was closed successfully
-      $ref: '#/components/responses/post'
-
-    conversation-message:
-      description: Returns whether a message was successfully delivered
-      $ref: '#/components/responses/post'
-    
-
-  ###################### ADMIN RESPONSES ########################
-    admin-user-view:
-      description: Returns a view of the user
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/user-view'
-
-    admin-user-search:
-      description: Returns a list of users that satisfy the search parameters
-      content:
-        'application/json':
-          schemas:
-            $ref: '#/components/schemas/user-search'
-
-  ###################### LISTING RESPONSES ######################
-    listings:
-      description: Returns a set of listings
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/listings'
-
-    listing:
-      description: Returns a listing
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/listing'
-  
-
-  #################### REPORT RESPONSES #######################
-    reports:
-      description: Returns a set of reports
-      content:
-        'application/json':
-          schmema:
-            type: object
-            items:
-            - $ref: '#/components/schemas/reports'
-
-    report:
-      description: Returns a report
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/report'
-
-
-  ################### ACCOUNT REQUESTBODIES #####################
-
-  requestBodies:
-    account-signup:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/account-signup'
-    
-    account-login:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/account-login'
-
-    account-deletion:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/account-deletion'
-
-    account-modification:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/account-modification'
-      examples:
-        single-var-change:
-          password: current_password
-          modifiedDetails:
-            name: new_name
-        multi-var-change:
-          password: current_password
-          modifiedDetails:
-            name: new_name
-            email: new_email_address@example.com
-            password: new_password
-
-          
-  #################### COMMS REQUEST BODIES #######################
-    conversation-end:
-      content:
-        'application/json':
-          schema:
-            type: object
-            required:
-            - conversationID
-            properties:
-              conversationID:
-                $ref: '#/components/schemas/id'
-      
-    conversation-start:
-      content:
-        'application/json':
-          schema:
-            type: object
-            required:
-            - receiverID  # this can be derived from listingID
-            - listingID
-            properties:
-              receiverID:
-                $ref: '#/components/schemas/id'
-              listingID:
-                $ref: '#/components/schemas/id'
-
-    conversation-message:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/message'
-
-
-  ################# LISTINGS REQUESTBODIES ######################
-    listing-modification:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/listing-modification'
-
-    listing-creation:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/listing-creation'
-
-
-  ################### REPORT REQUESTBODIES #######################
-    report-review:
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/report-review'
-
-  ######################### SCHEMAS ##############################
-
-  schemas:
-    # There are potentially more properties to be modified by the admin
-    user-view:
-      type: object
-      required:
-      - name
-      - dob
-      - email
-      - profilePhoto
-      properties:
-        name:
-          $ref: '#/components/schemas/name'
-        dob:
-          $ref: '#/components/schemas/date'
-        email:
-          $ref: '#/components/schemas/email'
-        profilePicture:
-          $ref: '#/components/schemas/photo'
-
-    user-search:
-      type: array
-      items:
-        $ref: '#/components/schemas/user-view'
-
-    listing-creation:
-      type: object
-      required:
-      - description
-      - location
-      - category
-      - condition
-      - media ## this will encompass videos, photos and what other
-      properties:
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
-        media:
-          $ref: '#/components/schemas/media'
-        condition:
-          $ref: '#/components/schemas/condition' 
-
-    listing-modification:
-      type: object
-      required:
-      - password
-      - modifiedDetails
-      properties:
-        password:
-          $ref: '#/components/schemas/password'
-        variable-modification:
-          $ref: '#/components/schemas/listing-modifiedDetails'
-    
-    listing-modifiedDetails:
-      type: object
-      optional:
-      - description
-      - location
-      - category
-      - media
-      properties:
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
-        media:
-          $ref: '#/components/schemas/media'
-
-    account-modification:
-      type: object
-      required:
-      - password
-      - modifiedDetails
-      properties:
-        password:
-          $ref: '#/components/schemas/password'
-        variable-modification:
-          $ref: '#/components/schemas/account-modifiedDetails'
-
-    account-modifiedDetails:
-      type: object
-      optional:
-      - name
-      - email
-      - dob
-      - password
-      properties:
-        name:
-          $ref: '#/components/schemas/name'
-        email:
-          $ref: '#/components/schemas/email'
-        dob:
-          $ref: '#/components/schemas/date'
-        password:
-          $ref: '#/components/schemas/password'
-
-    # formally called account schmema -- this won't be transferred between client and server (so I've split it up into objects where data would be transferred)
-    
-    account-signup:
-      type: object
-      required:
-      - name
-      - email
-      - password
-      - dob # DoB (keeping lowecase for consistency on naming)
-      - address
-      properties:
-        userId:
-          $ref: '#/components/schemas/name'
-        email:
-          $ref: '#/components/schemas/email'
-        password:
-          $ref: '#/components/schemas/password'
-        dob:
-          $ref: '#/components/schemas/date'
-        address:
-          $ref: '#/components/schemas/address'
-      example:
-        name: Sam Sepiol
-        email: sspeiol@protonmail.org
-        dob: '1986-09-17'
-        address:
-          $ref: '#/components/schemas/address/example' # TODO example
-        
-    account-login:
-      type: object
-      required:
-      - email
-      - password
-      properties:
-        email:
-          $ref: '#/components/schemas/email'
-        password:
-          $ref: '#/components/schemas/password'
-
-    account-deletion:
-      type: object
-      required:
-      - email
-      - password
-      properties:
-        email:
-          $ref: '#/components/schemas/email'
-        password:
-          $ref: '#/components/schemas/password'
-
-    # TODO: There may be media links such as user profile picture to be included here
-    conversation-descriptor:
-      type: object
-      required:
-      - conversationID
-      - receiver
-      - listing
-      properties:
-        conversationID:
-          $ref: '#/components/schemas/id'
-        listing-descriptor:
-          $ref: '#/components/schemas/listing'
-        receiver-descriptor:
-          $ref: '#/components/schemas/user'
-
-    conversation:
-      type: array
-      items:
-        $ref: '#/components/schemas/message'
-
-
-    report:
-      type: object
-      required:
-      - incidentID
-      - reporterID
-      - offenderID
-      - location
-      - offenseType
-      - description
-      - status
-      - outcomes
-      properties:
-        incidentID:
-          $ref: '#/components/schemas/id'
-        offenderID:
-          $ref: '#/components/schemas/id'
-        victimID:
-          $ref: '#/components/schemas/id'
-        location:
-          type: string
-          format: enum(Conversation, Listing, Account)
-        offenseType:
-          type: string
-          format: enum(scam, illegal-content, malicious-language)
-        description:
-          $ref: '#/components/schemas/description'
-        status:
-          type: string
-          format: enum(reported, investigating, closed)
-        outcomes:
-          $ref: '#/components/schemas/outcomes'
-
-    reports:
-      type: array
-      items:
-      - $ref: '#/components/schemas/report' 
-
-    report-review:
-      type: object
-      required:
-      - outcomes
-      properties:
-        outcomes:
-          $ref: '#/components/schemas/outcomes'
-
-  ########################### MID-LEVEL COMPONENTS ########################
-    listings:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing'
-      
-    listings-descriptor:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing-descriptor'
-
-
-    listing-view:
-      type: object
-      # these are the required parameters
-      required:
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
-      - description
-      - location
-      - category
-      - condition
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - media ## this will encompass videos, photos and what other
-      properties:
-        listingId:
-          $ref: '#/components/schemas/id'
-        contributorId:
-          $ref: '#/components/schemas/id'
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        creationDate:
-          $ref: '#/components/schemas/date'
-        modificationDate:
-          $ref: '#/components/schemas/date'
-        media:
-          $ref: '#/components/schemas/media'
-        condition:
-          $ref: '#/components/schemas/condition'
-
-    # TODO: add
-    listing-own:
-      type: object
-      required: 
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
-      - description
-      - location
-      - category
-      - condition
-      - media ## this will encompass videos, photos and what other
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - closedDate
-      properties:
-        listingId:
-          $ref: '#/components/schemas/id'
-        contributorId:
-          $ref: '#/components/schemas/id'
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        creationDate:
-          $ref: '#/components/schemas/date'
-        modificationDate:
-          $ref: '#/components/schemas/date'
-        closedDate:
-          $ref: '#/components/schemas/date'
-        media:
-          $ref: '#/components/schemas/media'
-        condition:
-          $ref: '#/components/schemas/condition'
-        
-
-    # TODO: This will be a subset of the "listing" object -- just need to decide what to include
-    listing-descriptor:
-      type: object
-      required:
-
-    message:
-      type: object
-      required:
-      - senderId
-      - receiverId
-      - datetime
-      - mediaContent
-      - textContent
-      properties:
-        senderId:
-          $ref: '#/components/schemas/id'
-        receiverId:
-          $ref: '#/components/schemas/id'
-        datetime:
-          $ref: '#/components/schemas/datetime'
-        mediaContent:
-          $ref: '#/components/schemas/mediaContent'
-        textContent:
-          $ref: '#/components/schemas/textContent'
-
-    user:
-      type: object
-      required:
-      - userId
-      - name
-      - bio
-      - profilePics
-      properties:
-        userId:
-          $ref: '#/components/schemas/id'
-        name:
-          $ref: '#/components/schemas/name'
-        bio:
-          $ref: '#/components/schemas/description'
-        profilePics:
-          $ref: '#/components/schemas/media'
-
-    # TODO: This schema's structure is very likely to be changed in the near future
-    mediaContent:
-      type: object
-      optional:
-      - media
-      - description
-      properties:
-        media:
-          $ref: '#/components/schemas/media'
-        description:
-          $ref: '#/components/schemas/description'
-
-    textContent:
-      type: string
-
-
-    # TODO: This needs to be decided depending on what level of accuracy was decided -- This may also be influenced by the maps api that is ended up using
-    address:
-      type: object
-      required:
-      - country
-      - city
-      - postcode
-      optional:
-      - street # which would include door number
-      properties:
-        country:
-          $ref: '#/components/schemas/country'
-        city:
-          $ref: '#/components/schemas/city'
-        postcode:
-          $ref: '#/components/schemas/postcode'
-        street:
-          $ref: '#/components/schemas/street'
-
-    media: # i.e media = ["url1", "url2", ...]
-      type: array
-      items:
-        type: string
-        format: url
-
-    category-descriptor:
-      type: object
-      required:
-      - category
-      - icon
-      - color
-      - categoryPath
-      properties:
-        category:
-          $ref: '#/components/schemas/category'
-        icon:
-          $ref: '#/components/schemas/photo'
-        color:
-          $ref: '#/components/schemas/color'
-        categoryPath:
-          $ref: '#/components/schemas/path'
-      
-
-    photo:
-      type: string
-      format: url
-
-    ############################## LOW-LEVEL COMPONENTS ###############################
-    country:
-      type: string
-
-    city:
-      type: string
-
-    postcode:
-      type: string
-
-    street:
-      type: string
-
-    ## we'll define formats for these types below soon (e.g. sizes and other attributes)
-    id:
-      type: string
-
-    name:
-      type: string
-
-    description:
-      type: string
-
-    date:
-      type: string
-      format: ISO Date (8601) # can be changed
-
-    datetime:
-      type: string
-      format: ISO Datetime (8601) # can be changed
-
-    password:
-      type: string
-      format: password
-
-    email:
-      type: string
-      format: email
-    
-    category:
-      type: string
-      format: enum
-
-    condition:
-      type: string
-      format: enum
-
-    path:
-      type: string
-      format: path
-    
-    color:
-      type: string
-      format: hex
-
-    outcomes:
-      type: array
-      items:
-        - type: string
-          format: enum(warning, temp-ban, perma-ban)
-
-    
-
-  ################################# HEADERS COMPONENTS ######################################
-
-
-
-  headers:
-    auth-token:
-      description: Used to authenticate requests
-      schema:
-        type: JWT Token # Room for change
-
-
-
-######################################### Parameter Objects #################################################
-  parameters:
-    maxResults:
-      name: max
-      in: query
-      description: Returns <= maxResults results
-      required: true
-      schema:
-        type: integer
-        format: int32
-      
-    startResults:
-      name: start
-      in: query
-      description: Returns results starting and including from the nth result
-      required: true
-      schema:
-        type: integer
-        format: int32
-    
-    endResults:
-      name: end
-      in: query
-      description: Returns results up to but not including the nth result
-      required: false
-      schema:
-        type: integer
-        format: int32
-    
-    queryString:
-      name: q
-      in: query
-      description: The search query that is provided to the search operation
-      required: true
-      schema:
-        type: string
-        format: string
-
-    listingID:
-      name: listingID
-      in: query
-      description: The id used to identify any listing
-      required: true
-      schema:
-        type: string
-        format: string
-
-    category:
-      name: category
-      in: query
-      description: Describes the category when selecting results
-      required: false
-      schema:
-        type: string
-        format: string
 
 
 ########################### SECURITY SCHEME OBJECT ##############################
-
 securitySchemes:
   bearerAuth:
     type: http
