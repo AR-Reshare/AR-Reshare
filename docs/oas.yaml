@@ -267,7 +267,7 @@ paths:
           $ref: '#/components/responses/account-login'
       requestBody:
         $ref: '#/components/requestBodies/account-login'
-    
+     
   /account/modification/:
     put:
       description: Modifies the details of the current account
@@ -281,6 +281,10 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/account-modification'
 
+  # TODO: 
+  /account/reset/:
+    put: 
+      description: Modifies the details
 
   # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
   ## This overwrite can include a new password
@@ -787,7 +791,7 @@ components:
         $ref: '#/components/schemas/listing-descriptor'
 
 
-    listing:
+    listing-view:
       type: object
       # these are the required parameters
       required:
@@ -796,6 +800,7 @@ components:
       - description
       - location
       - category
+      - condition
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
       - media ## this will encompass videos, photos and what other
@@ -814,6 +819,46 @@ components:
           $ref: '#/components/schemas/date'
         media:
           $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition'
+
+    # TODO: add
+    listing-own:
+      type: object
+      required: 
+      - listingId # the id of the listing
+      - contributorId # the id of the contributor
+      - description
+      - location
+      - category
+      - condition
+      - media ## this will encompass videos, photos and what other
+      - creationDate
+      - modificationDate # Ignoring archived date, and last modified
+      - closedDate
+      - archivedDate
+      properties:
+        listingId:
+          $ref: '#/components/schemas/id'
+        contributorId:
+          $ref: '#/components/schemas/id'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        creationDate:
+          $ref: '#/components/schemas/date'
+        modificationDate:
+          $ref: '#/components/schemas/date'
+        closedDate:
+          $ref: '#/components/schemas/date'
+        archivedDate:
+          $ref: '#/components/schemas/date'
+        media:
+          $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition'
+        
 
     # TODO: This will be a subset of the "listing" object -- just need to decide what to include
     listing-descriptor:
@@ -826,7 +871,8 @@ components:
       - senderId
       - receiverId
       - datetime
-      - content
+      - mediaContent
+      - textContent
       properties:
         senderId:
           $ref: '#/components/schemas/id'
@@ -834,8 +880,10 @@ components:
           $ref: '#/components/schemas/id'
         datetime:
           $ref: '#/components/schemas/datetime'
-        content:
-          $ref: '#/components/schemas/content'
+        mediaContent:
+          $ref: '#/components/schemas/mediaContent'
+        textContent:
+          $ref: '#/components/schemas/textContent'
 
     user:
       type: object
@@ -855,7 +903,7 @@ components:
           $ref: '#/components/schemas/media'
 
     # TODO: This schema's structure is very likely to be changed in the near future
-    content:
+    mediaContent:
       type: object
       optional:
       - media
@@ -866,6 +914,9 @@ components:
         description:
           $ref: '#/components/schemas/description'
 
+    textContent:
+      type: string
+
 
     # TODO: This needs to be decided depending on what level of accuracy was decided -- This may also be influenced by the maps api that is ended up using
     address:
@@ -873,7 +924,7 @@ components:
       required:
       - country
       - city
-      - zipcode
+      - postcode
       optional:
       - street # which would include door number
       properties:
@@ -881,8 +932,8 @@ components:
           $ref: '#/components/schemas/country'
         city:
           $ref: '#/components/schemas/city'
-        zipcode:
-          $ref: '#/components/schemas/zipcode'
+        postcode:
+          $ref: '#/components/schemas/postcode'
         street:
           $ref: '#/components/schemas/street'
 
@@ -891,6 +942,24 @@ components:
       items:
         type: string
         format: url
+
+    category-descriptor:
+      type: object
+      required:
+      - category
+      - icon
+      - color
+      - categoryPath
+      properties:
+        category:
+          $ref: '#/components/schemas/category'
+        icon:
+          $ref: '#/components/schemas/photo'
+        color:
+          $ref: '#/components/schemas/color'
+        categoryPath:
+          $ref: '#/components/schemas/path'
+      
 
     photo:
       type: string
@@ -903,7 +972,7 @@ components:
     city:
       type: string
 
-    zipcode:
+    postcode:
       type: string
 
     street:
@@ -938,6 +1007,15 @@ components:
     category:
       type: string
       format: enum
+
+    path:
+      type: string
+      format: path
+    
+    color:
+      type: string
+      format: hex
+
 
 
   ################################# HEADERS COMPONENTS ######################################
