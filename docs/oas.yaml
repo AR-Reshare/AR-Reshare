@@ -14,7 +14,6 @@ info:
     description: The url will be filled out as we push through development
 
 
-# WAITING: I'm still waiting on each person to provide their own set of urls
 paths:
   /index:
     get:
@@ -26,9 +25,7 @@ paths:
   /:
     $ref: '#/paths/index'
 
-
 ########################################### ADMIN ##########################################################
-paths:
   /admin/: # TODO: a standard authentication method
     post:
       description: Authenticates in order to access the admin console
@@ -132,7 +129,7 @@ paths:
           $ref: '#/components/responses/admin-user-view'
       parameters:
         userID:
-          $ref: '#/components/parameters/userID'
+          $ref: '#/components/schemas/id'
 
   /admin/user/search:
     get:
@@ -140,18 +137,18 @@ paths:
       responses:
         '200':
           description: The server processed the request succesfully and returns candidate user-views
-          $ref: '#/components/responses/' # !!! should probably have something after the /, no?
+          $ref: '#/components/responses/admin-user-search'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/'
+          $ref: '#/components/responses/admin-user-search'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/'
+          $ref: '#/components/responses/admin-user-search'
       parameters:
         userID:
-          $ref: '#/components/parameters/userID'
+          $ref: '#/components/schemas/id'
         category:
-          $ref: '#/components/parameters/category'
+          $ref: '#/components/schemas/category'
 
 
   # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
@@ -161,21 +158,21 @@ paths:
       responses:
         '200':
           description: The server has successfully modified user details
-          $ref: '#/components/responses/user-manipulate'
+          $ref: '#/components/responses/account-modification'
         '400': # Bad Request
           description: The request did not include a "userID" parameter
-          $ref: '#/components/responses/user-manipulate'
+          $ref: '#/components/responses/account-modification'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#/components/responses/user-manipulate'
+          $ref: '#/components/responses/account-modification'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: '#/components/responses/user-manipulate'
+          $ref: '#/components/responses/account-modification'
         '404': # Not Found
           description: The user does not exist
-          $ref: '#/components/responses/user-manipulate'
+          $ref: '#/components/responses/account-modification'
     requestBody:
-      $ref: '#/components/requestBodies/user-manipulate' # !!! this is not described elsewhere in the document, I assume it contains at least a userID
+      $ref: '#/components/requestBodies/account-modification'
 
   # NOTE: The below paths do not seem neccessary
 
@@ -217,7 +214,6 @@ paths:
 
 
 ################################### ACCOUNT ##########################################################
-paths:
   /account/creation/:
     post:
       description: Creates an account with request arguments
@@ -240,7 +236,7 @@ paths:
           
   /account/deletion:
     post: # not delete
-      description: "Deletes" the current account (some info is required by law to be retained). The "current" account is the one the user is logged in as.
+      description: "'Deletes' the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
         '200':
           description: The account has been queued for deletion - the user no longer has access
@@ -269,8 +265,9 @@ paths:
           description: Failed to log into requested account
           $ref: '#/components/responses/account-login'
       requestBody:
-        $ref '#/components/requestBodies/account-login'
+        $ref: '#/components/requestBodies/account-login'
     
+
   /account/modification/:
     put:
       description: Modifies the details of the current account
@@ -283,8 +280,11 @@ paths:
           $ref: '#/components/responses/account-modification'
       requestBody:
         $ref: '#/components/requestBodies/account-modification'
-  
-  # !!! one for a password reset?
+
+
+
+  # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
+  ## This overwrite can include a new password
 
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
@@ -300,8 +300,6 @@ paths:
 # -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
 
 # NOTE: All of these will be using some authentication token (e.g. jwt)
-
-paths:
   /conversation/start:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
@@ -333,6 +331,7 @@ paths:
   /conversation/end:
     post:
       description: Closes a converstaion with the seller based on a unique conversationID
+      responses:
         '200':
           description: The conversation has been ended
           $ref: '#/components/responses/conversation-end'
@@ -354,6 +353,7 @@ paths:
   /conversations:
     get:
       description: Returns descriptors of conversations that the user still has open
+      responses:
         '200':
           description: Returns a set of the descriptors of the most recent converstaions
           $ref: '#/components/responses/conversation-descriptors'
@@ -374,6 +374,7 @@ paths:
   /conversation/message:
     post:
       description: Sends a message to a conversation via it's conversationID
+      responses:
         '200':
           description: The message has been successfully delivered
           $ref: '#/components/responses/conversation-message'
@@ -398,6 +399,7 @@ paths:
   /conversation:
     get:
       description: Returns the conversation of a given conversationID
+      responses:
         '200':
           description: The conversation exists and it has been returned
           $ref: '#/components/responses/conversation'
@@ -412,7 +414,7 @@ paths:
           $ref: '#/components/responses/conversation'     
     parameters:
       conversationID:
-        $ref: '#/components/schema/id'
+        $ref: '#/components/schemas/id'
 
 
 components:
@@ -452,7 +454,7 @@ components:
       $ref: '#/components/responses/post'
 
     # TODO: I believe authentication information can be removed from here and put into a seperate security component
-    account-signin:
+    account-login:
       description: The account was sign in
       content:
         'application/json':
@@ -493,26 +495,20 @@ components:
               success:
                 type: boolean
      
-    conversation-end:
-      description: Returns whether the conversation was closed successfully
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/post'
-
-    conversation-message:
-      description: Returns whether a message was successfully delivered
-      content:
-        'application/json':
-          schema:
-            $ref: '#/components/schemas/post'
-
     conversation:
       description: Returns the conversation of a given conversationID
       content:
         'application/json':
           schema:
             $ref: '#/components/schemas/conversation'
+
+    conversation-end:
+      description: Returns whether the conversation was closed successfully
+      $ref: '#/components/responses/post'
+
+    conversation-message:
+      description: Returns whether a message was successfully delivered
+      $ref: '#/components/responses/post'
     
 
   ###################### ADMIN RESPONSES ########################
@@ -522,6 +518,13 @@ components:
         'application/json':
           schema:
             $ref: '#/components/schemas/user-view'
+
+    admin-user-search:
+      description: Returns a list of users that satisfy the search parameters
+      content:
+        'application/json':
+          schemas:
+            $ref: '#/components/schemas/user-search'
 
   ###################### LISTING RESPONSES ######################
     listings:
@@ -547,20 +550,26 @@ components:
       content:
         'application/json':
           schema:
-            $ref: '#/components/schema/account-signup'
+            $ref: '#/components/schemas/account-signup'
     
     account-login:
       content:
         'application/json':
           schema:
-            $ref: '#/components/schema/account-login'
+            $ref: '#/components/schemas/account-login'
+
+    account-deletion:
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/account-deletion'
 
     account-modification:
       content:
         'application/json':
           schema:
-            $ref: '#/components/schema/account-modification'
-       examples:
+            $ref: '#/components/schemas/account-modification'
+      examples:
         single-var-change:
           password: current_password
           modifiedDetails:
@@ -583,7 +592,7 @@ components:
             - conversationID
             properties:
               conversationID:
-                $ref: '#/components/schemas/conversationID'
+                $ref: '#/components/schemas/id'
       
     conversation-start:
       content:
@@ -601,9 +610,9 @@ components:
 
     conversation-message:
       content:
-        'application/json'
+        'application/json':
           schema:
-            $ref: '#/components/schema/message'
+            $ref: '#/components/schemas/message'
 
 
   ################# LISTINGS REQUEST BODIES ######################
@@ -611,7 +620,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: '#/components/schema/listing-modification'
+            $ref: '#/components/schemas/listing-modification'
 
   ######################### SCHEMAS ##############################
 
@@ -623,15 +632,21 @@ components:
       - name
       - dob
       - email
+      - profilePhoto
       properties:
         name:
           $ref: '#/components/schemas/name'
         dob:
-          $ref: '#/components/schemas/dob'
+          $ref: '#/components/schemas/date'
         email:
           $ref: '#/components/schemas/email'
+        profilePicture:
+          $ref: '#/components/schemas/photo'
 
-
+    user-search:
+      type: array
+      items:
+        $ref: '#/components/schemas/user-view'
 
     listing-modification:
       type: object
@@ -685,7 +700,7 @@ components:
         email:
           $ref: '#/components/schemas/email'
         dob:
-          $ref: '#/components/schemas/dob'
+          $ref: '#/components/schemas/date'
         password:
           $ref: '#/components/schemas/password'
 
@@ -715,16 +730,27 @@ components:
         email: sspeiol@protonmail.org
         dob: '1986-09-17'
         address:
-          $ref: '#/components/schemas/address/example'
+          $ref: '#/components/schemas/address/example' # TODO example
         
     account-login:
       type: object
       required:
-      - userId # !!! consider using an email address instead? It depends what userID ends up being
+      - email
       - password
       properties:
-        userId:
-          $ref: '#/components/schemas/id'
+        email:
+          $ref: '#/components/schemas/email'
+        password:
+          $ref: '#/components/schemas/password'
+
+    account-deletion:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
 
@@ -757,6 +783,10 @@ components:
       items:
         $ref: '#/components/schemas/listing'
       
+    listings-descriptor:
+      type: array
+      items:
+        $ref: '#/components/schemas/listing-descriptor'
 
 
     listing:
@@ -786,7 +816,11 @@ components:
           $ref: '#/components/schemas/date'
         media:
           $ref: '#/components/schemas/media'
-    
+
+    # TODO: This will be a subset of the "listing" object -- just need to decide what to include
+    listing-descriptor:
+      type: object
+      required:
 
     message:
       type: object
@@ -860,6 +894,9 @@ components:
         type: string
         format: url
 
+    photo:
+      type: string
+      format: url
 
     ############################## LOW-LEVEL COMPONENTS ###############################
     country:
@@ -903,6 +940,7 @@ components:
     category:
       type: string
       format: enum
+
 
   ################################# HEADERS COMPONENTS ######################################
 
@@ -962,6 +1000,16 @@ components:
       schema:
         type: string
         format: string
+
+    category:
+      name: category
+      in: query
+      description: Describes the category when selecting results
+      required: false
+      schema:
+        type: string
+        format: string
+
 
     
     
