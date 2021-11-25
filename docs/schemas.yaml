@@ -218,15 +218,14 @@ components:
     report-submit:
       required:
       - offenderID
-      - location
+      - offenseLocation
       - offenseType
       - description
       properties:
         offenderID:
           $ref: '#/components/schemas/id'
-        location:
-          type: string
-          format: enum(Conversation, Listing, Account)
+        offenseLocation:
+          $ref: '#/components/schemas/offenseLocation'
         offenseType:
           $ref: '#/components/schemas/offenseType'
         description:
@@ -392,8 +391,7 @@ components:
     media: # i.e media = ["url1", "url2", ...]
       type: array
       items:
-        type: string
-        format: url
+      - $ref: '#/components/schemas/mediaContent'
 
     category-descriptor:
       type: object
@@ -411,11 +409,7 @@ components:
           $ref: '#/components/schemas/color'
         categoryPath:
           $ref: '#/components/schemas/path'
-      
 
-    photo:
-      type: string
-      format: url
 
     ############################## LOW-LEVEL COMPONENTS ###############################
     country:
@@ -439,6 +433,10 @@ components:
 
     description:
       type: string
+
+    photo:
+      type: string
+      format: url
 
     date:
       type: string
@@ -472,6 +470,8 @@ components:
       type: string
       format: hex
 
+
+    ## Report-related schemas  
     outcomes:
       type: array
       items:
@@ -494,4 +494,6 @@ components:
       type: string
       format: enum(Conversation, Listing, Account)
 
-    
+    offenseLocation:
+      type: string
+      format: enum(Conversation, Listing, Account)
