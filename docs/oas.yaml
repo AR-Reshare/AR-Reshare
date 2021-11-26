@@ -72,7 +72,7 @@ paths:
         listingID:
           $ref: 'parameters.yaml#/components/parameters/listingID'
 
-  /admin/listing/search:
+  /admin/listings/search:
     get:
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
@@ -383,16 +383,89 @@ paths:
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
 ################################ LISTINGS ######################################################
-  /listings/view:
-    ##
+  /listing/view:
+    get:
+      description: Returns the listing which matches the value of the parameter "listingId"
+      responses:
+        '200':
+          description: The listing exists and it is returned
+          $ref: 'responses.yaml#/components/responses/listing'
+        '400': # Bad Request
+          description: The request did not include a "listingID" parameter
+          $ref: 'responses.yaml#/components/responses/listing'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/listing'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/listing'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/listing'
+      parameters:
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
+
+
   /listings/search:
-    ##
+    get:
+      description: Returns the listings that match the criteria provided by the requests parameter
+      responses:
+        '200':
+          description: Returns all available listings with the parameters required
+          $ref: 'responses.yaml#/components/responses/listings'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/listings'
+        # no 404 included - I assume that if no listings match, the reponse will still be 200 but will be empty
+      parameters:
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
+   
   /listings/create:
-    ##
-  /listings/close:
-    ##
+    post:
+      description: Creates a new listing
+      responses: 
+        '200':
+          description: The listing has been succesfully created
+          $ref: '#responses.yaml#/components/responses/post'
+        '401': #
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: '#responses.yaml#/components/responses/post'
+      requestBodies:
+        $ref: 'requestBodies#/components/requestBodies/listing-creation'
+
   /listings/modify:
-    ##
+    post:
+      description: Modifies the listings
+      responses:
+        '200':
+          description: The listing has been modified successfully
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modification'
+
+
+  /listings/close:
+    post:
+      description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
+      responses:
+        '200':
+          description: The listing has been succesfully closed
+          $ref: 'responses.yaml#/components/responses/post'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
+
+
   /listings/report:
     ##
   /accounts/report:

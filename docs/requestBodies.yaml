@@ -84,6 +84,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/parameters/listing-creation'
 
+    listing-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml/components/parameters/listing-creation'
 
     ################### REPORT REQUESTBODIES #######################
     report-review:

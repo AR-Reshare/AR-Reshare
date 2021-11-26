@@ -48,6 +48,19 @@ components:
         title:
           $ref: '#/components/schemas/title'
 
+    listing-close:
+      type: object
+      required:
+        - outcome
+        - reason
+      properties:
+        outcome:
+          type: string
+          format: enum(close)
+        reason:
+          type: string
+          format: enum(sold, removed)
+
     listing-modification:
       type: object
       required:
