@@ -465,15 +465,22 @@ paths:
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
 
-
-  /listings/report:
-    ##
-  /accounts/report:
-    ##
+  /report:
+    post:
+      description: Submits a report form
+      responses:
+        '200':
+          description: The report has successfully been submitted
+          $ref: 'schemas.yaml#/components/responses/post'
+        '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
+          description: There already exists a "ongoing" report by the victimID with the same parameters
+          $ref: 'schemas.yaml#/components/responses/post'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/report-submit'
   
-
-
-
 
   
 
