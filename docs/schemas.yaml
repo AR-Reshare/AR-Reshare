@@ -44,7 +44,9 @@ components:
         media:
           $ref: '#/components/schemas/media'
         condition:
-          $ref: '#/components/schemas/condition' 
+          $ref: '#/components/schemas/condition'
+        title:
+          $ref: '#/components/schemas/title'
 
     listing-modification:
       type: object
@@ -278,6 +280,8 @@ components:
           $ref: '#/components/schemas/media'
         condition:
           $ref: '#/components/schemas/condition'
+        title:
+          $ref: '#/components/schemas/title'
 
     # TODO: add
     listing-own:
@@ -313,6 +317,8 @@ components:
           $ref: '#/components/schemas/media'
         condition:
           $ref: '#/components/schemas/condition'
+        title:
+          $ref: '#/components/schemas/title'
         
 
     # TODO: This will be a subset of the "listing" object -- just need to decide what to include
@@ -441,6 +447,9 @@ components:
     photo:
       type: string
       format: url
+    
+    title:
+      type: string
 
     date:
       type: string
