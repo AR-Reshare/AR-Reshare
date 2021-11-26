@@ -28,6 +28,7 @@ components:
     listing-creation:
       type: object
       required:
+      - title
       - description
       - location
       - category
@@ -59,6 +60,7 @@ components:
     listing-modifiedDetails:
       type: object
       optional:
+      - title
       - description
       - location
       - category
@@ -251,6 +253,7 @@ components:
       required:
       - listingId # the id of the listing
       - contributorId # the id of the contributor
+      - title
       - description
       - location
       - category
@@ -282,6 +285,7 @@ components:
       required: 
       - listingId # the id of the listing
       - contributorId # the id of the contributor
+      - title
       - description
       - location
       - category
