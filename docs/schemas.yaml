@@ -233,6 +233,7 @@ components:
           $ref: '#/components/schemas/outcomes'
 
     report-submit:
+      type: object
       required:
       - offenderID
       - offenseLocation
@@ -247,6 +248,40 @@ components:
           $ref: '#/components/schemas/offenseType'
         description:
           $ref: '#/components/schemas/description'
+
+    report-modify:
+      type: object
+      required:
+      - reportID
+      - modifiedDetails
+      properties:
+        reportID:
+          $ref: '#/components/schemas/id'
+        report-modifiedDetails:
+          $ref: '#/components/schemas/report-modifiedDetails'
+
+    report-modifiedDetails:
+      optional:
+      - offenderID
+      - offenseLocation
+      - offenseType
+      - description
+      - status
+      - outcome
+      properties:
+        offenderID:
+          $ref: '#/components/schemas/id'
+        offenseLocation:
+          $ref: '#/components/schemas/offenseLocation'
+        offenseType:
+          $ref: '#/components/schemas/offenseType'
+        description:
+          $ref: '#/components/schemas/description'
+        status:
+          type: string
+          format: enum(reported, investigating, closed)
+        outcomes:
+          $ref: '#/components/schemas/outcomes'
 
     
 
@@ -397,7 +432,6 @@ components:
       type: object
       required:
       - country
-      - city
       - postcode
       optional:
       - street # which would include door number
@@ -505,16 +539,13 @@ components:
     outcomes:
       type: array
       items:
-        - type: string
-          format: enum(warning, temp-ban, perma-ban)
+      - type: string
+        format: enum(warning, temp-ban, perma-ban)
 
     warning:
       type: string
       format: enum
     
-    sanction:
-      type: string
-      fromat: enum
 
     offenseType:
       type: string
@@ -527,3 +558,61 @@ components:
     offenseLocation:
       type: string
       format: enum(Conversation, Listing, Account)
+
+    sanction:
+      type: string
+      format: enum
+
+    sanctions:
+      type: array
+      items:
+      - $ref: '#/components/schemas/sanction'
+
+    sanction-create:
+      type: object
+      required:
+      - sanction
+      properties:
+        sanctions:
+          $ref: '#/components/schemas/sanction'
+
+    sanction-overwrite:
+      type: object
+      required:
+      - sanctionID
+      - sanctionsObject
+      properties:
+        sanctionsObject:
+          $ref: '#/components/schemas/sanction-create'
+
+    sanction-delete:
+      type: object
+      required:
+      - sanctionID
+      properties:
+        sanctionID:
+          $ref: '#/components/schemas/id'
+
+    request-create:
+      type: object
+      required:
+      - description
+      - requestType
+      properties:
+        description:
+          $ref: '#/components/schemas/description'
+        requestType:
+          $ref: '#/components/schemas/requestType'
+
+    request-close:
+      type: object
+      required:
+      - requestId
+      properties:
+        description:
+          $ref: '#/components/schemas/id'
+    
+    requestType:
+      type: string
+      format: enum
+        
