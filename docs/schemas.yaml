@@ -371,7 +371,7 @@ components:
       - description
       properties:
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-resource'
         description:
           $ref: '#/components/schemas/description'
 
@@ -402,6 +402,10 @@ components:
       type: array
       items:
       - $ref: '#/components/schemas/mediaContent'
+
+    media-resource:
+      type: string
+      format: url
 
     category-descriptor:
       type: object
