@@ -133,7 +133,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/admin-user-view'
       parameters:
         userID:
-          $ref: 'schemas.yaml#/components/schemas/id'
+          $ref: 'parameters.yaml#/components/parameters/userID'
 
   /admin/user/search:
     get:
@@ -150,9 +150,9 @@ paths:
           $ref: 'responses.yaml#/components/responses/admin-user-search'
       parameters:
         userID:
-          $ref: 'schemas.yaml#/components/schemas/id'
+          $ref: 'parameters.yaml#/components/parameters/userID'
         category:
-          $ref: 'schemas.yaml#/components/schemas/category'
+          $ref: 'parameters.yaml#/components/parameters/category'
 
   # TODO: This path will need to be re-evaluated (need to decide what the admin can change)
   /admin/user/modify:
@@ -201,7 +201,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/report'
       parameters:
         reportID:
-          $ref: 'schemas.yaml#/components/schemas/id'
+          $ref: 'parameters.yaml#/components/parameters/reportID'
 
   /admin/report/search:
     get:
@@ -218,9 +218,9 @@ paths:
           $ref: 'responses.yaml#/components/responses/reports'
       parameters:
         reportID:
-          $ref: 'schemas.yaml#/components/schemas/id'
+          $ref: 'parameters.yaml#/components/parameters/reportID'
         category:
-          $ref: 'schemas.yaml#/components/schemas/category'
+          $ref: 'parameters.yaml#/components/parameters/category'
 
   /admin/report/close:
     post:
@@ -228,19 +228,19 @@ paths:
       responses:
         '200':
           description: The server processed the report review succesfully
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/reports'
         '401':
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/reports'
         '403':
           description: Insufficient privileges to perform request
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/reports'
         '404':
           description: The report does not exist
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/reports'
         '409':
           description: The report has already been closed
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/reports'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/report-review'
 
@@ -707,7 +707,7 @@ paths:
   # -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
 
   # NOTE: All of these will be using some authentication token (e.g. jwt)
-  /conversation/start:
+  /conversation/create:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
@@ -821,7 +821,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/conversation'     
     parameters:
       conversationID:
-        $ref: 'schemas.yaml#/components/schemas/id'
+        $ref: 'parameters.yaml#/components/parameters/conversationID'
 
 
 

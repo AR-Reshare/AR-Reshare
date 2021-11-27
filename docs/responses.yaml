@@ -59,7 +59,7 @@ components:
             items:
               $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
 
-    conversation-start:
+    conversation-create:
       description: Returns the conversation-descriptor if successful
       content:
         'application/json':

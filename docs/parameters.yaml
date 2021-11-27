@@ -63,3 +63,34 @@ components:
         type: string
         format: id
 
+    userID:
+      name: userID
+      in: query
+      description: The User's id
+      required: true
+      schema:
+        $ref: 'schemas.yaml#/components/schemas/id'
+
+    reportID:
+      name: reportID
+      in: query
+      description: The report's id
+      required: true
+      schema:
+        $ref: 'schemas.yaml#/components/schemas/id'
+
+    sanctionID:
+      name: sanctionID
+      in: query
+      description: The sanction's id
+      required: true
+      schema:
+        $ref: 'schemas.yaml#/components/schemas/id'
+
+    conversationID:
+      name: conversation's
+      in: query
+      description: The conversation's id
+      required: true
+      schema:
+        $ref: 'schemas.yaml#/components/schemas/id'

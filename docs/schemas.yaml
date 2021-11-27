@@ -360,7 +360,7 @@ components:
         textContent:
           $ref: '#/components/schemas/textContent'
      
-    conversation-start:
+    conversation-create:
       type: object
       required:
       - receiverID  # this can be derived from listingID

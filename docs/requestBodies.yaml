@@ -39,11 +39,11 @@ components:
 
           
    #################### COMMUNICATIONS #######################    
-    conversation-start:
+    conversation-create:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/conversation-start'
+            $ref: 'schemas.yaml#/components/schemas/conversation-create'
 
     conversation-close:
       content:
@@ -123,6 +123,8 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/request-close'
 
+
+    ################ ACCOUNT-RESET REQUESTBODIES ####################
     reset-request:
       content:
         'application/json':
