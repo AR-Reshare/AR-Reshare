@@ -443,9 +443,43 @@ paths:
   /account/listings:
 
   # TODO: Complete the password-reset functionality: 
-  /account/reset:
+  /account/reset-request:
     put: 
       description: Resets the account's password
+      responses:
+        '200':
+          description: The request has succesfully been received
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: Bad request received
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/reset-request'
+
+  /account/reset-execute:
+    put:
+      description: Resets the account's password
+      responses:
+        '200':
+          description: The password has been succesfully reset
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: The password does not satify the format required
+          $ref: 'responses.yaml#/components/responses/post'
+        '401':
+          description: The user has not presented a token
+          $ref: 'responses.yaml#/components/responses/post'
+        '403':
+          description: The user has not presented a token with sufficeint priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/reset-execute'
+    parameters:
+      reset-token:
+        $ref: 'parameters.yaml#/components/parameters/reset-token'
+
+
+
 
   /account/sanction/view:
      get:
@@ -661,8 +695,6 @@ paths:
           $ref: 'schemas.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/request-create'
-  
-  ##TODO: Provide functionality for /request
   
 
   ####################################### CONVERSATION ###################################

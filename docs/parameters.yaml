@@ -53,4 +53,13 @@ components:
       schema:
         type: string
         format: string
+    
+    reset-token:
+      name: token
+      in: query
+      description: The token required in order to execute the password reset
+      required: true
+      schema:
+        type: string
+        format: id
 
