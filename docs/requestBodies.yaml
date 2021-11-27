@@ -20,11 +20,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-close'
 
-    account-modification:
+    account-modify:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/account-modification'
+            $ref: 'schemas.yaml#/components/schemas/account-modify'
       examples:
         single-var-change:
           password: current_password
@@ -38,57 +38,44 @@ components:
             password: new_password
 
           
-   #################### COMMUNICATIONS #######################
-    conversation-end:
-      content:
-        'application/json':
-          schema:
-            type: object
-            required:
-            - conversationID
-            properties:
-              conversationID:
-                $ref: 'schemas.yaml#/components/schemas/id'
-      
+   #################### COMMUNICATIONS #######################    
     conversation-start:
       content:
         'application/json':
           schema:
-            type: object
-            required:
-            - receiverID  # this can be derived from listingID
-            - listingID
-            properties:
-              receiverID:
-                $ref: 'schemas.yaml#/components/schemas/id'
-              listingID:
-                $ref: 'schemas.yaml#/components/schemas/id'
+            $ref: 'schemas.yaml#/components/schemas/conversation-start'
+
+    conversation-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/conversation-close'
 
     conversation-message:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/message'
+            $ref: 'schemas.yaml#/components/schemas/conversation-message'
 
 
     ################# LISTINGS REQUESTBODIES ######################
-    listing-modification:
+    listing-create:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/listing-modification'
-
-    listing-creation:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/listing-creation'
+            $ref: 'schemas.yaml#/components/schemas/listing-create'
 
     listing-close:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml/components/schemas/listing-creation'
+            $ref: 'schemas.yaml/components/schemas/listing-close'
+  
+    listing-modify:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-modify'
 
     ################### REPORT REQUESTBODIES #######################
     report-review:
@@ -97,11 +84,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/report-review'
     
-    report-submit:
+    report-create:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/report-submit' 
+            $ref: 'schemas.yaml#/components/schemas/report-create' 
 
     report-modify:
       content:

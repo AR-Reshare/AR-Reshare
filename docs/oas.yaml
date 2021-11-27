@@ -16,7 +16,7 @@ info:
     bearerAuth:
     - /admin/[0-9A-Za-z/]+ ## Create better regex expression
     - /account/close
-    - /account/modification
+    - /account/modify
     - /conversation
     - /conversations/[0-9A-Za-z]*
 
@@ -32,7 +32,7 @@ paths:
   /:
     $ref: '#/paths//index'
 
-  ########################################### ADMIN ##########################################################
+  ################################ ADMIN PATH ITEM OBJECTS ##################################
   /admin/:
     post:
       description: Authenticates in order to access the admin console
@@ -96,7 +96,7 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
         
-  /admin/listing/modification:
+  /admin/listing/modify:
     post:
       description: Modifies the listings
       responses:
@@ -110,7 +110,7 @@ paths:
           description: The user's authentication token does not correspond to an administrator account
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modification'
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /admin/user/view:
     get:
@@ -154,190 +154,298 @@ paths:
         category:
           $ref: 'schemas.yaml#/components/schemas/category'
 
-  # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
-  /admin/user/manipulate:
+  # TODO: This path will need to be re-evaluated (need to decide what the admin can change)
+  /admin/user/modify:
     post:
       description: Modifies the user's values
       responses:
         '200':
           description: The server has successfully modified user details
-          $ref: 'responses.yaml#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modify'
         '400': # Bad Request
           description: The request did not include a "userID" parameter
-          $ref: 'responses.yaml#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modify'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: 'responses.yaml#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modify'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: 'responses.yaml#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modify'
         '404': # Not Found
           description: The user does not exist
-          $ref: 'responses.yaml#/components/responses/account-modification'
+          $ref: 'responses.yaml#/components/responses/account-modify'
     requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/account-modification'
+      $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
-    /admin/report/:
-      $ref: '/paths//report'
+  /admin/report/:
+    $ref: '/paths//report'
 
-    /admin/report/view:
-      get:
-        description: Returns the report which matches the value of the parameter "reportID"
-        responses:
-          '200':
-            description: Returns the report
-            $ref: 'responses.yaml#/components/responses/report'
-          '400': # Bad Request
-            description: The request did not include a "reportID" parameter
-            $ref: 'responses.yaml#/components/responses/report'
-          '401': # Unauthorised
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/report'
-          '403': # Forbidden
-            description: The user's authentication token does not correspond to an administrator account
-            $ref: 'responses.yaml#/components/responses/report'
-          '404': # Not Found
-            description: The user does not exist
-            $ref: 'responses.yaml#/components/responses/report'
-        parameters:
-          reportID:
-            $ref: 'schemas.yaml#/components/schemas/id'
+  /admin/report/view:
+    get:
+      description: Returns the report which matches the value of the parameter "reportID"
+      responses:
+        '200':
+          description: Returns the report
+          $ref: 'responses.yaml#/components/responses/report'
+        '400': # Bad Request
+          description: The request did not include a "reportID" parameter
+          $ref: 'responses.yaml#/components/responses/report'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/report'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/report'
+        '404': # Not Found
+          description: The user does not exist
+          $ref: 'responses.yaml#/components/responses/report'
+      parameters:
+        reportID:
+          $ref: 'schemas.yaml#/components/schemas/id'
 
-    /admin/report/search:
-      get:
-        description: Returns the reports that match the criteria provided by the requests parameter
-        responses:
-          '200':
-            description: The server processed the request succesfully and returns candidate reports
-            $ref: 'responses.yaml#/components/responses/reports'
-          '401': # Unauthorised
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/reports'
-          '403': # Forbidden
-            description: The user's authentication token does not correspond to an administrator account
-            $ref: 'responses.yaml#/components/responses/reports'
-        parameters:
-          reportID:
-            $ref: 'schemas.yaml#/components/schemas/id'
-          category:
-            $ref: 'schemas.yaml#/components/schemas/category'
+  /admin/report/search:
+    get:
+      description: Returns the reports that match the criteria provided by the requests parameter
+      responses:
+        '200':
+          description: The server processed the request succesfully and returns candidate reports
+          $ref: 'responses.yaml#/components/responses/reports'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/reports'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/reports'
+      parameters:
+        reportID:
+          $ref: 'schemas.yaml#/components/schemas/id'
+        category:
+          $ref: 'schemas.yaml#/components/schemas/category'
 
-     
-    /admin/report/close:
-      post:
-        description: After the admin has reviewed a report, they submit the outcome
-        responses:
-          '200':
-            description: The server processed the report review succesfully
-            $ref: 'responses.yaml#/components/responses/post'
-          '401':
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/reports'
-          '403':
-            description: Insufficient privileges to perform request
-            $ref: 'responses.yaml#/components/responses/post'
-          '404':
-            description: The report does not exist
-            $ref: 'responses.yaml#/components/responses/post'
-          '409':
-            description: The report has already been closed
-            $ref: 'responses.yaml#/components/responses/post'
-        requestBody:
-          $ref: 'requestBodies.yaml#/components/requestBodies/report-review'
-
-    /admin/report/modify:
-      post:
-        description: Modifies a report form
-        responses:
-          '200':
-            description: The report has successfully been submitted
-            $ref: 'schemas.yaml#/components/responses/post'
-          '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/post'
-          '404': ## Cannot modify a non-existent report
-            description: There is no report with such an id, so therefore cannot be modified
-            $ref: 'responses.yaml#/components/responses/post'
+  /admin/report/close:
+    post:
+      description: After the admin has reviewed a report, they submit the outcome
+      responses:
+        '200':
+          description: The server processed the report review succesfully
+          $ref: 'responses.yaml#/components/responses/post'
+        '401':
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/reports'
+        '403':
+          description: Insufficient privileges to perform request
+          $ref: 'responses.yaml#/components/responses/post'
+        '404':
+          description: The report does not exist
+          $ref: 'responses.yaml#/components/responses/post'
+        '409':
+          description: The report has already been closed
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/report-modify'
+        $ref: 'requestBodies.yaml#/components/requestBodies/report-review'
+
+  /admin/report/modify:
+    post:
+      description: Modifies a report form
+      responses:
+        '200':
+          description: The report has successfully been submitted
+          $ref: 'schemas.yaml#/components/responses/post'
+        '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': ## Cannot modify a non-existent report
+          description: There is no report with such an id, so therefore cannot be modified
+          $ref: 'responses.yaml#/components/responses/post'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/report-modify'
+
+  # NOTE: These urls (may) not exist -- this is because a sanction is included in the report section as an optional parameter
+  # This is because, in order to track sanctions and reasons, it would be unfair if an admin just hit the ban button without even filling out why
+  ## NOTE: The admin can create a report and the make a sanction via it
+  /admin/sanction/create:
+    post:
+      description: Sanctions a given userID
+      responses:
+        '200':
+          description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+    requestBodies:
+      $ref: 'requestBodies.yaml#/components/requestBodies/sanction-create'
+  
+  /admin/sanctions/close:
+    post:
+      description: closes a sanction given a sanctionID
+      responses:
+        '200':
+          description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+    requestBodies:
+      $ref: 'requestBodies.yaml#/components/requestBodies/sanction-close'
+  
+  /admin/sanction/view:
+    get:
+      description: Returns the sanction which matches the value of the parameter "sanctionID
+      responses:
+        '200':
+          description: The sanction exists and it is returned
+          $ref: 'responses.yaml#/components/responses/sanction'
+        '400': # Bad Request
+          description: The request did not include a "sanctionID" parameter
+          $ref: 'responses.yaml#/components/responses/sanction'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/sanction'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/sanction'
+        '404': # Not Found
+          description: The sanction does not exist
+          $ref: 'responses.yaml#/components/responses/sanction'
+      parameters:
+        sanctionID:
+          $ref: 'parameters.yaml#/components/parameters/sanctionID'
+
+  /admin/sanctions/search:
+    get:
+      description: Returns the sanctions that match the criteria provided by the requests parameter
+      responses:
+        '200':
+          description: Returns all available sanctions with the parameters required
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '403': # Forbidden
+          description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/sanction'
+        # no 404 included - I assume that if no sanctions match, the reponse will still be 200 but will be empty
+      parameters:
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
+  
+  # NOTE: The below paths do not seem neccessary
+
+  # site related paths (This isn't neccessarily required)
+  # This may include monitoring and modification functionality
+  # !!! I was thinking these could include adding/removing categories or language packs for future-proofing
+  /admin/site/modify:
+    post:
+      description: ...
+      responses:
+        '200':
+          description: ...
+          $ref: ...
+        '401':
+          description: ...
+          $ref: ...
+        '403':
+          description: ...
+          $ref: ...
+    requestBody:
+      $ref: ...
+
+  /admin/site/monitor:
+    post:
+      description: ...
+      responses:
+        '200':
+          description: ...
+          $ref: ...
+        '401':
+          description: ...
+          $ref: ...
+        '403':
+          description: ...
+          $ref: ...
+    requestBody:
+      $ref: ...
 
 
-    # NOTE: These urls (may) not exist -- this is because a sanction is included in the report section as an optional parameter
-    # This is because, in order to track sanctions and reasons, it would be unfair if an admin just hit the ban button without even filling out why
 
-    ## NOTE: The admin can create a report and the make a sanction via it
-    /admin/sanction/create:
-      post:
-        description: Sanctions a given userID
-        responses:
-          '200':
-            description: The report has succesfully been executed
-            $ref: 'responses.yaml#/components/responses/post'
-          '401': # Unauthorised
-            description: The report has succesfully been executed
-            $ref: 'responses.yaml#/components/responses/post'
-      requestBodies:
-        $ref: 'requestBodies.yaml#/components/requestBodies/sanction-create'
-    
-    /admin/sanctions/close:
-      post:
-        description: closes a sanction given a sanctionID
-        responses:
-          '200':
-            description: The report has succesfully been executed
-            $ref: 'responses.yaml#/components/responses/post'
-          '401': # Unauthorised
-            description: The report has succesfully been executed
-            $ref: 'responses.yaml#/components/responses/post'
-      requestBodies:
-        $ref: 'requestBodies.yaml#/components/requestBodies/sanction-close'
-    
-    /admin/sanction/view:
-      get:
-        description: Returns the sanction which matches the value of the parameter "sanctionID
-        responses:
-          '200':
-            description: The sanction exists and it is returned
-            $ref: 'responses.yaml#/components/responses/sanction'
-          '400': # Bad Request
-            description: The request did not include a "sanctionID" parameter
-            $ref: 'responses.yaml#/components/responses/sanction'
-          '401': # Unauthorised
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/sanction'
-          '403': # Forbidden
-            description: The user's authentication token does not correspond to an administrator account
-            $ref: 'responses.yaml#/components/responses/sanction'
-          '404': # Not Found
-            description: The sanction does not exist
-            $ref: 'responses.yaml#/components/responses/sanction'
-        parameters:
-          sanctionID:
-            $ref: 'parameters.yaml#/components/parameters/sanctionID'
+  ################################### ACCOUNT PATH ITEM OBJECTS########################################
+  /account/create:
+    post:
+      description: Creates an account with request arguments
+      responses:
+        '201':
+          description: The account has been created successfully
+          $ref: 'responses.yaml#/components/responses/account-create'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/account-create'
+        '409': # Conflict
+          description: The email address specified is already registered to an account
+          $ref: 'responses.yaml#/components/responses/account-create'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
+          $ref: 'responses.yaml#/components/responses/account-create'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
+               
+  /account/close:
+    post: # not delete
+      description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
+      responses:
+        '200':
+          description: The account has been queued for close - the user no longer has access
+          $ref: 'responses.yaml#/components/responses/account-close'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/account-close'
+        '409': # Conflict
+          description: The account is already queued for close
+          $ref: 'responses.yaml#/components/responses/account-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
+  
+  /account/login:
+    post:
+      description: Login in to the requested account using request arguments
+      responses:
+        '200':
+          description: Logs into the requested account
+          $ref: 'responses.yaml#/components/responses/account-login'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/account-login'
+        '401': # Unauthorised
+          description: Failed to log into requested account
+          $ref: 'responses.yaml#/components/responses/account-login'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
+     
+  /account/modify:
+    put:
+      description: Modifies the details of the current account
+      responses:
+        '200':
+          description: The details has been successfully modified
+          $ref: 'responses.yaml#/components/responses/account-modify'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/account-modify'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
-    /admin/sanctions/search:
-      get:
-        description: Returns the sanctions that match the criteria provided by the requests parameter
-        responses:
-          '200':
-            description: Returns all available sanctions with the parameters required
-            $ref: 'responses.yaml#/components/responses/sanctions'
-          '401': # Unauthorised
-            description: The user did not send an authentication token, or the authentication token does not match a valid account
-            $ref: 'responses.yaml#/components/responses/sanctions'
-          '403': # Forbidden
-            description: The user's authentication token does not correspond to an administrator account
-            $ref: 'responses.yaml#/components/responses/sanction'
-          # no 404 included - I assume that if no sanctions match, the reponse will still be 200 but will be empty
-        parameters:
-          maxResults:
-            $ref: 'parameters.yaml#/components/parameters/maxResults'
-          endResults:
-            $ref: 'parameters.yaml#/components/parameters/endResults'
-          startResults:
-            $ref: 'parameters.yaml#/components/parameters/startResults'
-          query:
-            $ref: 'parameters.yaml#/components/parameters/queryString'
+  /account/listings:
+
+  # TODO: Complete the password-reset functionality: 
+  /account/reset:
+    put: 
+      description: Resets the account's password
 
   /account/sanction/view:
      get:
@@ -391,7 +499,6 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
-
   /account/request/create:
     post:
       '200':
@@ -436,116 +543,6 @@ paths:
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/request-close'
     
-  # NOTE: The below paths do not seem neccessary
-
-  # site related paths (This isn't neccessarily required)
-  # This may include monitoring and modification functionality
-  # !!! I was thinking these could include adding/removing categories or language packs for future-proofing
-  /admin/site/manipulate:
-    post:
-      description: ...
-      responses:
-        '200':
-          description: ...
-          $ref: ...
-        '401':
-          description: ...
-          $ref: ...
-        '403':
-          description: ...
-          $ref: ...
-    requestBody:
-      $ref: ...
-
-  /admin/site/monitor:
-    post:
-      description: ...
-      responses:
-        '200':
-          description: ...
-          $ref: ...
-        '401':
-          description: ...
-          $ref: ...
-        '403':
-          description: ...
-          $ref: ...
-    requestBody:
-      $ref: ...
-
-
-  ################################### ACCOUNT ##########################################################
-  /account/creation/:
-    post:
-      description: Creates an account with request arguments
-      responses:
-        '201':
-          description: The account has been created successfully
-          $ref: 'responses.yaml#/components/responses/account-creation'
-        '400': # Bad Request
-          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/account-creation'
-        '409': # Conflict
-          description: The email address specified is already registered to an account
-          $ref: 'responses.yaml#/components/responses/account-creation'
-        '422': # Unprocessable Entity
-          description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
-          $ref: 'responses.yaml#/components/responses/account-creation'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
-               
-  /account/close:
-    post: # not delete
-      description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
-      responses:
-        '200':
-          description: The account has been queued for close - the user no longer has access
-          $ref: 'responses.yaml#/components/responses/account-close'
-        '401': # Unauthorised
-          description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/account-close'
-        '409': # Conflict
-          description: The account is already queued for close
-          $ref: 'responses.yaml#/components/responses/account-close'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
-  
-  /account/login/:
-    post:
-      description: Login in to the requested account using request arguments
-      responses:
-        '200':
-          description: Logs into the requested account
-          $ref: 'responses.yaml#/components/responses/account-login'
-        '400': # Bad Request
-          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/account-login'
-        '401': # Unauthorised
-          description: Failed to log into requested account
-          $ref: 'responses.yaml#/components/responses/account-login'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
-     
-  /account/modification/:
-    put:
-      description: Modifies the details of the current account
-      responses:
-        '200':
-          description: The details has been successfully modified
-          $ref: 'responses.yaml#/components/responses/account-modification'
-        '401': # Unauthorised
-          description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/account-modification'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-modification'
-
-  /account/listings/:
-  
-  # TODO: 
-  /account/reset/:
-    put: 
-      description: Resets the account's password
-
 
   # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
   ## This overwrite can include a new password
@@ -607,7 +604,7 @@ paths:
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: '#responses.yaml#/components/responses/post'
       requestBodies:
-        $ref: 'requestBodies#/components/requestBodies/listing-creation'
+        $ref: 'requestBodies#/components/requestBodies/listing-create'
 
   /listings/modify:
     post:
@@ -620,7 +617,7 @@ paths:
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modification'
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /listings/close:
     post:
@@ -649,18 +646,35 @@ paths:
       $ref: 'requestBodies.yaml#/components/requestBodies/report-submit'
   
 
+  /request:
+    post:
+      description: Submits a request form
+      responses:
+        '200':
+          description: The request has successfully been submitted
+          $ref: 'schemas.yaml#/components/responses/post'
+        '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
+          description: There already exists a "ongoing" request by the victimID with the same parameters
+          $ref: 'schemas.yaml#/components/responses/post'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/request-create'
+  
+  ##TODO: Provide functionality for /request
   
 
-####################################### CONVERSATION ###################################
+  ####################################### CONVERSATION ###################################
 
-# A conversation is uniquely created by the set {buyerID, listingID}
-# -> sellerID is implied from listingID,
-# -> buyerID is defined by the account currenlty signed in
+  # A conversation is uniquely created by the set {buyerID, listingID}
+  # -> sellerID is implied from listingID,
+  # -> buyerID is defined by the account currenlty signed in
 
-# Once a converstaion has been created, a conversationID,
-# -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
+  # Once a converstaion has been created, a conversationID,
+  # -> This is associated to the set that was used to create it (i.e {buyer, listing, seller})
 
-# NOTE: All of these will be using some authentication token (e.g. jwt)
+  # NOTE: All of these will be using some authentication token (e.g. jwt)
   /conversation/start:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
@@ -711,27 +725,6 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-end'
 
-  /conversations:
-    get:
-      description: Returns descriptors of conversations that the user still has open
-      responses:
-        '200':
-          description: Returns a set of the descriptors of the most recent converstaions
-          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-        '400': # Bad Request
-          description: The parameters sent in the request were badly formatted
-          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-        '401': # Unauthorised
-          description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-      parameters:
-        start:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        end:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        max:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-      
   /conversation/message:
     post:
       description: Sends a message to a conversation via it's conversationID
@@ -757,6 +750,27 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
+  /conversations:
+    get:
+      description: Returns descriptors of conversations that the user still has open
+      responses:
+        '200':
+          description: Returns a set of the descriptors of the most recent converstaions
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '400': # Bad Request
+          description: The parameters sent in the request were badly formatted
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+      parameters:
+        start:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        end:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        max:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+
   /conversation:
     get:
       description: Returns the conversation of a given conversationID
@@ -780,32 +794,10 @@ paths:
 
 
 
-
-
 ########################### SECURITY SCHEME OBJECT ##############################
 securitySchemes:
   bearerAuth:
     type: http
     scheme: bearer
     bearerFormat: JWT
-
-
-    
-
-    
-
-
-
-  
-      
-      
-  
-  
-
-
-
-
-
-
-
 

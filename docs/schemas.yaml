@@ -1,8 +1,50 @@
 ##TODO: define the enums
 
+## The currently supported entities are:
+## 1. User
+##    --> user-view
+##    --> users-search
+## 2. Listing
+##    --> listings-search
+##    --> listing-create
+##    --> listing-modify
+##    --> listing-close
+## 3. Account
+##    --> account-signup
+##    --> account-login
+##    --> account-close
+##    --> account-modify
+##    --> account-reset TODO
+## 2. Report
+##    --> 
+## 3. Request
+## 5. Sanctions
+## 6. Admin
+##    -->
+
 components:
   schemas:
-    # There are potentially more properties to be modified by the admin
+
+
+
+    ################ USER SCHEMAS ############################   
+    user:
+      type: object
+      required:
+      - userId
+      - name
+      - bio
+      - profilePics
+      properties:
+        userId:
+          $ref: '#/components/schemas/id'
+        name:
+          $ref: '#/components/schemas/name'
+        bio:
+          $ref: '#/components/schemas/description'
+        profilePics:
+          $ref: '#/components/schemas/media'
+
     user-view:
       type: object
       required:
@@ -25,7 +67,96 @@ components:
       items:
         $ref: '#/components/schemas/user-view'
 
-    listing-creation:
+
+
+
+    ############### LISTING SCHEMAS #########################
+    listing-own:
+      type: object
+      required: 
+      - listingId # the id of the listing
+      - contributorId # the id of the contributor
+      - title
+      - description
+      - location
+      - category
+      - condition
+      - media ## this will encompass videos, photos and what other
+      - creationDate
+      - modificationDate # Ignoring archived date, and last modified
+      - closedDate
+      properties:
+        listingId:
+          $ref: '#/components/schemas/id'
+        contributorId:
+          $ref: '#/components/schemas/id'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        creationDate:
+          $ref: '#/components/schemas/date'
+        modificationDate:
+          $ref: '#/components/schemas/date'
+        closedDate:
+          $ref: '#/components/schemas/date'
+        media:
+          $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition'
+        title:
+          $ref: '#/components/schemas/title'
+
+    listing-view:
+      type: object
+      # these are the required parameters
+      required:
+      - listingId # the id of the listing
+      - contributorId # the id of the contributor
+      - title
+      - description
+      - location
+      - category
+      - condition
+      - creationDate
+      - modificationDate # Ignoring archived date, and last modified
+      - media ## this will encompass videos, photos and what other
+      properties:
+        listingId:
+          $ref: '#/components/schemas/id'
+        contributorId:
+          $ref: '#/components/schemas/id'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        creationDate:
+          $ref: '#/components/schemas/date'
+        modificationDate:
+          $ref: '#/components/schemas/date'
+        media:
+          $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition'
+        title:
+          $ref: '#/components/schemas/title'
+
+    listings-private:
+      type: array
+      items:
+        $ref: '#/components/schemas/listing-own'
+        
+    listings-public:
+      type: array
+      items:
+        $ref: '#/components/schemas/listing-view'
+
+    listings-descriptor:
+      type: array
+      items:
+        $ref: '#/components/schemas/listing-descriptor'
+
+    listing-create:
       type: object
       required:
       - title
@@ -61,7 +192,7 @@ components:
           type: string
           format: enum(sold, removed)
 
-    listing-modification:
+    listing-modify:
       type: object
       required:
       - password
@@ -90,36 +221,27 @@ components:
         media:
           $ref: '#/components/schemas/media'
 
-    account-modification:
+    category-descriptor:
       type: object
       required:
-      - password
-      - modifiedDetails
+      - category
+      - icon
+      - color
+      - categoryPath
       properties:
-        password:
-          $ref: '#/components/schemas/password'
-        variable-modification:
-          $ref: '#/components/schemas/account-modifiedDetails'
+        category:
+          $ref: '#/components/schemas/category'
+        icon:
+          $ref: '#/components/schemas/photo'
+        color:
+          $ref: '#/components/schemas/color'
+        categoryPath:
+          $ref: '#/components/schemas/path'
 
-    account-modifiedDetails:
-      type: object
-      optional:
-      - name
-      - email
-      - dob
-      - password
-      properties:
-        name:
-          $ref: '#/components/schemas/name'
-        email:
-          $ref: '#/components/schemas/email'
-        dob:
-          $ref: '#/components/schemas/date'
-        password:
-          $ref: '#/components/schemas/password'
 
-    # formally called account schmema -- this won't be transferred between client and server (so I've split it up into objects where data would be transferred)
-    
+
+
+    ######################## ADMIN SCHEMAS ###########################
     account-signup:
       type: object
       required:
@@ -166,6 +288,38 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
+    account-modify:
+      type: object
+      required:
+      - password
+      - modifiedDetails
+      properties:
+        password:
+          $ref: '#/components/schemas/password'
+        variable-modification:
+          $ref: '#/components/schemas/account-modifiedDetails'
+
+    account-modifiedDetails:
+      type: object
+      optional:
+      - name
+      - email
+      - dob
+      - password
+      properties:
+        name:
+          $ref: '#/components/schemas/name'
+        email:
+          $ref: '#/components/schemas/email'
+        dob:
+          $ref: '#/components/schemas/date'
+        password:
+          $ref: '#/components/schemas/password'
+
+    
+
+
+    #################### CONVERSATION SCHEMAS ########################
     # TODO: There may be media links such as user profile picture to be included here
     conversation-descriptor:
       type: object
@@ -184,9 +338,49 @@ components:
     conversation:
       type: array
       items:
-        $ref: '#/components/schemas/message'
+        $ref: '#/components/schemas/conversation-message'
+
+    conversation-message:
+      type: object
+      required:
+      - senderId
+      - receiverId
+      - datetime
+      - mediaContent
+      - textContent
+      properties:
+        senderId:
+          $ref: '#/components/schemas/id'
+        receiverId:
+          $ref: '#/components/schemas/id'
+        datetime:
+          $ref: '#/components/schemas/datetime'
+        mediaContent:
+          $ref: '#/components/schemas/mediaContent'
+        textContent:
+          $ref: '#/components/schemas/textContent'
+     
+    conversation-start:
+      type: object
+      required:
+      - receiverID  # this can be derived from listingID
+      - listingID
+      properties:
+        receiverID:
+          $ref: 'schemas.yaml#/components/schemas/id'
+        listingID:
+          $ref: 'schemas.yaml#/components/schemas/id'
+  
+    conversation-close:
+      type: object
+      required:
+      - conversationID
+      properties:
+        conversationID:
+          $ref: '#/components/schemas/id'
 
 
+    ##################### REPORT SCHEMAS #################################
     report:
       type: object
       required:
@@ -232,7 +426,7 @@ components:
         outcomes:
           $ref: '#/components/schemas/outcomes'
 
-    report-submit:
+    report-create:
       type: object
       required:
       - offenderID
@@ -278,138 +472,75 @@ components:
         description:
           $ref: '#/components/schemas/description'
         status:
-          type: string
-          format: enum(reported, investigating, closed)
+          $ref: '#/components/schemas/report-status'
         outcomes:
-          $ref: '#/components/schemas/outcomes'
+          $ref: '#/components/schemas/report-outcomes'
 
+
+
+    ##################### SANCTIONS SCHEMAS #################################
+    sanction:
+      type: string
+      format: enum(warning, temp-ban, perma-ban)
+
+    sanctions:
+      type: array
+      items:
+      - $ref: '#/components/schemas/sanction'
+
+    sanction-create:
+      type: object
+      required:
+      - sanction
+      properties:
+        sanctions:
+          $ref: '#/components/schemas/sanction'
+
+    sanction-overwrite:
+      type: object
+      required:
+      - sanctionID
+      - sanctionsObject
+      properties:
+        sanctionsID:
+          $ref: '#/components/schemas/id'
+        sanctionsObject:
+          $ref: '#/components/schemas/sanction-create'
+
+    sanction-close:
+      type: object
+      required:
+      - sanctionID
+      properties:
+        sanctionID:
+          $ref: '#/components/schemas/id'
+
+
+
+    ########################### REQUEST SCHEMAS ##################################
+    request-create:
+      type: object
+      required:
+      - description
+      - requestType
+      properties:
+        description:
+          $ref: '#/components/schemas/description'
+        requestType:
+          $ref: '#/components/schemas/requestType'
+
+    request-close:
+      type: object
+      required:
+      - requestId
+      properties:
+        description:
+          $ref: '#/components/schemas/id'
     
-
-    ########################### MID-LEVEL COMPONENTS ########################
-    listings:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing'
-      
-    listings-descriptor:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing-descriptor'
+   
 
 
-    listing-view:
-      type: object
-      # these are the required parameters
-      required:
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
-      - title
-      - description
-      - location
-      - category
-      - condition
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - media ## this will encompass videos, photos and what other
-      properties:
-        listingId:
-          $ref: '#/components/schemas/id'
-        contributorId:
-          $ref: '#/components/schemas/id'
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        creationDate:
-          $ref: '#/components/schemas/date'
-        modificationDate:
-          $ref: '#/components/schemas/date'
-        media:
-          $ref: '#/components/schemas/media'
-        condition:
-          $ref: '#/components/schemas/condition'
-        title:
-          $ref: '#/components/schemas/title'
-
-    # TODO: add
-    listing-own:
-      type: object
-      required: 
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
-      - title
-      - description
-      - location
-      - category
-      - condition
-      - media ## this will encompass videos, photos and what other
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - closedDate
-      properties:
-        listingId:
-          $ref: '#/components/schemas/id'
-        contributorId:
-          $ref: '#/components/schemas/id'
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        creationDate:
-          $ref: '#/components/schemas/date'
-        modificationDate:
-          $ref: '#/components/schemas/date'
-        closedDate:
-          $ref: '#/components/schemas/date'
-        media:
-          $ref: '#/components/schemas/media'
-        condition:
-          $ref: '#/components/schemas/condition'
-        title:
-          $ref: '#/components/schemas/title'
-        
-
-    # TODO: This will be a subset of the "listing" object -- just need to decide what to include
-    listing-descriptor:
-      type: object
-      required:
-
-    message:
-      type: object
-      required:
-      - senderId
-      - receiverId
-      - datetime
-      - mediaContent
-      - textContent
-      properties:
-        senderId:
-          $ref: '#/components/schemas/id'
-        receiverId:
-          $ref: '#/components/schemas/id'
-        datetime:
-          $ref: '#/components/schemas/datetime'
-        mediaContent:
-          $ref: '#/components/schemas/mediaContent'
-        textContent:
-          $ref: '#/components/schemas/textContent'
-
-    user:
-      type: object
-      required:
-      - userId
-      - name
-      - bio
-      - profilePics
-      properties:
-        userId:
-          $ref: '#/components/schemas/id'
-        name:
-          $ref: '#/components/schemas/name'
-        bio:
-          $ref: '#/components/schemas/description'
-        profilePics:
-          $ref: '#/components/schemas/media'
+    ########################### LOWER LEVEL SCHEMAS ####################################
 
     # TODO: This schema's structure is very likely to be changed in the near future
     mediaContent:
@@ -454,22 +585,7 @@ components:
       type: string
       format: url
 
-    category-descriptor:
-      type: object
-      required:
-      - category
-      - icon
-      - color
-      - categoryPath
-      properties:
-        category:
-          $ref: '#/components/schemas/category'
-        icon:
-          $ref: '#/components/schemas/photo'
-        color:
-          $ref: '#/components/schemas/color'
-        categoryPath:
-          $ref: '#/components/schemas/path'
+
 
 
     ############################## LOW-LEVEL COMPONENTS ###############################
@@ -536,83 +652,27 @@ components:
 
 
     ## Report-related schemas  
-    outcomes:
+    report-outcomes:
       type: array
       items:
-      - type: string
-        format: enum(warning, temp-ban, perma-ban)
+      - $ref: '#/components/schemas/report-outcome'
 
-    warning:
+    report-outcome:
       type: string
-      format: enum
-    
+      format: enum(warning, temp-ban, perma-ban)
+
+    report-status:
+      type: string
+      format: enum(waiting, investigating, closed)
 
     offenseType:
       type: string
       format: enum(scam, illegal-content, malicious-language)
 
-    location:
-      type: string
-      format: enum(Conversation, Listing, Account)
-
     offenseLocation:
       type: string
       format: enum(Conversation, Listing, Account)
 
-    sanction:
-      type: string
-      format: enum
-
-    sanctions:
-      type: array
-      items:
-      - $ref: '#/components/schemas/sanction'
-
-    sanction-create:
-      type: object
-      required:
-      - sanction
-      properties:
-        sanctions:
-          $ref: '#/components/schemas/sanction'
-
-    sanction-overwrite:
-      type: object
-      required:
-      - sanctionID
-      - sanctionsObject
-      properties:
-        sanctionsObject:
-          $ref: '#/components/schemas/sanction-create'
-
-    sanction-close:
-      type: object
-      required:
-      - sanctionID
-      properties:
-        sanctionID:
-          $ref: '#/components/schemas/id'
-
-    request-create:
-      type: object
-      required:
-      - description
-      - requestType
-      properties:
-        description:
-          $ref: '#/components/schemas/description'
-        requestType:
-          $ref: '#/components/schemas/requestType'
-
-    request-close:
-      type: object
-      required:
-      - requestId
-      properties:
-        description:
-          $ref: '#/components/schemas/id'
-    
     requestType:
       type: string
-      format: enum
-        
+      format: enum(report-appeal, bug-fix, account-fix, feature-request)
