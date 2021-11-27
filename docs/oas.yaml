@@ -15,10 +15,15 @@ info:
   security:
     bearerAuth:
     - /admin/[0-9A-Za-z/]+ ## Create better regex expression
-    - /account/close
-    - /account/modify
-    - /conversation
-    - /conversations/[0-9A-Za-z]*
+    - /account/[0-9A-Za-z/]+ # except /account/reset-request and /account/reset-execute
+    - /conversation/[0-9A-Za-z/]+
+    - /conversations
+    - /listing/create
+    - /listing/modify
+    - /listing/close
+    - /report
+    - /request
+
 
 
 paths:
@@ -743,7 +748,6 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
-
   /listing/close:
     post:
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
@@ -787,7 +791,6 @@ paths:
           $ref: 'schemas.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/report-submit'
-  
 
   /request:
     post:

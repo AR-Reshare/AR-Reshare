@@ -36,12 +36,7 @@ components:
             name: new_name
             email: new_email_address@example.com
             password: new_password
-    
-    account-close:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/account-login'
+            
           
    #################### COMMUNICATIONS #######################    
     conversation-create:
