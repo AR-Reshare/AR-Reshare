@@ -30,20 +30,24 @@ paths:
           description: The index page is succesfully returned
 
   /:
-    $ref: '#/paths//index'
+    get:
+      description: Returns the index page of the Application
+      responses:
+        '200':
+          description: The index page is succesfully returned
 
   ################################ ADMIN PATH ITEM OBJECTS ##################################
   /admin/:
     post:
       description: Authenticates in order to access the admin console
       responses:
-        '200':
+        '200': # Success
           description: The admin has authenticated with the admin console
           $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include the required parameters
           $ref: 'responses.yaml#/components/responses/listing'
-        '401': # Unauthorised (distinct to 403 Forbidden)
+        '401': # Unauthorised
           description: The user did not authenticate with the correct credentials with the admin console
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
@@ -53,7 +57,7 @@ paths:
     get:
       description: Returns the listing which matches the value of the parameter "listingId"
       responses:
-        '200':
+        '200': # Success
           description: The listing exists and it is returned
           $ref: 'responses.yaml#/components/responses/listing'
         '400': # Bad Request
@@ -76,8 +80,11 @@ paths:
     get:
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
-        '200':
+        '200': # Success
           description: Returns all available listings with the parameters required
+          $ref: 'responses.yaml#/components/responses/listings'
+        '400': # Bad Request
+          description: The request did not include a query
           $ref: 'responses.yaml#/components/responses/listings'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
@@ -100,8 +107,11 @@ paths:
     post:
       description: Modifies the listings
       responses:
-        '200':
+        '200': # Success
           description: The listing has been modified successfully
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The modification form is in an invalid format
           $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
@@ -116,7 +126,7 @@ paths:
     get:
       description: Returns the user which matches the value of the parameter "userID"
       responses:
-        '200':
+        '200': # Success
           description: Returns the user-view
           $ref: 'responses.yaml#/components/responses/admin-user-view'
         '400': # Bad Request
@@ -135,12 +145,15 @@ paths:
         userID:
           $ref: 'parameters.yaml#/components/parameters/userID'
 
-  /admin/user/search:
+  /admin/users/search:
     get:
       description: Returns the users that match the criteria provided by the requests parameter
       responses:
-        '200':
+        '200': # Success
           description: The server processed the request succesfully and returns candidate user-views
+          $ref: 'responses.yaml#/components/responses/admin-user-search'
+        '400': # Bad Request
+          description: The request did not include a query
           $ref: 'responses.yaml#/components/responses/admin-user-search'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
@@ -149,8 +162,14 @@ paths:
           description: The user's authentication token does not correspond to an administrator account
           $ref: 'responses.yaml#/components/responses/admin-user-search'
       parameters:
-        userID:
-          $ref: 'parameters.yaml#/components/parameters/userID'
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
         category:
           $ref: 'parameters.yaml#/components/parameters/category'
 
@@ -159,7 +178,7 @@ paths:
     post:
       description: Modifies the user's values
       responses:
-        '200':
+        '200': # Success
           description: The server has successfully modified user details
           $ref: 'responses.yaml#/components/responses/account-modify'
         '400': # Bad Request
@@ -177,14 +196,11 @@ paths:
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
-  /admin/report/:
-    $ref: '/paths//report'
-
   /admin/report/view:
     get:
       description: Returns the report which matches the value of the parameter "reportID"
       responses:
-        '200':
+        '200': # Success
           description: Returns the report
           $ref: 'responses.yaml#/components/responses/report'
         '400': # Bad Request
@@ -203,12 +219,15 @@ paths:
         reportID:
           $ref: 'parameters.yaml#/components/parameters/reportID'
 
-  /admin/report/search:
+  /admin/reports/search:
     get:
       description: Returns the reports that match the criteria provided by the requests parameter
       responses:
         '200':
           description: The server processed the request succesfully and returns candidate reports
+          $ref: 'responses.yaml#/components/responses/reports'
+        '400': # Bad Request
+          description: The request did not include a "reportID" parameter
           $ref: 'responses.yaml#/components/responses/reports'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
@@ -217,10 +236,14 @@ paths:
           description: The user's authentication token does not correspond to an administrator account
           $ref: 'responses.yaml#/components/responses/reports'
       parameters:
-        reportID:
-          $ref: 'parameters.yaml#/components/parameters/reportID'
-        category:
-          $ref: 'parameters.yaml#/components/parameters/category'
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
 
   /admin/report/close:
     post:
@@ -276,7 +299,7 @@ paths:
     requestBodies:
       $ref: 'requestBodies.yaml#/components/requestBodies/sanction-create'
   
-  /admin/sanctions/close:
+  /admin/sanction/close:
     post:
       description: closes a sanction given a sanctionID
       responses:
@@ -627,7 +650,7 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
    
-  /listings/create:
+  /listing/create:
     post:
       description: Creates a new listing
       responses: 
