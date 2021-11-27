@@ -735,27 +735,27 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-start'
   
-  /conversation/end:
+  /conversation/close:
     post:
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
         '200':
-          description: The conversation has been ended
-          $ref: 'responses.yaml#/components/responses/conversation-end'
+          description: The conversation has been closed
+          $ref: 'responses.yaml#/components/responses/conversation-close'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-close'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-close'
         '404': # Not Found
           description: The conversation does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-close'
         '409': # Conflict
           description: The conversation is already closed
-          $ref: 'responses.yaml#/components/responses/conversation-end'
+          $ref: 'responses.yaml#/components/responses/conversation-close'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-end'
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
   /conversation/message:
     post:
