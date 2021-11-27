@@ -14,15 +14,15 @@ info:
     description: The url will be filled out as we push through development
   security:
     bearerAuth:
-    - /admin/[0-9A-Za-z/]+ ## Create better regex expression
-    - /account/[0-9A-Za-z/]+ # except /account/reset-request and /account/reset-execute
-    - /conversation/[0-9A-Za-z/]+
-    - /conversations
-    - /listing/create
-    - /listing/modify
-    - /listing/close
-    - /report
-    - /request
+    - \/admin\/[\w\/]+ ## Create better regex expression
+    - \/account\/[\w\/]+ # except /account/reset-request and /account/reset-execute
+    - \/conversation\/[\w\/]+
+    - \/conversations
+    - \/listing\/create
+    - \/listing\/modify
+    - \/listing\/close
+    - \/report
+    - \/request
 
 
 
