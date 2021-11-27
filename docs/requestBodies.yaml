@@ -69,7 +69,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml/components/schemas/listing-close'
+            $ref: 'schemas.yaml#/components/schemas/listing-close'
   
     listing-modify:
       content:

@@ -64,19 +64,19 @@ paths:
       responses:
         '200': # Success
           description: The listing exists and it is returned
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-private'
         '400': # Bad Request
           description: The request did not include a "listingID" parameter
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-private'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-private'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-private'
         '404': # Not Found
           description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-private'
       parameters:
         listingID:
           $ref: 'parameters.yaml#/components/parameters/listingID'
@@ -87,16 +87,16 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-private'
         '400': # Bad Request
           description: The request did not include a query
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-private'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-private'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-private'
         # no 404 included - I assume that if no listings match, the reponse will still be 200 but will be empty
       parameters:
         maxResults:
@@ -123,6 +123,9 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
+          description: The listing does not exist
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
@@ -218,7 +221,7 @@ paths:
           description: The user's authentication token does not correspond to an administrator account
           $ref: 'responses.yaml#/components/responses/report'
         '404': # Not Found
-          description: The user does not exist
+          description: The report does not exist
           $ref: 'responses.yaml#/components/responses/report'
       parameters:
         reportID:
@@ -232,7 +235,7 @@ paths:
           description: The server processed the request succesfully and returns candidate reports
           $ref: 'responses.yaml#/components/responses/reports'
         '400': # Bad Request
-          description: The request did not include a "reportID" parameter
+          description: The request did not include a query
           $ref: 'responses.yaml#/components/responses/reports'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
@@ -281,7 +284,7 @@ paths:
       responses:
         '200': # Success
           description: The report has successfully been submitted
-          $ref: 'schemas.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a valid requestID or schemas/request-modifiedDetails
           $ref: 'responses.yaml#/components/responses/post'
@@ -393,37 +396,37 @@ paths:
   # site related paths (This isn't neccessarily required)
   # This may include monitoring and modification functionality
   # !!! I was thinking these could include adding/removing categories or language packs for future-proofing
-  /admin/site/modify:
-    post:
-      description: ...
-      responses:
-        '200':
-          description: ...
-          $ref: ...
-        '401':
-          description: ...
-          $ref: ...
-        '403':
-          description: ...
-          $ref: ...
-    requestBody:
-      $ref: ...
+  # /admin/site/modify:
+  #   post:
+  #     description: ...
+  #     responses:
+  #       '200':
+  #         description: ...
+  #         $ref: ...
+  #       '401':
+  #         description: ...
+  #         $ref: ...
+  #       '403':
+  #         description: ...
+  #         $ref: ...
+  #   requestBody:
+  #     $ref: ...
 
-  /admin/site/monitor:
-    post:
-      description: ...
-      responses:
-        '200':
-          description: ...
-          $ref: ...
-        '401':
-          description: ...
-          $ref: ...
-        '403':
-          description: ...
-          $ref: ...
-    requestBody:
-      $ref: ...
+  # /admin/site/monitor:
+  #   post:
+  #     description: ...
+  #     responses:
+  #       '200':
+  #         description: ...
+  #         $ref: ...
+  #       '401':
+  #         description: ...
+  #         $ref: ...
+  #       '403':
+  #         description: ...
+  #         $ref: ...
+  #   requestBody:
+  #     $ref: ...
 
 
 
@@ -507,8 +510,42 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
-  ##TODO: Finish account/listings
-  /account/listings:
+  /account/listing/view:
+    get:
+      description: Returns the listing which matches the value of the parameter "listingId"
+      responses:
+        '200': # Success
+          description: The listing exists and it is returned
+          $ref: 'responses.yaml#/components/responses/listing-private'
+        '400': # Bad Request
+          description: The request did not include a "listingID" parameter
+          $ref: 'responses.yaml#/components/responses/listing-private'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/listing-private'
+      parameters:
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
+
+  /account/listings/search:
+    get:
+      description: Returns the listings that match the criteria provided by the requests parameter
+      responses:
+        '200': # Success
+          description: Returns all available listings with the parameters required
+          $ref: 'responses.yaml#/components/responses/listings-private'
+        '400': # Bad Request
+          description: The request did not include a valid query parameter
+          $ref: 'responses.yaml#/components/responses/listings-private'
+      parameters:
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
 
   /account/reset-request:
     put: 
@@ -629,7 +666,7 @@ paths:
         description: The user's authentication token is not associated with the requestID
         $ref: 'responses.yaml#/components/responses/request'
     requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/request'
+      $ref: 'requestBodies.yaml#/components/requestBodies/request-create'
 
   /account/request/view:
     get:
@@ -679,13 +716,13 @@ paths:
       responses:
         '200': # Success
           description: The listing exists and it is returned
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-public'
         '400': # Bad Request
           description: The request did not include a "listingID" parameter
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-public'
         '404': # Not Found
           description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/listing-public'
       parameters:
         listingID:
           $ref: 'parameters.yaml#/components/parameters/listingID'
@@ -696,10 +733,10 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-public'
         '400': # Bad Request
           description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings'
+          $ref: 'responses.yaml#/components/responses/listings-public'
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
@@ -724,7 +761,7 @@ paths:
           description: The user is not allowed to create a listing
           $ref: 'responses.yaml#/components/responses/post'
       requestBodies:
-        $ref: 'requestBodies#/components/requestBodies/listing-create'
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
     post:
@@ -779,7 +816,7 @@ paths:
       responses:
         '200': # Success
           description: The report has successfully been submitted
-          $ref: 'schemas.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/post'
@@ -788,9 +825,9 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
         '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
           description: There already exists a "ongoing" report by the victimID with the same parameters
-          $ref: 'schemas.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
     requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/report-submit'
+      $ref: 'requestBodies.yaml#/components/requestBodies/report-create'
 
   /request:
     post:
@@ -798,7 +835,7 @@ paths:
       responses:
         '200':
           description: The request has successfully been submitted
-          $ref: 'schemas.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/post'
@@ -807,7 +844,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
         '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
           description: There already exists a "ongoing" request by the victimID with the same parameters
-          $ref: 'schemas.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/request-create'
   
