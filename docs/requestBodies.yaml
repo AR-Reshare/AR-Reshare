@@ -1,0 +1,138 @@
+
+components:
+  requestBodies:
+    ############################ ACCOUNT ############################
+    account-signup:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/account-signup'
+    
+    account-login:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/account-login'
+
+    account-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/account-close'
+
+    account-modify:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/account-modify'
+      examples:
+        single-var-change:
+          password: current_password
+          modifiedDetails:
+            name: new_name
+        multi-var-change:
+          password: current_password
+          modifiedDetails:
+            name: new_name
+            email: new_email_address@example.com
+            password: new_password
+            
+          
+   #################### COMMUNICATIONS #######################    
+    conversation-create:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/conversation-create'
+
+    conversation-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/conversation-close'
+
+    conversation-message:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/conversation-message'
+
+
+    ################# LISTINGS REQUESTBODIES ######################
+    listing-create:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-create'
+
+    listing-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-close'
+  
+    listing-modify:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-modify'
+
+    ################### REPORT REQUESTBODIES #######################
+    report-review:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/report-review'
+    
+    report-create:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/report-create' 
+
+    report-modify:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/report-modify'
+
+    
+    ################## SANCTION REQUESTBODIES ######################
+    sanction-create:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/sanction-create'
+
+    sanction-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/sanction-close'
+
+    ################## REQUEST REQUESTBODIES ########################
+    request-create:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/request-create'    
+
+    request-close:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/request-close'
+
+
+    ################ ACCOUNT-RESET REQUESTBODIES ####################
+    reset-request:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/reset-request'
+    
+    reset-execute:
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/reset-execute'  

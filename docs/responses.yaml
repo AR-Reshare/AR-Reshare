@@ -1,0 +1,194 @@
+components:
+  responses:
+
+    #NOTE: Error message is subject to change soon
+    post:
+      description: The response to a post request
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - success
+            optional:
+            - error
+            properties:
+              success: boolean
+              error: errorMsg
+            examples:
+              post-success:
+                success: true
+              post-failure:
+                success: false
+                error: this is an error message
+
+
+    ################### ACCOUNT RESPONSES #####################
+
+    account-close:
+      description: The account was requested to be closed
+      $ref: '#/components/responses/post'
+
+    account-create:
+      description: The account was requested to be created
+      $ref: '#/components/responses/post'
+
+    # TODO: I believe authentication information can be removed from here and put into a seperate security component
+    account-login:
+      description: The account was sign in
+      content:
+        'application/json':
+          schema:
+            type: object
+      headers:
+        Authorization:
+          $ref: 'headers.yaml#/headers/auth-token'
+
+    account-modify:
+      description: Returns whether an account detail was modified successfully
+      $ref: '#/components/responses/post'
+
+
+    ####################### COMMS RESPONSES #######################
+    conversation-descriptors:
+      description: Returns a list of conversation descriptors
+      content:
+        'application/json':
+          schema:
+            type: array
+            items:
+              $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
+
+    conversation-create:
+      description: Returns the conversation-descriptor if successful
+      content:
+        'application/json':
+          schema:
+            type: object
+            required:
+            - success
+            optional:
+            - conversation
+            properties:
+              conversation:
+                $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
+              success:
+                type: boolean
+     
+    conversation-view:
+      description: Returns the conversation of a given conversationID
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/conversation'
+
+    conversation-close:
+      description: Returns whether the conversation was closed successfully
+      $ref: '#/components/responses/post'
+
+    conversation-message:
+      description: Returns whether a message was successfully delivered
+      $ref: '#/components/responses/post'
+    
+
+    ###################### ADMIN RESPONSES ########################
+    admin-user-view:
+      description: Returns a view of the user
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/user-view'
+
+    admin-user-search:
+      description: Returns a list of users that satisfy the search parameters
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/user-search'
+
+   ###################### LISTING RESPONSES ######################
+    listings-private:
+      description: Returns a set of listings
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listings-private'
+
+    listings-public:
+      description: Returns a set of listings
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listings-public'
+    
+    listings-descriptor:
+      description: Returns a set of listings
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listings-descriptor'
+
+    listing-private:
+      description: Returns a listing
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-own'
+
+    listing-public:
+      description: Returns a listing
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-view'
+
+    listing-descriptor:
+      description: Returns a listing
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/listing-descriptor'
+  
+
+    #################### REPORT RESPONSES #######################
+    reports:
+      description: Returns a set of reports
+      content:
+        'application/json':
+          schema:
+            type: object
+            items:
+            - $ref: 'schemas.yaml#/components/schemas/reports'
+
+    report:
+      description: Returns a report
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/report'
+
+    ################## SANCTIONS RESPONSES ######################
+
+    sanction:
+      description: Returns a sanction
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/sanction'
+
+    sanctions:
+      description: Returns a set of sanctions
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/sanctions'
+
+    ################ REQUEST RESPONSES #########################
+    request:
+      description: Returns a request
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/request'
+
+
