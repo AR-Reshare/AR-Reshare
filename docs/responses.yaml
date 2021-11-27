@@ -25,11 +25,11 @@ components:
 
     ################### ACCOUNT RESPONSES #####################
 
-    account-deletion:
-      description: The account was requested to be deleted
+    account-close:
+      description: The account was requested to be closed
       $ref: '#/components/responses/post'
 
-    account-creation:
+    account-create:
       description: The account was requested to be created
       $ref: '#/components/responses/post'
 
@@ -44,7 +44,7 @@ components:
         Authorization:
           $ref: '#/components/headers/auth-token'
 
-    account-modification:
+    account-modify:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
 
@@ -82,7 +82,7 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/conversation'
 
-    conversation-end:
+    conversation-close:
       description: Returns whether the conversation was closed successfully
       $ref: '#/components/responses/post'
 

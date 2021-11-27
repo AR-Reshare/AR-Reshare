@@ -155,7 +155,7 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
-    account-deletion:
+    account-close:
       type: object
       required:
       - email
@@ -585,7 +585,7 @@ components:
         sanctionsObject:
           $ref: '#/components/schemas/sanction-create'
 
-    sanction-delete:
+    sanction-close:
       type: object
       required:
       - sanctionID

@@ -15,7 +15,7 @@ info:
   security:
     bearerAuth:
     - /admin/[0-9A-Za-z/]+ ## Create better regex expression
-    - /account/deletion
+    - /account/close
     - /account/modification
     - /conversation
     - /conversations/[0-9A-Za-z]*
@@ -27,13 +27,13 @@ paths:
       description: Returns the index page of the Application
       responses:
         '200':
-          description: ...
+          description: The index page is succesfully returned
 
   /:
     $ref: '#/paths//index'
 
-########################################### ADMIN ##########################################################
-  /admin/: # TODO: a standard authentication method
+  ########################################### ADMIN ##########################################################
+  /admin/:
     post:
       description: Authenticates in order to access the admin console
       responses:
@@ -153,7 +153,6 @@ paths:
           $ref: 'schemas.yaml#/components/schemas/id'
         category:
           $ref: 'schemas.yaml#/components/schemas/category'
-
 
   # NOTE: This path will need to be re-evaluated (need to decide what the admin can change)
   /admin/user/manipulate:
@@ -279,11 +278,10 @@ paths:
             $ref: 'responses.yaml#/components/responses/post'
       requestBodies:
         $ref: 'requestBodies.yaml#/components/requestBodies/sanction-create'
-
-      ##
-    /admin/sanctions/delete:
+    
+    /admin/sanctions/close:
       post:
-        description: Deletes a sanction given a sanctionID
+        description: closes a sanction given a sanctionID
         responses:
           '200':
             description: The report has succesfully been executed
@@ -292,8 +290,8 @@ paths:
             description: The report has succesfully been executed
             $ref: 'responses.yaml#/components/responses/post'
       requestBodies:
-        $ref: 'requestBodies.yaml#/components/requestBodies/sanction-delete'
-      ##
+        $ref: 'requestBodies.yaml#/components/requestBodies/sanction-close'
+    
     /admin/sanction/view:
       get:
         description: Returns the sanction which matches the value of the parameter "sanctionID
@@ -341,7 +339,6 @@ paths:
           query:
             $ref: 'parameters.yaml#/components/parameters/queryString'
 
-    
   /account/sanction/view:
      get:
         description: Returns the sanction which matches the value of the parameter "sanctionID
@@ -477,7 +474,7 @@ paths:
       $ref: ...
 
 
-################################### ACCOUNT ##########################################################
+  ################################### ACCOUNT ##########################################################
   /account/creation/:
     post:
       description: Creates an account with request arguments
@@ -497,21 +494,21 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
                
-  /account/deletion:
+  /account/close:
     post: # not delete
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
         '200':
-          description: The account has been queued for deletion - the user no longer has access
-          $ref: 'responses.yaml#/components/responses/account-deletion'
+          description: The account has been queued for close - the user no longer has access
+          $ref: 'responses.yaml#/components/responses/account-close'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/account-deletion'
+          $ref: 'responses.yaml#/components/responses/account-close'
         '409': # Conflict
-          description: The account is already queued for deletion
-          $ref: 'responses.yaml#/components/responses/account-deletion'
+          description: The account is already queued for close
+          $ref: 'responses.yaml#/components/responses/account-close'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-deletion'
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
   
   /account/login/:
     post:
@@ -542,16 +539,19 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-modification'
 
+  /account/listings/:
+  
   # TODO: 
   /account/reset/:
     put: 
-      description: Modifies the details
+      description: Resets the account's password
+
 
   # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
   ## This overwrite can include a new password
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
-################################ LISTINGS ######################################################
+  ################################ LISTINGS ######################################################
   /listing/view:
     get:
       description: Returns the listing which matches the value of the parameter "listingId"
@@ -574,7 +574,6 @@ paths:
       parameters:
         listingID:
           $ref: 'parameters.yaml#/components/parameters/listingID'
-
 
   /listings/search:
     get:
@@ -622,7 +621,6 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modification'
-
 
   /listings/close:
     post:

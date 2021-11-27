@@ -14,11 +14,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-login'
 
-    account-deletion:
+    account-close:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/account-deletion'
+            $ref: 'schemas.yaml#/components/schemas/account-close'
 
     account-modification:
       content:
@@ -117,11 +117,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/sanction-create'
 
-    sanction-delete:
+    sanction-close:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/sanction-delete'
+            $ref: 'schemas.yaml#/components/schemas/sanction-close'
 
     ################## REQUEST REQUESTBODIES ########################
     request-create:
