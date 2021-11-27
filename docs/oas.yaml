@@ -37,7 +37,7 @@ paths:
           description: The index page is succesfully returned
 
   ################################ ADMIN PATH ITEM OBJECTS ##################################
-  /admin/:
+  /admin:
     post:
       description: Authenticates in order to access the admin console
       responses:
@@ -46,7 +46,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include the required parameters
-          $ref: 'responses.yaml#/components/responses/listing'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not authenticate with the correct credentials with the admin console
           $ref: 'responses.yaml#/components/responses/post'
@@ -223,7 +223,7 @@ paths:
     get:
       description: Returns the reports that match the criteria provided by the requests parameter
       responses:
-        '200':
+        '200': # Success
           description: The server processed the request succesfully and returns candidate reports
           $ref: 'responses.yaml#/components/responses/reports'
         '400': # Bad Request
@@ -249,21 +249,24 @@ paths:
     post:
       description: After the admin has reviewed a report, they submit the outcome
       responses:
-        '200':
+        '200': # Success
           description: The server processed the report review succesfully
-          $ref: 'responses.yaml#/components/responses/reports'
-        '401':
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a valid requestID 
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorized
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: 'responses.yaml#/components/responses/reports'
-        '403':
-          description: Insufficient privileges to perform request
-          $ref: 'responses.yaml#/components/responses/reports'
-        '404':
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: Insufficient priviledges to perform request
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
           description: The report does not exist
-          $ref: 'responses.yaml#/components/responses/reports'
-        '409':
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': # Conflict
           description: The report has already been closed
-          $ref: 'responses.yaml#/components/responses/reports'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/report-review'
 
@@ -271,13 +274,19 @@ paths:
     post:
       description: Modifies a report form
       responses:
-        '200':
+        '200': # Success
           description: The report has successfully been submitted
           $ref: 'schemas.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a valid requestID or schemas/request-modifiedDetails
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/post'
-        '404': ## Cannot modify a non-existent report
+        '403': # Forbidden
+          description: Insufficient priviledges to perform request
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
           description: There is no report with such an id, so therefore cannot be modified
           $ref: 'responses.yaml#/components/responses/post'
     requestBody:
@@ -290,11 +299,17 @@ paths:
     post:
       description: Sanctions a given userID
       responses:
-        '200':
+        '201': # Successfully created
           description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a valid sanction
           $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: Insufficient priviledges to perform request
           $ref: 'responses.yaml#/components/responses/post'
     requestBodies:
       $ref: 'requestBodies.yaml#/components/requestBodies/sanction-create'
@@ -303,11 +318,17 @@ paths:
     post:
       description: closes a sanction given a sanctionID
       responses:
-        '200':
+        '200': # Success
           description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a valid sanctionID
           $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The report has succesfully been executed
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: Insufficient priviledges to perform request
           $ref: 'responses.yaml#/components/responses/post'
     requestBodies:
       $ref: 'requestBodies.yaml#/components/requestBodies/sanction-close'
@@ -316,7 +337,7 @@ paths:
     get:
       description: Returns the sanction which matches the value of the parameter "sanctionID
       responses:
-        '200':
+        '200': # Success
           description: The sanction exists and it is returned
           $ref: 'responses.yaml#/components/responses/sanction'
         '400': # Bad Request
@@ -342,12 +363,15 @@ paths:
         '200':
           description: Returns all available sanctions with the parameters required
           $ref: 'responses.yaml#/components/responses/sanctions'
+        '400': # Bad Request
+          description: The request did not include a valid query parameter
+          $ref: 'responses.yaml#/components/responses/sanctions'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/sanctions'
         '403': # Forbidden
           description: The user's authentication token does not correspond to an administrator account
-          $ref: 'responses.yaml#/components/responses/sanction'
+          $ref: 'responses.yaml#/components/responses/sanctions'
         # no 404 included - I assume that if no sanctions match, the reponse will still be 200 but will be empty
       parameters:
         maxResults:
@@ -398,12 +422,12 @@ paths:
 
 
 
-  ################################### ACCOUNT PATH ITEM OBJECTS########################################
+  ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
     post:
       description: Creates an account with request arguments
       responses:
-        '201':
+        '201': # Succesfully created
           description: The account has been created successfully
           $ref: 'responses.yaml#/components/responses/account-create'
         '400': # Bad Request
@@ -422,23 +446,29 @@ paths:
     post: # not delete
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
-        '200':
+        '200': # Success
           description: The account has been queued for close - the user no longer has access
+          $ref: 'responses.yaml#/components/responses/account-close'
+        '400': # Bad Request
+          description: The request had a badly formatted schemas/account-close object
           $ref: 'responses.yaml#/components/responses/account-close'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
           $ref: 'responses.yaml#/components/responses/account-close'
+        '403': # Forbidden
+          description: Insufficient privileges to perform request
+          $ref: 'responses.yaml#/components/responses/account-close'
         '409': # Conflict
           description: The account is already queued for close
           $ref: 'responses.yaml#/components/responses/account-close'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
+    requestBody:
+      $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
   
   /account/login:
     post:
       description: Login in to the requested account using request arguments
       responses:
-        '200':
+        '200': # Success
           description: Logs into the requested account
           $ref: 'responses.yaml#/components/responses/account-login'
         '400': # Bad Request
@@ -447,6 +477,9 @@ paths:
         '401': # Unauthorised
           description: Failed to log into requested account
           $ref: 'responses.yaml#/components/responses/account-login'
+        '404': # Not Found
+          description: The account doesn't exist
+          $ref: 'responses.yaml#/components/responses/account-login'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
      
@@ -454,26 +487,32 @@ paths:
     put:
       description: Modifies the details of the current account
       responses:
-        '200':
+        '200': # Success
           description: The details has been successfully modified
+          $ref: 'responses.yaml#/components/responses/account-modify'
+        '400': # Bad Request
+          description: Bad schemas/account-modifiedDetails object received
           $ref: 'responses.yaml#/components/responses/account-modify'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
           $ref: 'responses.yaml#/components/responses/account-modify'
+        '403': # Not Found
+          description: Insufficient privileges to perform request
+          $ref: 'responses.yaml#/components/responses/account-modify'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
+  ##TODO: Finish account/listings
   /account/listings:
 
-  # TODO: Complete the password-reset functionality: 
   /account/reset-request:
     put: 
       description: Resets the account's password
       responses:
-        '200':
+        '200': # Success
           description: The request has succesfully been received
           $ref: 'responses.yaml#/components/responses/post'
-        '400':
+        '400': # Bad Request
           description: Bad request received
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
@@ -483,16 +522,16 @@ paths:
     put:
       description: Resets the account's password
       responses:
-        '200':
+        '200': # Success
           description: The password has been succesfully reset
           $ref: 'responses.yaml#/components/responses/post'
-        '400':
+        '400': # Bad Request
           description: The password does not satify the format required
           $ref: 'responses.yaml#/components/responses/post'
-        '401':
+        '401': # Unauthorized
           description: The user has not presented a token
           $ref: 'responses.yaml#/components/responses/post'
-        '403':
+        '403': # Forbidden
           description: The user has not presented a token with sufficeint priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
     requestBody:
@@ -508,7 +547,7 @@ paths:
      get:
         description: Returns the sanction which matches the value of the parameter "sanctionID
         responses:
-          '200':
+          '200': # Success
             description: The sanction exists and it is returned
             $ref: 'responses.yaml#/components/responses/sanction'
           '400': # Bad Request
@@ -520,7 +559,9 @@ paths:
           '403': # Forbidden
             description: The user's authentication token is not associated with the sanctionID
             $ref: 'responses.yaml#/components/responses/sanction'
-          # '404': # Not Found -- NO 404 returned -- return 403 instead
+          '404': # Not Found
+            description: The report does not exist
+            $ref: 'responses.yaml#/components/responses/sanction'
         parameters:
           sanctionID:
             $ref: 'parameters.yaml#/components/parameters/sanctionID'
@@ -529,22 +570,34 @@ paths:
     get:
       description: Returns all sanctions associated with the account
       responses:
-        '200':
+        '200': # Success
           description: Returns all available sanctions with the parameters required
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '400': # Bad Request
+          description: The request did not include a valid request body
           $ref: 'responses.yaml#/components/responses/sanctions'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '403': # Forbidden
+          description: The user's authentication token is not associated with the sanctionID
           $ref: 'responses.yaml#/components/responses/sanctions'
 
   /account/sanctions/search:
     get:
       description: Returns all sanctions associated with the account
       responses:
-        '200':
+        '200': # Success
           description: Returns all available sanctions with the parameters required
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '400': # Bad Request
+          description: The request did not include a valid request body
           $ref: 'responses.yaml#/components/responses/sanctions'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/sanctions'
+        '403': # Forbidden
+          description: The user's authentication token is not associated with the sanctionID
           $ref: 'responses.yaml#/components/responses/sanctions'
       parameters:
         maxResults:
@@ -558,9 +611,18 @@ paths:
 
   /account/request/create:
     post:
-      '200':
+      '201': # Successfully Created
         description: Submits a request to do a variety of things e.g. (bug fixes, report appeals)
-        $ref: 'responses.yaml#/components/responses/post'
+        $ref: 'responses.yaml#/components/responses/request'
+      '400': # Bad Request
+        description: The request did not include a valid request body
+        $ref: 'responses.yaml#/components/responses/request'
+      '401': # Unauthorised
+        description: The user did not send an authentication token, or the authentication token does not match a valid account
+        $ref: 'responses.yaml#/components/responses/request'
+      '403': # Forbidden
+        description: The user's authentication token is not associated with the requestID
+        $ref: 'responses.yaml#/components/responses/request'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/request'
 
@@ -578,49 +640,43 @@ paths:
       '403': # Forbidden
         description: The user's authentication token is not associated with the requestID
         $ref: 'responses.yaml#/components/responses/request'
-      # '404': # Not Found -- NO 404 returned -- return 403 instead 
+      '404':
+        description: The request does not exist
+        $ref: 'responses.yaml#/components/responses/request'
 
   /account/request/close:
     post:
-      '200':
+      '200': # Success
         description: The server processed the report review succesfully
         $ref: 'responses.yaml#/components/responses/post'
-      '401':
+      '401': # Unauthorized
         description: The user did not send an authentication token, or the authentication token does not match a valid account
-        $ref: 'responses.yaml#/components/responses/reports'
-      '403':
+        $ref: 'responses.yaml#/components/responses/post'
+      '403': # Forbidden
         description: Insufficient privileges to perform request
         $ref: 'responses.yaml#/components/responses/post'
-      '404':
+      '404': # Not Found
         description: The report does not exist
         $ref: 'responses.yaml#/components/responses/post'
-      '409':
+      '409': # Conflict
         description: The report has already been closed
         $ref: 'responses.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/request-close'
     
-
-  # !!! one for a password reset? -- ANSWER: The above handled all account modification. The client will send the new information to overwrite and they use their password and token to validate their request
-  ## This overwrite can include a new password
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
   ################################ LISTINGS ######################################################
+  ## Some of the below functionality does not require authentication - hence the missing 401, 403 codes
   /listing/view:
     get:
       description: Returns the listing which matches the value of the parameter "listingId"
       responses:
-        '200':
+        '200': # Success
           description: The listing exists and it is returned
           $ref: 'responses.yaml#/components/responses/listing'
         '400': # Bad Request
           description: The request did not include a "listingID" parameter
-          $ref: 'responses.yaml#/components/responses/listing'
-        '401': # Unauthorised
-          description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: 'responses.yaml#/components/responses/listing'
-        '403': # Forbidden
-          description: The user's authentication token does not correspond to an administrator account
           $ref: 'responses.yaml#/components/responses/listing'
         '404': # Not Found
           description: The listing does not exist
@@ -633,13 +689,12 @@ paths:
     get:
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
-        '200':
+        '200': # Success
           description: Returns all available listings with the parameters required
           $ref: 'responses.yaml#/components/responses/listings'
-        '401': # Unauthorised
-          description: The user did not send an authentication token, or the authentication token does not match a valid account
+        '400': # Bad Request
+          description: The request did not include a valid query parameter
           $ref: 'responses.yaml#/components/responses/listings'
-        # no 404 included - I assume that if no listings match, the reponse will still be 200 but will be empty
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
@@ -654,34 +709,62 @@ paths:
     post:
       description: Creates a new listing
       responses: 
-        '200':
+        '201': # Successfully Created
           description: The listing has been succesfully created
           $ref: '#responses.yaml#/components/responses/post'
-        '401': #
+        '401': # Unauthorized
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: '#responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user is not allowed to create a listing
+          $ref: 'responses.yaml#/components/responses/post'
       requestBodies:
         $ref: 'requestBodies#/components/requestBodies/listing-create'
 
-  /listings/modify:
+  /listing/modify:
     post:
       description: Modifies the listings
       responses:
-        '200':
+        '200': # Success
           description: The listing has been modified successfully
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The modification form is in an invalid format
           $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not send an authentication token, or the authentication token does not match a valid account
           $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
-  /listings/close:
+
+  /listing/close:
     post:
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       responses:
-        '200':
+        '200': # Success
           description: The listing has been succesfully closed
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a listingID
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': # Conflict
+          description: The listing is already closed
           $ref: 'responses.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
@@ -690,11 +773,14 @@ paths:
     post:
       description: Submits a report form
       responses:
-        '200':
+        '200': # Success
           description: The report has successfully been submitted
           $ref: 'schemas.yaml#/components/responses/post'
         '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
           description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
         '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
           description: There already exists a "ongoing" report by the victimID with the same parameters
@@ -712,6 +798,9 @@ paths:
           $ref: 'schemas.yaml#/components/responses/post'
         '401': # Unauthorised -- This may be a question of debate whther a user must be logged in or not. (i.e. someone can spam reports a lot more easily if no auth is required)
           description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
         '409': ## Conflict, there already exists a "ongoing" report by the victimID with the same parameters
           description: There already exists a "ongoing" request by the victimID with the same parameters
@@ -734,35 +823,35 @@ paths:
     post:
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
-        '201':
+        '201': # Successfully Created
           description: The conversation has been initiated
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '403': # Forbidden
           description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '404': # Not Found
           description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '409': # Conflict
           description: The converstaion already exists
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
         '410': # Gone
           description: The listing is closed
-          $ref: 'responses.yaml#/components/responses/conversation-start'
+          $ref: 'responses.yaml#/components/responses/conversation-create'
       requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-start'
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
   /conversation/close:
     post:
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
-        '200':
+        '200': # Success
           description: The conversation has been closed
           $ref: 'responses.yaml#/components/responses/conversation-close'
         '400': # Bad Request
@@ -784,7 +873,7 @@ paths:
     post:
       description: Sends a message to a conversation via it's conversationID
       responses:
-        '200':
+        '200': # Success
           description: The message has been successfully delivered
           $ref: 'responses.yaml#/components/responses/conversation-message'
         '400': # Bad Request
@@ -809,7 +898,7 @@ paths:
     get:
       description: Returns descriptors of conversations that the user still has open
       responses:
-        '200':
+        '200': # Success
           description: Returns a set of the descriptors of the most recent converstaions
           $ref: 'responses.yaml#/components/responses/conversation-descriptors'
         '400': # Bad Request
@@ -818,6 +907,9 @@ paths:
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
           $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
       parameters:
         start:
           $ref: 'parameters.yaml#/components/parameters/startResults'
@@ -826,26 +918,25 @@ paths:
         max:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
 
-  /conversation:
+  /conversation/view:
     get:
       description: Returns the conversation of a given conversationID
       responses:
-        '200':
+        '200': # Success
           description: The conversation exists and it has been returned
-          $ref: 'responses.yaml#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation-view'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation-view'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation'
+          $ref: 'responses.yaml#/components/responses/conversation-view'
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
-          $ref: 'responses.yaml#/components/responses/conversation'     
+          $ref: 'responses.yaml#/components/responses/conversation-view'     
     parameters:
       conversationID:
         $ref: 'parameters.yaml#/components/parameters/conversationID'
-
 
 
 

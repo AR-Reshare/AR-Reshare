@@ -75,7 +75,7 @@ components:
               success:
                 type: boolean
      
-    conversation:
+    conversation-view:
       description: Returns the conversation of a given conversationID
       content:
         'application/json':
