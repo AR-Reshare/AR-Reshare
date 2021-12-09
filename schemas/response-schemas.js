@@ -1,0 +1,2 @@
+/* This file will define response schemas to be sent through the API
+*/

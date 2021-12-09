@@ -1,0 +1,2 @@
+/* This file will define push notification schemas
+*/
