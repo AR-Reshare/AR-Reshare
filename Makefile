@@ -1,5 +1,5 @@
 all:
-	psql -a -f db/database-init.pgsql
+	psql -f db/database-init.pgsql
 
 clean:
-	psql -a -f db/database-clean.pgsql
+	psql -f db/database-clean.pgsql
