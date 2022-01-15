@@ -15,6 +15,13 @@ const {Pool} = require('pg');
 
 const pool = new Pool(db_credentials);
 
+/**
+ * Executes a command on the database. A command is a query which does not have a return value - it either works or it doesn't.
+ * @async
+ * @param {string} queryTemplate - The query to execute, which may be parameterised
+ * @param {string[]} [values=[]] - (Optional) The values to substitute into the parameterised query
+ * @returns {Promise} Promise object which resolves if the query was successful and rejects with an error if it wasn't.
+ */
 const executeCommand = (queryTemplate, values=[]) => {
     return new Promise((resolve, reject) => {
         pool.query(queryTemplate, values).then(res => {
@@ -27,7 +34,7 @@ const executeCommand = (queryTemplate, values=[]) => {
 
 
 // Test code
-executeCommand('INSERT INTO Account (UserName, UserEmail, PassHash) VALUES ($1, $2, $3)', ['Testy McTestFace', 'test@testington.net', 'abcdefghjik']).then(()=>{
+executeCommand('INSERT INTO Account (UserName, UserEmail, PassHash) VALUES ($1, $2, $3)', ['Testy McTestFace', 'testyMcT@testington.net', 'abcdefghjik']).then(()=>{
     console.log('Success');
     process.exit();
 }).catch(err => {
