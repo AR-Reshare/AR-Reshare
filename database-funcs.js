@@ -17,23 +17,6 @@ const { continueSession } = require('pg/lib/sasl');
 const pool = new Pool(db_credentials);
 
 /**
- * Executes a command on the database. A command is a query which does not have a return value - it either works or it doesn't.
- * @async
- * @param {string} queryTemplate - The query to execute, which may be parameterised
- * @param {string[]} [values=[]] - (Optional) The values to substitute into the parameterised query
- * @returns {Promise} Promise object which resolves if the query was successful and rejects with an error if it wasn't.
- */
-const executeCommand = (queryTemplate, values=[]) => {
-    return new Promise((resolve, reject) => {
-        pool.query(queryTemplate, values).then(res => {
-            resolve();
-        }).catch(err => {
-            reject(err);
-        });
-    });
-}
-
-/**
  * Executes a query on the database
  * @async
  * @param {string} queryTemplate - The query to execute, which may be parameterised 
