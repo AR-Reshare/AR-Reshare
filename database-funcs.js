@@ -1,6 +1,6 @@
-/* This file will create the database connection and define the functions used for accessing the database directly
- * at a lower level than Pipeline.Store()
- * This is separated to help with securing the database connection
+/**
+ * This file creates the database connection and implements some low-level functions for accessing the database.
+ * Pipeline.Store, and whatever other functions end up accessing the database, should do so by calling something in this file.
  */
 
 // any credentials that have ever touched GitHub are NOT suitable for a production environment. These need to be abstracted to a different file before this system goes live.
@@ -33,7 +33,7 @@ const simpleQuery = (queryTemplate, values=[]) => {
 }
 
 /**
- * Executes a set of queries in order as a single transaction.
+ * Executes a set of queries in order as a single transaction. If there is only one query, use simpleQuery instead.
  * @async
  * @param {Object[]} queries - An array of query objects to be executed. Can be either strings, with no parameters, or objects with:
  * queries.text - The query to execute, which may be parameterised;
@@ -82,6 +82,11 @@ const complexQuery = (queries) => {
         })
     });
 }
+
+module.exports = {
+    simpleQuery: simpleQuery,
+    complexQuery: complexQuery,
+};
 
 // Test code
 
