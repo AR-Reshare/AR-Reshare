@@ -12,6 +12,9 @@ SET ROLE arresharedev; -- So any created tables will be owned by arresharedev, n
 CREATE DOMAIN email AS citext
     CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 
+CREATE DOMAIN mimetype AS citext
+    CHECK ( value ~ '^[^/\s]+/[^/\s]+$' );
+
 CREATE TYPE condition AS ENUM ('poor', 'average', 'good', 'like new', 'new');
 
 -- Table creations are in dependency order, since foreign keys must always reference existing tables
@@ -81,7 +84,12 @@ CREATE TABLE PushToken (
     UserID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE
 );
 
-CREATE TABLE Media ();
+CREATE TABLE Media (
+    MediaID serial8 PRIMARY KEY,
+    MimeType mimetype NOT NULL,
+    URL varchar NOT NULL,
+    Index int2 NOT NULL DEFAULT 0
+);
 
 CREATE TABLE ProfilePicture ();
 
