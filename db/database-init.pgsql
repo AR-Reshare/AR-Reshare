@@ -15,7 +15,9 @@ CREATE DOMAIN email AS citext
 CREATE DOMAIN mimetype AS citext
     CHECK ( value ~ '^[^/\s]+/[^/\s]+$' );
 
-CREATE TYPE condition AS ENUM ('poor', 'average', 'good', 'like new', 'new');
+CREATE TYPE itemCondition AS ENUM ('poor', 'average', 'good', 'like new', 'new');
+CREATE TYPE reportReason AS ENUM ('request', 'scam', 'illegal content', 'malicious language', 'other');
+CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 
 -- Table creations are in dependency order, since foreign keys must always reference existing tables
 CREATE TABLE Account (
@@ -53,7 +55,7 @@ CREATE TABLE Listing (
     ContributorID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
     Title varchar NOT NULL,
     Description varchar NOT NULL,
-    Condition condition NOT NULL,
+    Condition itemCondition NOT NULL,
     AddressID int8 REFERENCES Address ON DELETE SET NULL,
     CategoryID int8 REFERENCES Category ON DELETE SET NULL,
     CreationDate timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -110,15 +112,35 @@ CREATE TABLE Administrator (
     UserID int8 PRIMARY KEY REFERENCES Account ON DELETE CASCADE
 );
 
-CREATE TABLE Report ();
+CREATE TABLE Report (
+    ReportID serial8 PRIMARY KEY,
+    ReporterID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    Reason reportReason NOT NULL,
+    Description varchar,
+    Outcome varchar NOT NULL,
+    Status reportStatus NOT NULL,
+    CreationDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    AdminID int8 REFERENCES Administrator ON DELETE SET NULL
+);
 
-CREATE TABLE ProfileReport ();
+CREATE TABLE ProfileReport (
+    ReportID int8 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
+    UserID int8 REFERENCES StdUser ON DELETE SET NULL
+);
 
-CREATE TABLE ListingReport ();
+CREATE TABLE ListingReport (
+    ReportID int8 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
+    ListingID int8 REFERENCES Listing ON DELETE SET NULL
+);
 
-CREATE TABLE MessageReport ();
+CREATE TABLE MessageReport (
+    ReportID int8 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
+    MessageID int8 REFERENCES Message ON DELETE SET NULL 
+);
 
-CREATE TABLE Request ();
+CREATE TABLE Request (
+    ReportID int8 PRIMARY KEY REFERENCES Report ON DELETE CASCADE
+);
 
 CREATE TABLE Sanction ();
 
