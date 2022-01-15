@@ -12,7 +12,6 @@ const db_credentials = {
 };
 
 const {Pool} = require('pg');
-const { continueSession } = require('pg/lib/sasl');
 
 const pool = new Pool(db_credentials);
 
