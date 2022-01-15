@@ -72,10 +72,14 @@ CREATE TABLE Message (
     ConversationID int8 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp DEFAULT CURRENT_TIMESTAMP,
     ReadTime timestamp,
-    ContentText varchar,
+    ContentText varchar
 );
 
-CREATE TABLE PushToken ();
+CREATE TABLE PushToken (
+    DeviceToken varchar PRIMARY KEY, -- Nobody can agree on what an FCM token actually looks like. Reported lengths have ranged from 119 chars to 326 chars.
+    Time timestamp DEFAULT CURRENT_TIMESTAMP,
+    UserID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+);
 
 CREATE TABLE Media ();
 
