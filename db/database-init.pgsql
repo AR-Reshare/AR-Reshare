@@ -58,7 +58,13 @@ CREATE TABLE Listing (
     ClosedDate timestamp
 );
 
-CREATE TABLE Conversation ();
+CREATE TABLE Conversation (
+    ConversationID serial8 PRIMARY KEY,
+    ReceiverID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ListingID int8 NOT NULL REFERENCES Listing ON DELETE CASCADE,
+    CreationDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    ClosedDate timestamp
+);
 
 CREATE TABLE Message ();
 
