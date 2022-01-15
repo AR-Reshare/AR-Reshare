@@ -142,7 +142,16 @@ CREATE TABLE Request (
     ReportID int8 PRIMARY KEY REFERENCES Report ON DELETE CASCADE
 );
 
-CREATE TABLE Sanction ();
+CREATE TABLE Sanction (
+    SanctionID serial8 PRIMARY KEY,
+    UserID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    Type varchar NOT NULL,
+    StartDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    EndDate timestamp,
+    Reason varchar,
+    ReportID int8 REFERENCES Report ON DELETE SET NULL,
+    AdminID int8 REFERENCES Administrator ON DELETE SET NULL
+);
 
 CREATE TABLE AdminChange ();
 
