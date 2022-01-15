@@ -106,7 +106,9 @@ CREATE TABLE MessageMedia (
     MessageID int8 NOT NULL REFERENCES Message ON DELETE CASCADE
 );
 
-CREATE TABLE Administrator ();
+CREATE TABLE Administrator (
+    UserID int8 PRIMARY KEY REFERENCES Account ON DELETE CASCADE
+);
 
 CREATE TABLE Report ();
 
