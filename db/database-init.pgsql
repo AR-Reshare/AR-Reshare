@@ -153,8 +153,19 @@ CREATE TABLE Sanction (
     AdminID int8 REFERENCES Administrator ON DELETE SET NULL
 );
 
-CREATE TABLE AdminChange ();
+CREATE TABLE AdminChange (
+    ChangeID serial8 PRIMARY KEY,
+    Reason varchar NOT NULL,
+    Date timestamp DEFAULT CURRENT_TIMESTAMP,
+    AdminID int8 REFERENCES Administrator ON DELETE SET NULL
+);
 
-CREATE TABLE ProfileChange ();
+CREATE TABLE ProfileChange (
+    ChangeID int8 PRIMARY KEY REFERENCES AdminChange ON DELETE CASCADE,
+    UserID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+);
 
-CREATE TABLE ListingChange ();
+CREATE TABLE ListingChange (
+    ChangeID int8 PRIMARY KEY REFERENCES AdminChange ON DELETE CASCADE,
+    ListingID int8 NOT NULL REFERENCES Listing ON DELETE CASCADE
+);
