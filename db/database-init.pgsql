@@ -66,7 +66,14 @@ CREATE TABLE Conversation (
     ClosedDate timestamp
 );
 
-CREATE TABLE Message ();
+CREATE TABLE Message (
+    MessageID serial8 PRIMARY KEY,
+    SenderID int8 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ConversationID int8 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
+    SentTime timestamp DEFAULT CURRENT_TIMESTAMP,
+    ReadTime timestamp,
+    ContentText varchar,
+);
 
 CREATE TABLE PushToken ();
 
