@@ -7,6 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
+    "db-init": "psql -f db/database-init.pgsql",
+    "db-clear": "psql -f db/database-clean.pgsql",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
