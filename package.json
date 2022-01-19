@@ -7,8 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "db-init": "psql -f db/database-init.pgsql",
-    "db-clear": "psql -f db/database-clean.pgsql",
+    "db-dev": "psql -f db/database-init.pgsql -v database=arresharedev -v account=arresharedev -v password=\"'SVh}Q,A>3.nL9vp~'\"",
+    "db-test": "psql -f db/database-init.pgsql -v database=arresharetest -v account=arresharetest -v password=\"'uPGdN%kSXFA8u2Rf'\"",
+    "db-drop-dev": "psql -f db/database-clean.pgsql -v database=arresharedev -v account=arresharedev",
+    "db-drop-test": "psql -f db/database-clean.pgsql -v database=arresharetest -v account=arresharetest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

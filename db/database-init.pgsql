@@ -1,12 +1,13 @@
--- Execute from linux via the makefile with: sudo -u postgres make
+-- Execute from linux via the makefile with: sudo -u postgres npm run db-init
 
-CREATE USER arresharedev WITH ENCRYPTED PASSWORD 'SVh}Q,A>3.nL9vp~';
-CREATE DATABASE arresharedev WITH OWNER arresharedev;
-\c arresharedev
+CREATE USER :account WITH ENCRYPTED PASSWORD :password;
+CREATE DATABASE :database WITH OWNER :account;
+
+\c :database;
 
 CREATE EXTENSION citext;
 
-SET ROLE arresharedev; -- So any created tables will be owned by arresharedev, not superuser
+SET ROLE :account; -- So any created tables will be owned by the specified account, not superuser
 
 -- Define an email type
 CREATE DOMAIN email AS citext

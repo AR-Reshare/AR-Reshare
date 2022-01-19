@@ -12,8 +12,8 @@ Install postgres: `sudo apt install postgresql postgresql-contrib`
 
 Start the postgres server: `sudo service postgresql start`
 
-Initialise the database: `sudo -u postgres npm run db-init`
+Initialise the database: `sudo -u postgres npm run db-dev`
 
-Remove the database (e.g. after a faulty install): `sudo -u postgres npm run db-clear`
+Remove the database (e.g. after a faulty install): `sudo -u postgres npm run db-clear-dev`
 
-WARNING: I don't know how to undo that so do NOT run it on the production server unless you are 100% sure about it.
+Replace `dev` with `test` in the above commands to install a test database instead. You can have both installed at once.
