@@ -1,9 +1,9 @@
 -- Execute from linux via the makefile with: sudo -u postgres npm run db-init
 
 CREATE USER :account WITH ENCRYPTED PASSWORD :password;
-CREATE DATABASE :database WITH OWNER :account;
+CREATE DATABASE :account WITH OWNER :account;
 
-\c :database;
+\c :account;
 
 CREATE EXTENSION citext;
 
