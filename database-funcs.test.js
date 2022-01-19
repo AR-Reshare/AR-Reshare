@@ -13,19 +13,39 @@ describe('Test simple query', () => {
         });
     });
 
-    // More tests:
+    test('SELECT returns expected data', () => {
+        return db.simpleQuery('SELECT UserName FROM Account').then(res => {
+            expect(res).toHaveLength(4);
+            expect(res[0]).toMatchObject({username: 'Testy McTestface'});
+        });
+    });
 
-    // SELECT returns expected data
+    test('INSERT affects data as expected', () => {
+        return db.simpleQuery('INSERT INTO Account (UserName, UserEmail, PassHash) VALUES (\'John Smith\', \'john@outlook.com\', \'$2a$12$hgGavvldCSkrCmPOSOGBM.U.mdPRpfO0WYEFNPdivmXyhBX3zAgDS\') RETURNING UserID').then(res => {
+            expect(res).toHaveLength(1);
+            expect(res[0]).toMatchObject({userid: 5});
+        });
+    });
 
-    // INSERT affects data as expected
+    test('Parameterised query works as expected', () => {
+        return db.simpleQuery('SELECT UserID FROM Account WHERE UserName = $1', ['Kevin McTestface']).then(res => {
+            expect(res).toHaveLength(1);
+            expect(res[0]).toMatchObject({userid: 2});
+        });
+    });
 
-    // Parameterised query works as expected
+    test('SQL injection is prevented', () => {
+        return db.simpleQuery('SELECT UserID FROM Account WHERE UserName = $1', ['Admin\' OR 1=1; --']).then(res => {
+            expect(res).toHaveLength(0);
+        });
+    });
 
-    // DROP is prevented
-
-    // SQL injection is prevented
-
-    // SELECT on non-existant table rejects
+    test('Query rejects on error', () => {
+        expect.assertions(1);
+        return db.simpleQuery('SELECT UserID FROM NonExistantTable').catch(err => {
+            expect(err).toBeDefined();
+        });
+    });
 });
 
 describe('Test complex query', () => {
