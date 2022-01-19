@@ -1,6 +1,14 @@
 {
-    "user": "arresharedev",
-    "host": "localhost",
-    "database": "arresharedev",
-    "password": "SVh}Q,A>3.nL9vp~"
+    "dev": {
+        "user": "arresharedev",
+        "host": "localhost",
+        "database": "arresharedev",
+        "password": "SVh}Q,A>3.nL9vp~"
+    },
+    "test": {
+        "user": "arresharetest",
+        "host": "localhost",
+        "database": "arresharetest",
+        "password": "uPGdN%kSXFA8u2Rf"
+    }
 }

@@ -81,6 +81,10 @@ class Database {
             })
         });
     }
+
+    end() {
+        this.pool.end();
+    }
 }
 
 module.exports = Database;
