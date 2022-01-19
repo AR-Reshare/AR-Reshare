@@ -7,8 +7,6 @@ CREATE DATABASE :database WITH OWNER :account;
 
 CREATE EXTENSION citext;
 
-SET ROLE :account; -- So any created tables will be owned by the specified account, not superuser
-
 -- Define an email type
 CREATE DOMAIN email AS citext
     CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );

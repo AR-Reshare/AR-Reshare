@@ -7,9 +7,21 @@ afterAll(() => {
 });
 
 describe('Test simple query', () => {
-    test('Test basic functionality', () => {
+    test('Basic SELECT succeeds', () => {
         return db.simpleQuery('SELECT NOW() AS now').then(res => {
             expect(res).toHaveLength(1);
         });
     });
+
+    // More tests:
+
+    // SELECT returns expected data
+
+    // INSERT affects data as expected
+
+    // DROP is prevented
+
+    // SQL injection is prevented
+
+    // SELECT on non-existant table rejects
 });
