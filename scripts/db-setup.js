@@ -171,7 +171,7 @@ function createDB(os, db_type, password) {
     psqlInit.on('error', (err) => {
         console.error('Failed to start subprocess');
         process.exit(1);
-    })
+    });
 }
 
 // Store connection data in connection.json

@@ -14,7 +14,9 @@
     "db-drop-test": "psql -f db/database-clean.pgsql -v account=arresharetest",
     "postinstall": "node scripts/db-setup.js",
     "setup": "node scripts/db-setup.js",
-    "test": "jest"
+    "pretest": "node scripts/db-test-setup.js",
+    "test": "jest",
+    "posttest": "node scripts/db-test-teardown.js"
   },
   "repository": {
     "type": "git",
