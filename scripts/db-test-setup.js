@@ -27,9 +27,12 @@ function getOS() {
 // Generate password
 function makePassword(os) {
     // Temporary
-    if (os !== 'Linux') {
-        console.log('Joe is too lazy sorry, he\'ll get around to it');
-        process.exit(1);
+    if (os === 'Windows') {
+        console.log('This script is not set up for Windows yet. Please install the test database by running the file `db/database-init.pgsql` before conducting tests.');
+        process.exit(0);
+    } else if (os === 'MacOS') {
+        console.log('WARNING: this script has not been tested on MacOS. If you experience problems, please go to scripts/db-test-setup.js and uncomment line 35.');
+        // process.exit(0);
     }
     
     console.log('Generating password...');

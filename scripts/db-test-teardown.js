@@ -19,8 +19,19 @@ function getOS() {
         console.log('Your OS was not recognised.');
         process.exit(1);
     } else {
-        console.log(`Your OS was detected as ${os_dict[uname]}.`);
-        removeDB(os_dict[uname]);
+        let os = os_dict[uname];
+        console.log(`Your OS was detected as ${os}.`);
+
+        // Temporary
+        if (os === 'Windows') {
+            console.log('This script is not set up for Windows yet. Please remove the database by running the file `db/database-clear.pgsql`');
+            process.exit(0);
+        } else if (os === 'MacOS') {
+            console.log('WARNING: this script has not been tested on MacOS. If you experience problems, please go to scripts/db-test-teardown.js and uncomment line 30.');
+            // process.exit(0);
+        }
+
+        removeDB(os);
     }
 }
 

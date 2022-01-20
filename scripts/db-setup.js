@@ -54,6 +54,14 @@ function checkOS() {
         }
     }
 
+    // Temporary
+    if (os === 'Windows') {
+        console.log('This script is not set up for Windows yet. Please install the database by running the file `db/database-init.pgsql`');
+        process.exit(0);
+    } else if (os === 'MacOS') {
+        console.log('WARNING: this script has not been tested on MacOS. If you experience problems, please go to scripts/db-setup.js and uncomment line 63.');
+        // process.exit(0);
+    }
     checkPostgres(os);
 }
 
@@ -61,10 +69,6 @@ function checkOS() {
 function checkPostgres(os) {
     console.log('Checking postgres...');
 
-    if (os !== 'Linux') {
-        console.log('Joe is lazy and hasn\'t done the mac or windows bits yet');
-        process.exit(1);
-    }
     let psqlCheck = spawn('service', ['postgresql', 'status'], {stdio: [process.stdin, process.stdout, process.stderr]});
 
     psqlCheck.on('close', (code) => {
