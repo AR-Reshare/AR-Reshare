@@ -34,7 +34,7 @@ describe('Test simple query', () => {
         });
     });
 
-    test('Query with no retrn still resolves', () => {
+    test('Query with no return still resolves', () => {
         return db.simpleQuery('UPDATE Account SET useremail = \'gary.cheeseman@gmail.com\' WHERE userid = 4').then(res => {
             expect(res).toHaveLength(0);
         });

@@ -28,8 +28,8 @@ CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 -- Any ON DELETE for a primary key pointing to a user (including indirectly) should have CASCADE behaviour, since fully deleting a user account should take all of that user's data with it
 CREATE TABLE Account (
     UserID serial4 PRIMARY KEY,
-    UserName varchar NOT NULL,
-    UserEmail email NOT NULL,
+    FullName varchar NOT NULL,
+    Email email NOT NULL,
     PassHash varchar NOT NULL
 );
 
