@@ -188,5 +188,14 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         });
     });
 
-    // Class 8: no client available
+    test('Class 8: no client available', () => {
+        mockConnect.mockReturnValueOnce(new Error('No clients available'));
+        let q0 = mockQueryText;
+        let cmd0 = {text: q0};
+        let cmds = [cmd0];
+        expect.assertions(1);
+        return db.complexQuery(cmds).catch(err => {
+            expect(mockQuery).toBeCalledTimes(0);
+        });
+    });
 });
