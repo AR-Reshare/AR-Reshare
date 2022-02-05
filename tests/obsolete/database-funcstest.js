@@ -1,5 +1,5 @@
-const credentials = require('./connection.json')['test'];
-const Database = require('./database-funcs');
+const credentials = require('../../connection.json')['test'];
+const Database = require('../../database-funcs');
 const db = new Database(credentials);
 
 afterAll(() => {

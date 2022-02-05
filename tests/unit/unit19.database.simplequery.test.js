@@ -1,4 +1,4 @@
-const Database = require('../database-funcs');
+const Database = require('../../database-funcs');
 const {Pool} = require('pg');
 
 const mockQueryInner = jest.fn();

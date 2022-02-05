@@ -7,16 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "db-dev": "psql -f db/database-init.pgsql -v account=arresharedev -v password=\"'SVh}Q,A>3.nL9vp~'\"",
-    "db-dev-populate": "pgsql -f db/database-sample.pgsql -v account=arresharedev",
-    "db-test": "psql -f db/database-init.pgsql -v account=arresharetest -v password=\"'uPGdN%kSXFA8u2Rf'\" && psql -f db/database-sample.pgsql -v account=arresharetest",
-    "db-drop-dev": "psql -f db/database-clean.pgsql -v account=arresharedev",
-    "db-drop-test": "psql -f db/database-clean.pgsql -v account=arresharetest",
     "postinstall": "node scripts/db-setup.js",
     "setup": "node scripts/db-setup.js",
-    "pretest": "node scripts/db-test-setup.js",
-    "test": "jest",
-    "posttest": "node scripts/db-test-teardown.js"
+    "test": "jest --verbose"
   },
   "repository": {
     "type": "git",
