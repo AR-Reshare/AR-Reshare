@@ -98,7 +98,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         return db.complexQuery(cmds).then(res => {
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
-            expect(mockQuery).nthCalledWith(2, cmd0);
+            expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'COMMIT');
             expect(mockRelease).toBeCalledTimes(1);
             expect(res).toHaveLength(1);
@@ -115,7 +115,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         return db.complexQuery(cmds).then(res => {
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
-            expect(mockQuery).nthCalledWith(2, cmd0);
+            expect(mockQuery).nthCalledWith(2, q0, v0);
             expect(mockQuery).nthCalledWith(3, 'COMMIT');
             expect(mockRelease).toBeCalledTimes(1);
             expect(res).toHaveLength(1);
@@ -134,8 +134,8 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         return db.complexQuery(cmds).then(res => {
             expect(mockQuery).toBeCalledTimes(4);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
-            expect(mockQuery).nthCalledWith(2, cmd0);
-            expect(mockQuery).nthCalledWith(3, cmd1);
+            expect(mockQuery).nthCalledWith(2, q0, []);
+            expect(mockQuery).nthCalledWith(3, q1, []);
             expect(mockQuery).nthCalledWith(4, 'COMMIT');
             expect(mockRelease).toBeCalledTimes(1);
             expect(res).toHaveLength(2);
@@ -144,10 +144,62 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         });
     });
 
-    // Class 4: backreferencing queries
-    // Class 5: invalid backreference
+    test('Class 4: backreferencing queries', () => {
+        let q0 = mockQueryText;
+        let q1 = mockQueryText3;
+        let v1 = [
+            res => res[0][0]['fullname']
+        ];
+        let cmd0 = {text: q0};
+        let cmd1 = {text: q1, values: v1};
+        let cmds = [cmd0, cmd1];
+        mockQueryInner.mockImplementation(() => testObject);
+        return db.complexQuery(cmds).then(res => {
+            expect(mockQuery).toBeCalledTimes(4);
+            expect(mockQuery).nthCalledWith(1, 'BEGIN');
+            expect(mockQuery).nthCalledWith(2, q0, []);
+            expect(mockQuery).nthCalledWith(3, q1, [testObject.rows[0].fullname]);
+            expect(mockQuery).nthCalledWith(4, 'COMMIT');
+            expect(mockRelease).toBeCalledTimes(1);
+            expect(res).toHaveLength(2);
+            expect(res[0]).toBe(testObject.rows);
+            expect(res[1]).toBe(testObject.rows);
+        });
+    });
+    
+    test('Class 5: invalid backreference', () => {
+        let q0 = mockQueryText;
+        let q1 = mockQueryText3;
+        let v1 = [
+            res => res[0][0]['keydoesntexist']
+        ];
+        let cmd0 = {text: q0};
+        let cmd1 = {text: q1, values: v1};
+        let cmds = [cmd0, cmd1];
+        mockQueryInner.mockImplementation(() => testObject);
+        expect.assertions(5);
+        return db.complexQuery(cmds).catch(err => {
+            expect(mockQuery).toBeCalledTimes(3);
+            expect(mockQuery).nthCalledWith(1, 'BEGIN');
+            expect(mockQuery).nthCalledWith(2, q0, []);
+            expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
+            expect(mockRelease).toBeCalledTimes(1);
+        });
+    });
 
-    test('Class 6: exceptional first query', () => {
+    test('Class 6: textless query', () => {
+        let cmd0 = {};
+        let cmds = [cmd0];
+        expect.assertions(4);
+        return db.complexQuery(cmds).catch(err => {
+            expect(mockQuery).toBeCalledTimes(2);
+            expect(mockQuery).nthCalledWith(1, 'BEGIN');
+            expect(mockQuery).nthCalledWith(2, 'ROLLBACK');
+            expect(mockRelease).toBeCalledTimes(1);
+        });
+    });
+
+    test('Class 7: exceptional first query', () => {
         let q0 = mockQueryText;
         let q1 = mockQueryText2;
         let cmd0 = {text: q0};
@@ -160,14 +212,14 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
-            expect(mockQuery).nthCalledWith(2, cmd0);
+            expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
             expect(err).toHaveProperty('message', msg);
         });
     });
 
-    test('Class 7: exceptional last query', () => {
+    test('Class 8: exceptional last query', () => {
         let q0 = mockQueryText;
         let q1 = mockQueryText2;
         let cmd0 = {text: q0};
@@ -180,15 +232,15 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(4);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
-            expect(mockQuery).nthCalledWith(2, cmd0);
-            expect(mockQuery).nthCalledWith(3, cmd1);
+            expect(mockQuery).nthCalledWith(2, q0, []);
+            expect(mockQuery).nthCalledWith(3, q1, []);
             expect(mockQuery).nthCalledWith(4, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
             expect(err).toHaveProperty('message', msg);
         });
     });
 
-    test('Class 8: no client available', () => {
+    test('Class 9: no client available', () => {
         mockConnect.mockReturnValueOnce(new Error('No clients available'));
         let q0 = mockQueryText;
         let cmd0 = {text: q0};

@@ -4,6 +4,7 @@
  */
 
 const {Pool} = require('pg');
+const isCallable = require('is-callable');
 
 class Database {
     /**
@@ -49,8 +50,34 @@ class Database {
                     let nextQueryHandler = () => {
                         return new Promise((rslv, rjct) => {
                             let nextquery = queries.shift();
+                            let text;
+                            let values = [];
+                            if ('text' in nextquery) {
+                                text = nextquery.text;
+                            } else {
+                                rjct(new Error('No query text provided'));
+                                return;
+                            }
 
-                            client.query(nextquery).then(res => {
+                            if ('values' in nextquery) {
+                                for (let elem of nextquery.values) {
+                                    let temp = elem;
+                                    if (isCallable(elem)) {
+                                        try {
+                                            temp = elem(result);
+                                            if (temp === undefined) {
+                                                throw new ReferenceError('Value not found');
+                                            }
+                                        } catch (err) {
+                                            rjct(err);
+                                            return;
+                                        }
+                                    }
+                                    values.push(temp);
+                                }
+                            }
+
+                            client.query(text, values).then(res => {
                                 result.push(res.rows);
 
                                 if (queries.length == 0) {
