@@ -46,7 +46,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
     test('Class 1: non-paramaterised query', () => {
         let q = 'MOCK query ON Database';
         mockQueryInner.mockReturnValueOnce(testObject);
-        return db.simpleQuery('MOCK query ON Database').then(res => {
+        return db.simpleQuery(q).then(res => {
             expect(mockQuery).toBeCalledWith(q, []);
             expect(res).toBe(testObject.rows);
         });
