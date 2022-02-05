@@ -44,33 +44,38 @@ beforeEach(() => {
 
 describe('Unit Test 19 - Database.simpleQuery', () => {
     test('Class 1: non-paramaterised query', () => {
+        let q = 'MOCK query ON Database';
         mockQueryInner.mockReturnValueOnce(testObject);
         return db.simpleQuery('MOCK query ON Database').then(res => {
-            expect(mockQuery).toBeCalledWith('MOCK query ON Database', []);
+            expect(mockQuery).toBeCalledWith(q, []);
             expect(res).toBe(testObject.rows);
         });
     });
 
     test('Class 2: paramaterised query', () => {
+        let q = 'MOCK query ON Database FOR Class=$1';
+        let v = [2];
         mockQueryInner.mockReturnValueOnce(testObject);
-        return db.simpleQuery('MOCK query ON Database FOR Class=', [2]).then(res => {
-            expect(mockQuery).toBeCalledWith('MOCK query ON Database FOR Class=', [2]);
+        return db.simpleQuery(q, v).then(res => {
+            expect(mockQuery).toBeCalledWith(q, v);
             expect(res).toBe(testObject.rows);
         });
     });
 
     test('Class 3: query with no rows', () => {
+        let q = 'MOCK query ON Database';
         mockQueryInner.mockReturnValueOnce({rows: [], fields: [], command: 'INSERT', rowCount: 0});
-        return db.simpleQuery('MOCK query ON Database').then(res => {
+        return db.simpleQuery(q).then(res => {
             expect(res).toStrictEqual([]);
         });
     });
 
     test('Class 4: exceptional query', () => {
+        let q = 'MOCK query ON Database';
         let msg = 'The database did a broked';
         mockQueryInner.mockReturnValueOnce(new Error(msg));
         expect.assertions(1);
-        return db.simpleQuery('MOCK query ON Database').catch(err => {
+        return db.simpleQuery(q).catch(err => {
             expect(err).toHaveProperty('message', msg);
         });
     });
