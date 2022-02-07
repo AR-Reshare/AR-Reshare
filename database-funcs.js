@@ -7,6 +7,7 @@ const {Pool} = require('pg');
 const isCallable = require('is-callable');
 
 class QueryError extends Error {
+    // Represents an error in constructing or executing a query
     constructor(message) {
         super(message);
         this.name = "QueryError";
@@ -14,6 +15,7 @@ class QueryError extends Error {
 }
 
 class DatabaseConnectionError extends Error {
+    // Represents an error in establishing connection to the database
     constructor(message) {
         super(message);
         this.name = "DatabaseConnectionError";
@@ -21,6 +23,7 @@ class DatabaseConnectionError extends Error {
 }
 
 class DBClientNotAvailableError extends Error {
+    // Represents an error in accessing a postgres client
     constructor(message) {
         super(message);
         this.name = "DBClientNotAvailableError";
@@ -28,6 +31,8 @@ class DBClientNotAvailableError extends Error {
 }
 
 class QueryConstructionError extends QueryError {
+    // Represents an error in constructing a query
+    // i.e. Node-side
     constructor(message) {
         super(message);
         this.name = "QueryConstructionError";
@@ -35,6 +40,8 @@ class QueryConstructionError extends QueryError {
 }
 
 class QueryExecutionError extends QueryError {
+    // Represents an error in executing a query
+    // i.e. PostgreSQL-side
     constructor(message) {
         super(message);
         this.name = "QueryExecutionError";

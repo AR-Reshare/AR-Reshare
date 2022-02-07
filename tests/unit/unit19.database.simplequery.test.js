@@ -1,6 +1,7 @@
 const Database = require('../../database-funcs');
 const {Pool} = require('pg');
 
+// mock of pg.Pool.query
 const mockQueryInner = jest.fn();
 const mockQuery = jest.fn().mockImplementation(() => {
     return new Promise((resolve, reject) => {
@@ -12,6 +13,8 @@ const mockQuery = jest.fn().mockImplementation(() => {
         }
     });
 });
+
+// mock of pg
 jest.mock('pg', () => {
     return {
         Pool: jest.fn().mockImplementation(() => {
@@ -24,6 +27,7 @@ jest.mock('pg', () => {
 });
 
 let db;
+
 const testObject = {
     rows: [
         {'fullname': 'Ronnie Omelettes', 'email': 'ronnieo@yahoo.com'},
@@ -52,9 +56,16 @@ beforeEach(() => {
 
 describe('Unit Test 19 - Database.simpleQuery', () => {
     test('Class 1: non-paramaterised query', () => {
+        // init test values
         let q = 'MOCK query ON Database';
+
+        // seed mocks
         mockQueryInner.mockReturnValueOnce(testObject);
+
+        // execute
         return db.simpleQuery(q).then(res => {
+            
+            // assert
             expect(mockQuery).toBeCalledWith(q, []);
             expect(res).toBe(testObject.rows);
         });
@@ -82,7 +93,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         let q = 'MOCK query ON Database';
         let msg = 'The database did a broked';
         mockQueryInner.mockReturnValueOnce(new Error(msg));
-        expect.assertions(2);
+        expect.assertions(2); // required in case the promise resolves
         return db.simpleQuery(q).catch(err => {
             expect(err).toHaveProperty('name', 'QueryExecutionError');
             expect(err).toHaveProperty('message', msg);

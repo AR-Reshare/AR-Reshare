@@ -1,11 +1,13 @@
 const Database = require('../../database-funcs');
 const {Pool} = require('pg');
 
+// test values
 const mockQueryText = 'MOCK query ON Database';
 const mockQueryText2 = 'MOCK anotherQuery ON Database';
 const mockQueryText3 = 'MOCK query ON Database WHERE Params=$1';
 const mockQueryValues3 = [true];
 
+// mock pg.Client.query
 const mockQueryInner = jest.fn();
 const mockQueryInner2 = jest.fn();
 const mockQuery = jest.fn().mockImplementation((query, values=[]) => {
@@ -28,8 +30,10 @@ const mockQuery = jest.fn().mockImplementation((query, values=[]) => {
     });
 });
 
+// mock pg.Client.release
 const mockRelease = jest.fn();
 
+// mock pg.Pool.connect
 const mockConnectInner = jest.fn().mockImplementation(() => {
     return {
         query: mockQuery,
@@ -47,6 +51,7 @@ const mockConnect = jest.fn().mockImplementation(() => {
     });
 });
 
+// mock pg
 jest.mock('pg', () => {
     return {
         Pool: jest.fn().mockImplementation(() => {
@@ -59,6 +64,7 @@ jest.mock('pg', () => {
 });
 
 let db;
+
 const testObject = {
     rows: [
         {'fullname': 'Ronnie Omelettes', 'email': 'ronnieo@yahoo.com'},
@@ -71,7 +77,6 @@ const testObject = {
     command: 'SELECT',
     rowCount: 2,
 };
-
 const testObject2 = {
     rows: [
         {'userid': 12345},
@@ -100,11 +105,18 @@ beforeEach(() => {
 
 describe('Unit Test 20 - Database.complexQuery', () => {
     test('Class 1: single, non-paramaterised query', () => {
+        // init test values
         let q0 = mockQueryText;
         let cmd0 = {text: q0};
         let cmds = [cmd0];
+
+        // seed mocks
         mockQueryInner.mockImplementation(() => testObject);
+
+        // execute
         return db.complexQuery(cmds).then(res => {
+
+            // assert
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
             expect(mockQuery).nthCalledWith(2, q0, []);
@@ -198,10 +210,12 @@ describe('Unit Test 20 - Database.complexQuery', () => {
     });
 
     test('Class 6: exceptional backreference', () => {
+        // this is what Class 5 was originally for, but then I remembered
+        // JavaScript doesn't do ReferenceError unless absolutely necessary
         let q0 = mockQueryText;
         let q1 = mockQueryText3;
         let v1 = [
-            res => {throw new Error('test error')}
+            () => {throw new Error('test error');}
         ];
         let cmd0 = {text: q0};
         let cmd1 = {text: q1, values: v1};
