@@ -6,13 +6,104 @@
 const {Pool} = require('pg');
 const isCallable = require('is-callable');
 
+class QueryError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "QueryError";
+    }
+}
+
+class DatabaseConnectionError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "DatabaseConnectionError";
+    }
+}
+
+class DBClientNotAvailableError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "DBClientNotAvailableError";
+    }
+}
+
+class QueryConstructionError extends QueryError {
+    constructor(message) {
+        super(message);
+        this.name = "QueryConstructionError";
+    }
+}
+
+class QueryExecutionError extends QueryError {
+    constructor(message) {
+        super(message);
+        this.name = "QueryExecutionError";
+    }
+}
+
+const nextQueryHandler = (client, queries, result=[]) => {
+    // treats queries as a queue, pops the first one and executes, then recurses
+    return new Promise((resolve, reject) => {
+        let nextquery = queries.shift();
+
+        let text, values = [];
+
+        // get query text
+        if ('text' in nextquery) {
+            text = nextquery.text;
+        } else {
+            reject(new QueryConstructionError('No query text provided'));
+            return;
+        }
+
+        // get query values
+        if ('values' in nextquery) {
+            for (let elem of nextquery.values) {
+                let temp = elem;
+                if (isCallable(elem)) {
+                    // execute backreference
+                    try {
+                        temp = elem(result);
+                    } catch (e) {
+                        reject(new QueryConstructionError('Error in Backreference'));
+                        return;
+                    }
+
+                    if (temp === undefined) {
+                        throw new QueryConstructionError('Backreference did not resolve to a value');
+                    }
+                }
+
+                values.push(temp);
+            }
+        }
+
+        client.query(text, values).then(res => {
+            // the query executed successfully
+            result.push(res.rows);
+
+            if (queries.length == 0) {
+                // base case
+                return client.query('COMMIT');
+            } else {
+                // recursive case
+                return nextQueryHandler(client, queries, result);
+            }
+        }).then(() => resolve(result), reject); // propogate resolve or reject back to top level
+    });
+};
+
 class Database {
     /**
      * Create a new Database object for querying
      * @param {Object} db_credentials The credentials to use to access the database (e.g. connection.json).
      */
     constructor (db_credentials) {
-        this.pool = new Pool(db_credentials);
+        try {
+            this.pool = new Pool(db_credentials);
+        } catch (e) {
+            throw new DatabaseConnectionError('Unable to connect to Postgres instance');
+        }
     }
 
     /**
@@ -25,9 +116,11 @@ class Database {
     simpleQuery = (queryTemplate, values=[]) => {
         return new Promise((resolve, reject) => {
             this.pool.query(queryTemplate, values).then(res => {
+                // query executed correctly
                 resolve(res.rows);
             }).catch(err => {
-                reject(err);
+                // query failed
+                reject(new QueryExecutionError(err.message));
             });
         });
     }
@@ -37,75 +130,40 @@ class Database {
      * @async
      * @param {Object[]} queries - An array of query objects to be executed. Can be either strings, with no parameters, or objects with:
      * queries.text - The query to execute, which may be parameterised;
-     * queries.values - (Optional, Array) The values to substitute into the parameterised query
+     * queries.values - (Optional, Array) The values to substitute into the parameterised query. If a value is a function, it is called on the existing set of results at the time.
      * @returns {Promise<Object[][]>} Promise object which resolves with an array of arrays containing the results from each query. Subarrays correspond to queries i.e. results of the 3rd query will be in the 3rd position of the array. Each object in a subarray corresponds to a row returned from the query. Keys of the object correspond to fields returned, in lowercase.
      */
     complexQuery = (queries) => {
         return new Promise((resolve, reject) => {
             this.pool.connect().then(client => {
-                let err, result = [];
+                // a client was available to service the request
+
+                let finish;
 
                 client.query('BEGIN').then(() => {
-                    // treats queries as a queue. This function takes the first one, executes it, and appends the results to the "global" (from the function's perspective) result variable, then does the next one recursively
-                    let nextQueryHandler = () => {
-                        return new Promise((rslv, rjct) => {
-                            let nextquery = queries.shift();
-                            let text;
-                            let values = [];
-                            if ('text' in nextquery) {
-                                text = nextquery.text;
-                            } else {
-                                rjct(new Error('No query text provided'));
-                                return;
-                            }
-
-                            if ('values' in nextquery) {
-                                for (let elem of nextquery.values) {
-                                    let temp = elem;
-                                    if (isCallable(elem)) {
-                                        try {
-                                            temp = elem(result);
-                                            if (temp === undefined) {
-                                                throw new ReferenceError('Value not found');
-                                            }
-                                        } catch (err) {
-                                            rjct(err);
-                                            return;
-                                        }
-                                    }
-                                    values.push(temp);
-                                }
-                            }
-
-                            client.query(text, values).then(res => {
-                                result.push(res.rows);
-
-                                if (queries.length == 0) {
-                                    // base case
-                                    return client.query('COMMIT');
-                                } else {
-                                    // recursive case
-                                    return nextQueryHandler();
-                                }
-                            }).then(rslv, rjct); // propogate resolve or reject back to top level
-                        });
+                    // recurse on the queries
+                    return nextQueryHandler(client, queries);
+                }).then(result => {
+                    // all queries executed non-exceptionally
+                    finish = () => resolve(result);
+                    return;
+                }).catch(err => {
+                    // a query failed
+                    if (!(err instanceof QueryError)) {
+                        // cast non-QueryErrors to QueryExecutionError
+                        err = new QueryExecutionError(err.message);
                     }
-
-                    return nextQueryHandler();
-                }).catch(e => {
-                    err = e;
+                    finish = () => reject(err);
                     return client.query('ROLLBACK');
                 }).finally(() => {
+                    // release the client and resolve/reject
                     client.release();
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
+                    finish();
                 });
             }).catch(err => {
-                reject(err);
-            })
+                // no client was available, reject and exit
+                reject(new DBClientNotAvailableError(err.message));
+            });
         });
     }
 

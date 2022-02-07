@@ -52,12 +52,13 @@ jest.mock('pg', () => {
         Pool: jest.fn().mockImplementation(() => {
             return {
                 connect: mockConnect,
+                end: jest.fn(),
             };
         }),
     };
 });
 
-let db = new Database({});
+let db;
 const testObject = {
     rows: [
         {'fullname': 'Ronnie Omelettes', 'email': 'ronnieo@yahoo.com'},
@@ -81,6 +82,14 @@ const testObject2 = {
     command: 'INSERT',
     rowCount: 1,
 };
+
+beforeAll(() => {
+    db = new Database({});
+});
+
+afterAll(() => {
+    db.end();
+});
 
 beforeEach(() => {
     Pool.mockClear();
@@ -177,29 +186,52 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let cmd1 = {text: q1, values: v1};
         let cmds = [cmd0, cmd1];
         mockQueryInner.mockImplementation(() => testObject);
-        expect.assertions(5);
+        expect.assertions(6);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
+            expect(err).toHaveProperty('name', 'QueryConstructionError');
         });
     });
 
-    test('Class 6: textless query', () => {
+    test('Class 6: exceptional backreference', () => {
+        let q0 = mockQueryText;
+        let q1 = mockQueryText3;
+        let v1 = [
+            res => {throw new Error('test error')}
+        ];
+        let cmd0 = {text: q0};
+        let cmd1 = {text: q1, values: v1};
+        let cmds = [cmd0, cmd1];
+        mockQueryInner.mockImplementation(() => testObject);
+        expect.assertions(6);
+        return db.complexQuery(cmds).catch(err => {
+            expect(mockQuery).toBeCalledTimes(3);
+            expect(mockQuery).nthCalledWith(1, 'BEGIN');
+            expect(mockQuery).nthCalledWith(2, q0, []);
+            expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
+            expect(mockRelease).toBeCalledTimes(1);
+            expect(err).toHaveProperty('name', 'QueryConstructionError');
+        });
+    });
+
+    test('Class 7: textless query', () => {
         let cmd0 = {};
         let cmds = [cmd0];
-        expect.assertions(4);
+        expect.assertions(5);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(2);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
             expect(mockQuery).nthCalledWith(2, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
+            expect(err).toHaveProperty('name', 'QueryConstructionError');
         });
     });
 
-    test('Class 7: exceptional first query', () => {
+    test('Class 8: exceptional first query', () => {
         let q0 = mockQueryText;
         let q1 = mockQueryText2;
         let cmd0 = {text: q0};
@@ -208,18 +240,19 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let msg = 'Something broked'
         mockQueryInner.mockImplementation(() => new Error(msg));
         mockQueryInner2.mockImplementation(() => testObject);
-        expect.assertions(6);
+        expect.assertions(7);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(3);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
+            expect(err).toHaveProperty('name', 'QueryExecutionError');
             expect(err).toHaveProperty('message', msg);
         });
     });
 
-    test('Class 8: exceptional last query', () => {
+    test('Class 9: exceptional last query', () => {
         let q0 = mockQueryText;
         let q1 = mockQueryText2;
         let cmd0 = {text: q0};
@@ -228,7 +261,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let msg = 'Something broked'
         mockQueryInner.mockImplementation(() => testObject);
         mockQueryInner2.mockImplementation(() => new Error(msg));
-        expect.assertions(7);
+        expect.assertions(8);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(4);
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
@@ -236,17 +269,19 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(3, q1, []);
             expect(mockQuery).nthCalledWith(4, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
+            expect(err).toHaveProperty('name', 'QueryExecutionError');
             expect(err).toHaveProperty('message', msg);
         });
     });
 
-    test('Class 9: no client available', () => {
-        mockConnect.mockReturnValueOnce(new Error('No clients available'));
+    test('Class 10: no client available', () => {
+        mockConnectInner.mockReturnValueOnce(new Error('No clients available'));
         let q0 = mockQueryText;
         let cmd0 = {text: q0};
         let cmds = [cmd0];
-        expect.assertions(1);
+        expect.assertions(2);
         return db.complexQuery(cmds).catch(err => {
+            expect(err).toHaveProperty('name', 'DBClientNotAvailableError');
             expect(mockQuery).toBeCalledTimes(0);
         });
     });

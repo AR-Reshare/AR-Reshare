@@ -17,12 +17,13 @@ jest.mock('pg', () => {
         Pool: jest.fn().mockImplementation(() => {
             return {
                 query: mockQuery,
+                end: jest.fn(),
             };
         }),
     };
 });
 
-let db = new Database({});
+let db;
 const testObject = {
     rows: [
         {'fullname': 'Ronnie Omelettes', 'email': 'ronnieo@yahoo.com'},
@@ -36,6 +37,13 @@ const testObject = {
     rowCount: 2,
 };
 
+beforeAll(() => {
+    db = new Database({});
+});
+
+afterAll(() => {
+    db.end();
+});
 
 beforeEach(() => {
     Pool.mockClear();
@@ -74,8 +82,9 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         let q = 'MOCK query ON Database';
         let msg = 'The database did a broked';
         mockQueryInner.mockReturnValueOnce(new Error(msg));
-        expect.assertions(1);
+        expect.assertions(2);
         return db.simpleQuery(q).catch(err => {
+            expect(err).toHaveProperty('name', 'QueryExecutionError');
             expect(err).toHaveProperty('message', msg);
         });
     });
