@@ -3,7 +3,10 @@
 */
 
 class Pipeline {
-    constructor() {} // constructor is deliberately empty
+    constructor(db, logger=console) {
+        this.db = db; // expected to implement simpleQuery and complexQuery
+        this.logger = logger; // expected to implement .log, .error, and .warn
+    }
 
     SecurityValidate(authenticationType, token, rejectIfBanned) {
         // authType: a string from the following set:
@@ -45,13 +48,9 @@ class Pipeline {
         // formatObject: an object containing values which can be passed into the template string. Can be the output of DataValidate
 
         return new Promise((resolve, reject) => {
-            // if the operation is successful, and was a SELECT query (i.e. something that returns data)
+            // if the operation is successful
                 resolve(dbResponse);
                 // dbResponse: an object containing the response from the database
-            // if the operation is successful, and was an INSERT, UPDATE, or other non-data-returning query
-                resolve(rowPK);
-                // rowPK: the primary key of the row that was inserted/changed.
-                //      If multiple rows were changed, rowPK will be an array of them
             // otherwise
                 reject(err);
                 // err: an Error object representing the type of error, most likely 404
@@ -100,14 +99,16 @@ class CreateEntityPipeline extends Pipeline {
     // const Login = new LoginPipeline();
     // app.post('/account/login', Login.Execute);
 
-    constructor(entityType, isAdmin, notify) {
+    constructor(entityType, isAdmin, notify, ...args) {
         // entityType: string describing the type of entity e.g. 'listing' or 'account'
         // isAdmin: boolean indicating whether this action is being performed by an administrator
         // notify: an optional string with one of the following values:
         //      'affected' - push notifications will be sent to other users who are connected to the new entity,
         //                   or to entities connected to the new entity
         //      'self' - push notifications will be sent to any other device the user who made the request is logged in to
+        // args should be the db and logger from the Pipeline
 
+        super(...args);
         this.actionType = `create-${entityType}`;
         this.isAdmin = isAdmin;
         this.notify = notify;
