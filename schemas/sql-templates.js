@@ -1,11 +1,23 @@
 /* This file will contain template strings for PostgreSQL
 */
 
+const isCallable = require('is-callable');
+
 class ConstructionError extends Error {
     constructor(message) {
         super(message);
         this.name = "ConstructionError";
     }
+}
+
+const getAllIndexes = (arr, elem) => {
+    let indexes = [];
+    for (let i=0; i<arr.length; i++) {
+        if (arr[i] === elem) {
+            indexes.push(i);
+        }
+    }
+    return indexes;
 }
 
 class SQLTemplate {
@@ -18,37 +30,73 @@ class SQLTemplate {
         let queryList = [], queryNames = [];
 
         this.order.forEach(query => {
-            let nextquery = {};
+            let nextquerytexts = [];
+            let nextqueryvalueses = [];
+            let queryTimes = 1;
+            
             if (!(query in this.queryDict)) {
                 throw new ConstructionError('Query not found in queryDict');
             }
-            nextquery['text'] = this.queryDict[query].text;
+
+            if ('times' in this.queryDict[query]) {
+                queryTimes = this.queryDict[query].times(inputObject, accountID);
+            }
+
+            for (let i=0; i<queryTimes; i++) nextquerytexts.push(this.queryDict[query].text);
+
+            if ('condition' in this.queryDict[query]) {
+                if (!this.queryDict[query].condition(inputObject, accountID)) return;
+            }
 
             if ('values' in this.queryDict[query]) {
-                nextquery['values'] = [];
+                for (let i=0; i<queryTimes; i++) nextqueryvalueses.push([]);
+
                 this.queryDict[query].values.forEach(valueCons => {
                     if (valueCons === 'accountID') {
-                        nextquery['values'].push(accountID);
+                        for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(accountID);
                         return;
+                    }
+                    if (isCallable(valueCons)) {
+                        for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(valueCons(inputObject, accountID, queryNames));
                     }
                     if ('from_input' in valueCons) {
                         if (valueCons['from_input'] in inputObject) {
-                            nextquery['values'].push(inputObject[valueCons['from_input']]);
+                            for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(inputObject[valueCons['from_input']]);
                             return;
                         }
                     }
                     if ('from_query' in valueCons) {
-                        let qIndex = queryNames.indexOf(valueCons['from_query'][0]);
+                        let qIndexes = getAllIndexes(queryNames, valueCons['from_query'][0]);
                         let fKey = valueCons['from_query'][1];
-                        let getValue = (res) => {
-                            return res[qIndex][0][fKey];
-                        };
-                        nextquery['values'].push(getValue);
+
+                        if (qIndexes.length === 1) {
+                            let getValue = (res) => {
+                                return res[qIndexes[0]][0][fKey];
+                            };
+                            for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(getValue);
+                            return;
+
+                        } else if (qIndexes.length === queryTimes) {
+                            for (let i=0; i<queryTimes; i++) {
+                                let getValue = (res) => {
+                                    return res[qIndexes[i]][0][fKey];
+                                };
+                                nextqueryvalueses[i].push(getValue);
+                            }
+                            return;
+                        }
                     }
                 });
             }
-            queryNames.push(query);
-            queryList.push(nextquery);
+
+            for (let i=0; i<queryTimes; i++) {
+                let nextqueryobject = {
+                    text: nextquerytexts[i],
+                };
+                if (nextqueryvalueses[i] !== undefined) nextqueryobject['values'] = nextqueryvalueses[i]
+                queryNames.push(query);
+                queryList.push(nextqueryobject);
+            }
         });
         return queryList;
     }
