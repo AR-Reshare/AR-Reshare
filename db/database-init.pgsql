@@ -29,12 +29,8 @@ CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 CREATE TABLE Account (
     UserID serial4 PRIMARY KEY,
     FullName varchar NOT NULL,
-    Email email NOT NULL,
-    PassHash varchar NOT NULL
-);
-
-CREATE TABLE StdUser (
-    UserID int4 PRIMARY KEY REFERENCES Account ON DELETE CASCADE,
+    Email email UNIQUE NOT NULL,
+    PassHash varchar NOT NULL,
     DoB date NOT NULL,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     DeletionDate timestamp
@@ -44,7 +40,7 @@ CREATE TABLE Address (
     AddressID serial4 PRIMARY KEY,
     Country varchar NOT NULL,
     PostCode varchar NOT NULL,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE Category (
@@ -58,7 +54,7 @@ CREATE TABLE Category (
 
 CREATE TABLE Listing (
     ListingID serial4 PRIMARY KEY,
-    ContributorID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ContributorID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     Title varchar NOT NULL,
     Description varchar NOT NULL,
     Condition itemCondition NOT NULL,
@@ -71,7 +67,7 @@ CREATE TABLE Listing (
 
 CREATE TABLE Conversation (
     ConversationID serial4 PRIMARY KEY,
-    ReceiverID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ReceiverID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ClosedDate timestamp
@@ -79,7 +75,7 @@ CREATE TABLE Conversation (
 
 CREATE TABLE Message (
     MessageID serial4 PRIMARY KEY,
-    SenderID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    SenderID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ConversationID int4 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ReadTime timestamp,
@@ -89,7 +85,7 @@ CREATE TABLE Message (
 CREATE TABLE PushToken (
     DeviceToken varchar PRIMARY KEY, -- Nobody can agree on what an FCM token actually looks like. Reported lengths have ranged from 119 chars to 326 chars.
     Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE Media (
@@ -101,7 +97,7 @@ CREATE TABLE Media (
 
 CREATE TABLE ProfilePicture (
     MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE ListingMedia (
@@ -120,7 +116,7 @@ CREATE TABLE Administrator (
 
 CREATE TABLE Report (
     ReportID serial4 PRIMARY KEY,
-    ReporterID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ReporterID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     Reason reportReason NOT NULL,
     Description varchar NOT NULL,
     Outcome varchar NOT NULL,
@@ -131,7 +127,7 @@ CREATE TABLE Report (
 
 CREATE TABLE ProfileReport (
     ReportID int4 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE ListingReport (
@@ -150,7 +146,7 @@ CREATE TABLE Request (
 
 CREATE TABLE Sanction (
     SanctionID serial4 PRIMARY KEY,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     Type varchar NOT NULL,
     StartDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     EndDate timestamp,
@@ -168,7 +164,7 @@ CREATE TABLE AdminChange (
 
 CREATE TABLE ProfileChange (
     ChangeID int4 PRIMARY KEY REFERENCES AdminChange ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE ListingChange (
