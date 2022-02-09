@@ -35,37 +35,67 @@ class SQLTemplate {
             let queryTimes = 1;
             
             if (!(query in this.queryDict)) {
-                throw new ConstructionError('Query not found in queryDict');
+                throw new ConstructionError('Referenced query not found');
+            }
+
+            if ('condition' in this.queryDict[query]) {
+                try {
+                    if (!this.queryDict[query].condition(inputObject, accountID)) return;
+                } catch {
+                    throw new ConstructionError('Error in callable condition function');
+                }
             }
 
             if ('times' in this.queryDict[query]) {
-                queryTimes = this.queryDict[query].times(inputObject, accountID);
+                try {
+                    queryTimes = this.queryDict[query].times(inputObject, accountID);
+                } catch {
+                    throw new ConstructionError('Error in callable times function');
+                }
+                if (!(Number.isInteger(queryTimes)) || queryTimes < 0) {
+                    throw new ConstructionError('Return value of times function was not a positive integer');
+                }
             }
+
+            if (!('text' in this.queryDict[query])) throw new ConstructionError('No text in query');
 
             for (let i=0; i<queryTimes; i++) nextquerytexts.push(this.queryDict[query].text);
-
-            if ('condition' in this.queryDict[query]) {
-                if (!this.queryDict[query].condition(inputObject, accountID)) return;
-            }
 
             if ('values' in this.queryDict[query]) {
                 for (let i=0; i<queryTimes; i++) nextqueryvalueses.push([]);
 
                 this.queryDict[query].values.forEach(valueCons => {
                     if (valueCons === 'accountID') {
-                        for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(accountID);
+                        for (let i=0; i<queryTimes; i++) {
+                            nextqueryvalueses[i].push(accountID);
+                        }
                         return;
                     }
                     if (isCallable(valueCons)) {
-                        for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(valueCons(inputObject, accountID, queryNames));
+                        let value;
+                        try {
+                            value = valueCons(inputObject, accountID, queryNames);
+                        } catch {
+                            throw new ConstructionError('Error in callable value constructor');
+                        }
+
+                        for (let i=0; i<queryTimes; i++) {
+                            nextqueryvalueses[i].push(value);
+                        }
+                        return;
                     }
-                    if ('from_input' in valueCons) {
+                    if (typeof valueCons === 'object' && 'from_input' in valueCons) {
                         if (valueCons['from_input'] in inputObject) {
                             for (let i=0; i<queryTimes; i++) nextqueryvalueses[i].push(inputObject[valueCons['from_input']]);
                             return;
+                        } else {
+                            throw new ConstructionError('Key does not exist in input object');
                         }
                     }
-                    if ('from_query' in valueCons) {
+                    if (typeof valueCons === 'object' && 'from_query' in valueCons) {
+                        if (!Array.isArray(valueCons['from_query']) || valueCons['from_query'].length < 2) {
+                            throw new ConstructionError('Backreference contains less than two values');
+                        }
                         let qIndexes = getAllIndexes(queryNames, valueCons['from_query'][0]);
                         let fKey = valueCons['from_query'][1];
 
@@ -84,8 +114,15 @@ class SQLTemplate {
                                 nextqueryvalueses[i].push(getValue);
                             }
                             return;
+
+                        } else if (qIndexes.length === 0) {
+                            throw new ConstructionError('Backreference refers to nonexistant or future query');
+                        } else {
+                            throw new ConstructionError('Mismatch between number of executions and number of backreferences');
                         }
                     }
+                    // if none of those happened
+                    throw new ConstructionError('A value argument could not be parsed')
                 });
             }
 
@@ -104,4 +141,4 @@ class SQLTemplate {
 
 // define a bunch of SQLTemplates, including maybe some custom ones that overwrite .build
 
-module.exports = {SQLTemplate}; //, template1, template2, ...};
+module.exports = {SQLTemplate, ConstructionError}; //, template1, template2, ...};
