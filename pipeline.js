@@ -43,17 +43,32 @@ class Pipeline {
         });
     }
 
-    Store(sqlTemplate, formatObject) {
+    Store(sqlTemplate, formatObject, accountID) {
         // sqlTemplate: the template SQL string, as in schemas/sql-templates.js
         // formatObject: an object containing values which can be passed into the template string. Can be the output of DataValidate
+        // accountID: the ID of the user who is performing this action. null or undefined if the user is not authenticated
 
         return new Promise((resolve, reject) => {
-            // if the operation is successful
-                resolve(dbResponse);
-                // dbResponse: an object containing the response from the database
-            // otherwise
-                reject(err);
-                // err: an Error object representing the type of error, most likely 404
+            let transaction;
+            // build transaction
+            try {
+                transaction = sqlTemplate.build(formatObject, accountID);
+            } catch (err) {
+                reject(err); // 400
+            }
+
+            // execute transaction
+            if (transaction.length === 0) {
+                resolve([]); // no queries, so don't do anything
+            } else if (transaction.length === 1) {
+                if ('values' in transaction[0]) {
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(resolve, reject);
+                } else {
+                    this.db.simpleQuery(transaction[0].text).then(resolve, reject);
+                }
+            } else {
+                this.db.complexQuery(transaction).then(resolve, reject);
+            }
         });
     }
 
