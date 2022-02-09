@@ -9,7 +9,7 @@ const credentials = require('./connection.json');
 const db = new Database(credentials['dev']);
 
 // e.g.
-const CreateMessage = new CreateEntityPipeline('message', false, 'affected', db, console);
+const CreateMessage = new pipes.CreateEntityPipeline('message', false, 'affected', db, console);
 app.post('/conversation/message', CreateMessage.Execute);
 
 module.exports(app);

@@ -10,7 +10,7 @@ class QueryError extends Error {
     // Represents an error in constructing or executing a query
     constructor(message) {
         super(message);
-        this.name = "QueryError";
+        this.name = 'QueryError';
     }
 }
 
@@ -18,7 +18,7 @@ class DatabaseConnectionError extends Error {
     // Represents an error in establishing connection to the database
     constructor(message) {
         super(message);
-        this.name = "DatabaseConnectionError";
+        this.name = 'DatabaseConnectionError';
     }
 }
 
@@ -26,7 +26,7 @@ class DBClientNotAvailableError extends Error {
     // Represents an error in accessing a postgres client
     constructor(message) {
         super(message);
-        this.name = "DBClientNotAvailableError";
+        this.name = 'DBClientNotAvailableError';
     }
 }
 
@@ -35,7 +35,7 @@ class QueryConstructionError extends QueryError {
     // i.e. Node-side
     constructor(message) {
         super(message);
-        this.name = "QueryConstructionError";
+        this.name = 'QueryConstructionError';
     }
 }
 
@@ -44,7 +44,7 @@ class QueryExecutionError extends QueryError {
     // i.e. PostgreSQL-side
     constructor(message) {
         super(message);
-        this.name = "QueryExecutionError";
+        this.name = 'QueryExecutionError';
     }
 }
 
@@ -120,7 +120,7 @@ class Database {
      * @param {string[]} [values=[]] - (Optional, Array) The values to substitute into the parameterised query
      * @returns {Promise<Object[]>} Promise object which resolves with an array of results from the query. Each object in the array corresponds to a row returned from the query. Keys of the object correspond to fields returned, in lowercase.
      */
-    simpleQuery = (queryTemplate, values=[]) => {
+    simpleQuery (queryTemplate, values=[]) {
         return new Promise((resolve, reject) => {
             this.pool.query(queryTemplate, values).then(res => {
                 // query executed correctly
@@ -140,7 +140,7 @@ class Database {
      * queries.values - (Optional, Array) The values to substitute into the parameterised query. If a value is a function, it is called on the existing set of results at the time.
      * @returns {Promise<Object[][]>} Promise object which resolves with an array of arrays containing the results from each query. Subarrays correspond to queries i.e. results of the 3rd query will be in the 3rd position of the array. Each object in a subarray corresponds to a row returned from the query. Keys of the object correspond to fields returned, in lowercase.
      */
-    complexQuery = (queries) => {
+    complexQuery (queries) {
         return new Promise((resolve, reject) => {
             this.pool.connect().then(client => {
                 // a client was available to service the request
