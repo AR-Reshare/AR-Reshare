@@ -230,7 +230,15 @@ class SQLTemplate {
 const CreateAccountTemplate = new SQLTemplate({
     create: {
         text: 'INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ($1, $2, $3, $4) RETURNING UserID',
-        values: ['name', 'email', 'hash_password', 'date_of_birth'],
+        values: [{
+            from_input: 'name'
+        }, {
+            from_input: 'email'
+        }, {
+            from_input: 'hash_password'
+        }, {
+            from_input: 'date_of_birth'
+        }],
     },
 }, ['create']);
 

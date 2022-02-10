@@ -43,11 +43,14 @@ class Pipeline {
         });
     }
 
+    /**
+     * Creates and executes a transaction on the database
+     * @param {SQLTemplate} sqlTemplate Template of the SQL transaction, from the SQLTemplate class
+     * @param {object} formatObject Object whose values to insert into the transaction
+     * @param {number} accountID ID of the user who is performing this request
+     * @returns 
+     */
     Store(sqlTemplate, formatObject, accountID) {
-        // sqlTemplate: the template SQL string, as in schemas/sql-templates.js
-        // formatObject: an object containing values which can be passed into the template string. Can be the output of DataValidate
-        // accountID: the ID of the user who is performing this action. null or undefined if the user is not authenticated
-
         return new Promise((resolve, reject) => {
             let transaction;
             // build transaction
@@ -139,8 +142,9 @@ class CreateEntityPipeline extends Pipeline {
     }
 }
 
-module.exports({
+module.exports = {
+    Pipeline,
     CreateEntityPipeline,
     // ...
     // add other pipeline types here as they are defined
-});
+};
