@@ -163,7 +163,6 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         });
     });
 
-    // Class 6: Single parameterised, exceptional query
     test('Class 6: Single, parameterised, exceptional query', () => {
         let built_query = [{
             text: 'SELECT userid FROM Account WHERE username = $1',
@@ -212,6 +211,23 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).toBeCalledWith(built_query);
             expect(err).toBe(exec_err);
+        });
+    });
+
+    test('Class 8: no queries', () => {
+        let built_query = [];
+        let inputObject = {
+            test: 'test',
+        };
+        let accountID = 42;
+
+        mockSQLTemplateBuild.mockReturnValueOnce(built_query);
+        
+        return pipe.Store(template, inputObject, accountID).then(res => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+            expect(mockDatabaseSimple).not.toBeCalled();
+            expect(mockDatabaseComplex).not.toBeCalled();
+            expect(res).toStrictEqual([]);
         });
     });
 });
