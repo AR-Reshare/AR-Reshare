@@ -1,4 +1,4 @@
-const Database = require('../../database-funcs');
+const Database = require('../../classes/database');
 const {Pool} = require('pg');
 
 // test values

@@ -1,6 +1,6 @@
-const {Pipeline} = require('../../pipeline');
-const {SQLTemplate} = require('../../schemas/sql-templates');
-const Database = require('../../database-funcs');
+const Pipeline = require('../../classes/pipeline');
+const SQLTemplate = require('../../classes/sqltemplate');
+const Database = require('../../classes/database');
 
 const mockDBInner = jest.fn();
 const mockDBPromise = () => {
@@ -18,17 +18,15 @@ const mockSQLTemplateBuild = jest.fn();
 const mockDatabaseSimple = jest.fn().mockImplementation(mockDBPromise);
 const mockDatabaseComplex = jest.fn().mockImplementation(mockDBPromise);
 
-jest.mock('../../schemas/sql-templates', () => {
-    return {
-        SQLTemplate: jest.fn().mockImplementation(() => {
-            return {
-                build: mockSQLTemplateBuild,
-            };
-        }),
-    };
+jest.mock('../../classes/sqltemplate', () => {
+    return jest.fn().mockImplementation(() => {
+        return {
+            build: mockSQLTemplateBuild,
+        };
+    });
 });
 
-jest.mock('../../database-funcs', () => {
+jest.mock('../../classes/database', () => {
     return jest.fn().mockImplementation(() => {
         return {
             simpleQuery: mockDatabaseSimple,
