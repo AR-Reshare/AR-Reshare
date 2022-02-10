@@ -1,13 +1,15 @@
--- Execute from linux via the makefile with: sudo -u postgres make
+-- Execute from linux via the makefile with: sudo -u postgres npm run db-init
 
-CREATE USER arresharedev WITH ENCRYPTED PASSWORD 'SVh}Q,A>3.nL9vp~';
-CREATE DATABASE arresharedev WITH OWNER arresharedev;
-\c arresharedev
+CREATE USER :account WITH ENCRYPTED PASSWORD :password;
+CREATE DATABASE :account WITH OWNER :account;
+
+\c :account;
+
+-- GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public TO :account;
 
 CREATE EXTENSION citext;
 
-SET ROLE arresharedev; -- So any created tables will be owned by arresharedev, not superuser
-
+SET ROLE :account;
 -- Define an email type
 CREATE DOMAIN email AS citext
     CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
@@ -26,8 +28,8 @@ CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 -- Any ON DELETE for a primary key pointing to a user (including indirectly) should have CASCADE behaviour, since fully deleting a user account should take all of that user's data with it
 CREATE TABLE Account (
     UserID serial4 PRIMARY KEY,
-    UserName varchar NOT NULL,
-    UserEmail email NOT NULL,
+    FullName varchar NOT NULL,
+    Email email NOT NULL,
     PassHash varchar NOT NULL
 );
 
