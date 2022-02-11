@@ -1,6 +1,8 @@
 const Database = require('../../classes/database');
 const {Pool} = require('pg');
 
+const {DatabaseConnectionError} = require('../../classes/errors');
+
 const mockConstructor = jest.fn();
 const mockEnd = jest.fn();
 
@@ -46,14 +48,14 @@ describe('Unit Test 18 - Database.constructor', () => {
             password: 'heeheehoohoo',
         };
         mockConstructor.mockImplementation(() => {
-            throw new Error('test');
+            throw new DatabaseConnectionError('test');
         });
         expect.assertions(2);
         try {
             let db = new Database(creds);
         } catch (err) {
             expect(mockConstructor).toBeCalledWith(creds);
-            expect(err).toHaveProperty('name', 'DatabaseConnectionError');
+            expect(err).toBeInstanceOf(DatabaseConnectionError);
         }
     });
 });

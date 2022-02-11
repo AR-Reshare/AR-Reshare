@@ -2,6 +2,8 @@ const Pipeline = require('../../classes/pipeline');
 const SQLTemplate = require('../../classes/sqltemplate');
 const Database = require('../../classes/database');
 
+const {QueryConstructionError, QueryExecutionError} = require('../../classes/errors');
+
 const mockDBInner = jest.fn();
 const mockDBPromise = () => {
     return new Promise((res, rej) => {
@@ -122,7 +124,7 @@ describe('Unit Test 14 - Pipeline.Store', () => {
     });
 
     test('Class 4: Exceptional construction', () => {
-        let build_err = new Error('oopsie woopsie');
+        let build_err = new QueryConstructionError('oopsie woopsie');
 
         mockSQLTemplateBuild.mockImplementation(() => {throw build_err});
         let inputObject = {
@@ -144,7 +146,7 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let built_query = [{
             text: 'SELECT NOW() AS now',
         }];
-        let exec_err = new Error('oopsie woopsie');
+        let exec_err = new QueryExecutionError('oopsie woopsie');
         let inputObject = {
             test: 'test',
         };
@@ -168,7 +170,7 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             text: 'SELECT userid FROM Account WHERE username = $1',
             values: ['Ronnie Omelettes'],
         }];
-        let exec_err = new Error('oopsie woopsie');
+        let exec_err = new QueryExecutionError('oopsie woopsie');
         let inputObject = {
             test: 'test',
         };
@@ -195,7 +197,7 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             text: 'SELECT userid FROM Account WHERE username = $1',
             values: ['Gary Cheeseman'],
         }];
-        let exec_err = new Error('oopsie woopsie');
+        let exec_err = new QueryExecutionError('oopsie woopsie');
         let inputObject = {
             test: 'test',
         };

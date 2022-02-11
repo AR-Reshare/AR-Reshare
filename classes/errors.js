@@ -25,6 +25,15 @@ class DBClientNotAvailableError extends Error {
     }
 }
 
+class QueryTemplateError extends QueryError {
+    // Represents an error in constructing a query caused by the template
+    // rather than by the input values, DB response, etc
+    constructor(message) {
+        super(message);
+        this.name = 'QueryTemplateError';
+    }
+}
+
 class QueryConstructionError extends QueryError {
     // Represents an error in constructing a query
     // i.e. Node-side
@@ -47,6 +56,7 @@ module.exports = {
     QueryError,
     DatabaseConnectionError,
     DBClientNotAvailableError,
+    QueryTemplateError,
     QueryConstructionError,
     QueryExecutionError,
     // ...

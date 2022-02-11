@@ -1,5 +1,5 @@
 const SQLTemplate = require('../../classes/sqltemplate');
-const {QueryConstructionError} = require('../../classes/errors');
+const {QueryConstructionError, QueryTemplateError} = require('../../classes/errors');
 
 describe('Unit Test 21 - SQLTemplate.build', () => {
     test('Class 1: immediate query', () => {
@@ -255,7 +255,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let order = ['test2'];
 
         // let template = new SQLTemplate(queries, order);
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 12: query with no text', () => {
@@ -266,7 +266,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 13: query with values containing string except for accountID', () => {
@@ -278,7 +278,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 14: query where value object does not contain required key(s)', () => {
@@ -292,7 +292,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 15: query with from_input where key doesn\'t exist', () => {
@@ -326,7 +326,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test1', 'test2'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 17: backreferencing future query', () => {
@@ -343,7 +343,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test1', 'test2'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 18: backreferencing no query', () => {
@@ -360,10 +360,10 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test1', 'test2'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 19: backreferencing future query', () => {
+    test('Class 19: backreferencing query but not field', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -377,7 +377,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test1', 'test2'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 20: query with exceptional condition', () => {
@@ -507,7 +507,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test1', 'test2'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 28: query with unparsable value', () => {
@@ -519,7 +519,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         };
         let order = ['test'];
 
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryConstructionError);
+        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
     test('Class 29: query with backreference to conditional-negative query', () => {

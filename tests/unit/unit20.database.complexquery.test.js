@@ -1,5 +1,6 @@
 const Database = require('../../classes/database');
 const {Pool} = require('pg');
+const { QueryExecutionError, DBClientNotAvailableError, QueryConstructionError } = require('../../classes/errors');
 
 // test values
 const mockQueryText = 'MOCK query ON Database';
@@ -205,7 +206,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toHaveProperty('name', 'QueryConstructionError');
+            expect(err).toBeInstanceOf(QueryConstructionError);
         });
     });
 
@@ -228,7 +229,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toHaveProperty('name', 'QueryConstructionError');
+            expect(err).toBeInstanceOf(QueryConstructionError);
         });
     });
 
@@ -241,7 +242,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(1, 'BEGIN');
             expect(mockQuery).nthCalledWith(2, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toHaveProperty('name', 'QueryConstructionError');
+            expect(err).toBeInstanceOf(QueryConstructionError);
         });
     });
 
@@ -252,7 +253,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let cmd1 = {text: q1};
         let cmds = [cmd0, cmd1];
         let msg = 'Something broked'
-        mockQueryInner.mockImplementation(() => new Error(msg));
+        mockQueryInner.mockImplementation(() => new QueryExecutionError(msg));
         mockQueryInner2.mockImplementation(() => testObject);
         expect.assertions(7);
         return db.complexQuery(cmds).catch(err => {
@@ -261,7 +262,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toHaveProperty('name', 'QueryExecutionError');
+            expect(err).toBeInstanceOf(QueryExecutionError);
             expect(err).toHaveProperty('message', msg);
         });
     });
@@ -274,7 +275,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let cmds = [cmd0, cmd1];
         let msg = 'Something broked'
         mockQueryInner.mockImplementation(() => testObject);
-        mockQueryInner2.mockImplementation(() => new Error(msg));
+        mockQueryInner2.mockImplementation(() => new QueryExecutionError(msg));
         expect.assertions(8);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(4);
@@ -283,19 +284,19 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(3, q1, []);
             expect(mockQuery).nthCalledWith(4, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toHaveProperty('name', 'QueryExecutionError');
+            expect(err).toBeInstanceOf(QueryExecutionError);
             expect(err).toHaveProperty('message', msg);
         });
     });
 
     test('Class 10: no client available', () => {
-        mockConnectInner.mockReturnValueOnce(new Error('No clients available'));
+        mockConnectInner.mockReturnValueOnce(new DBClientNotAvailableError('No clients available'));
         let q0 = mockQueryText;
         let cmd0 = {text: q0};
         let cmds = [cmd0];
         expect.assertions(2);
         return db.complexQuery(cmds).catch(err => {
-            expect(err).toHaveProperty('name', 'DBClientNotAvailableError');
+            expect(err).toBeInstanceOf(DBClientNotAvailableError);
             expect(mockQuery).toBeCalledTimes(0);
         });
     });

@@ -1,5 +1,5 @@
 const isCallable = require('is-callable');
-const {QueryConstructionError} = require('./errors');
+const {QueryTemplateError, QueryConstructionError} = require('./errors');
 
 const getAllIndexes = (arr, elem) => {
     let indexes = [];
@@ -27,14 +27,14 @@ class SQLTemplate {
 
             // make sure all the queries used actually exist
             if (!(query in this.queryDict)) {
-                throw new QueryConstructionError(`Query "${query}" in order but not in queryDict`);
+                throw new QueryTemplateError(`Query "${query}" in order but not in queryDict`);
             }
 
             let q = this.queryDict[query];
 
             // make sure the queries all have text in
             if (!('text' in q)) {
-                throw new QueryConstructionError(`Query "${query}" contains no text`);
+                throw new QueryTemplateError(`Query "${query}" contains no text`);
             }
 
             if ('values' in q) {
@@ -43,7 +43,7 @@ class SQLTemplate {
                     // the string "accountID"
                     if (typeof elem === 'string' || elem instanceof String) {
                         if (elem !== 'accountID') {
-                            throw new QueryConstructionError(`Value argument "${elem}" not recognised`);
+                            throw new QueryTemplateError(`Value argument "${elem}" not recognised`);
                         }
                         return;
 
@@ -54,7 +54,7 @@ class SQLTemplate {
                     // or objects containing exactly one of from_input or from_query
                     } else if (typeof elem === 'object') {
                         if ('from_input' in elem && 'from_query' in elem) {
-                            throw new QueryConstructionError(`Query ${query} contains both from_input and from_query`);
+                            throw new QueryTemplateError(`Query ${query} contains both from_input and from_query`);
 
                         } else if ('from_input' in elem) {
                             return;
@@ -62,22 +62,22 @@ class SQLTemplate {
                         } else if ('from_query' in elem) {
                             // from_query has to be provided with a list of two elements
                             if (!Array.isArray(elem['from_query']) || elem['from_query'].length < 2) {
-                                throw new QueryConstructionError('Backreference contains less than two values');
+                                throw new QueryTemplateError('Backreference contains less than two values');
                             }
 
                             // make sure the backreference is to an actual query that will have already been executed
                             let i = order.indexOf(elem['from_query'][0]);
                             if (i === -1) {
-                                throw new QueryConstructionError('Backreference to non-existant query');
+                                throw new QueryTemplateError('Backreference to non-existant query');
                             } else if (i >= index) {
-                                throw new QueryConstructionError('Backreference to future query');
+                                throw new QueryTemplateError('Backreference to future query');
                             }
 
                         } else {
-                            throw new QueryConstructionError('Must include either from_input or from_query');
+                            throw new QueryTemplateError('Must include either from_input or from_query');
                         }
                     } else {
-                        throw new QueryConstructionError('Unparsable value');
+                        throw new QueryTemplateError('Unparsable value');
                     }
                 });
             }

@@ -1,5 +1,6 @@
 const Database = require('../../classes/database');
 const {Pool} = require('pg');
+const { QueryExecutionError } = require('../../classes/errors');
 
 // mock of pg.Pool.query
 const mockQueryInner = jest.fn();
@@ -92,10 +93,10 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
     test('Class 4: exceptional query', () => {
         let q = 'MOCK query ON Database';
         let msg = 'The database did a broked';
-        mockQueryInner.mockReturnValueOnce(new Error(msg));
+        mockQueryInner.mockReturnValueOnce(new QueryExecutionError(msg));
         expect.assertions(2); // required in case the promise resolves
         return db.simpleQuery(q).catch(err => {
-            expect(err).toHaveProperty('name', 'QueryExecutionError');
+            expect(err).toBeInstanceOf(QueryExecutionError);
             expect(err).toHaveProperty('message', msg);
         });
     });
