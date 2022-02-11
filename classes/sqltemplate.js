@@ -1,5 +1,5 @@
 const isCallable = require('is-callable');
-const {QueryTemplateError, QueryConstructionError} = require('./errors');
+const {QueryTemplateError, QueryConstructionError, QueryExecutionError} = require('./errors');
 
 const getAllIndexes = (arr, elem) => {
     let indexes = [];
@@ -17,10 +17,27 @@ class SQLTemplate {
      * Build the SQLTemplate
      * @param {*} queryDict A dictionary of queries. Each query must have text, plus optional values, times, and condition properties.
      * @param {*} order A list of strings which correspond to keys in the queryDict, giving the order that the queries should be executed.
+     * @param {*} options Dictionary of options to use for the template.
      */
-    constructor(queryDict, order) {
+    constructor(queryDict, order, options={}) {
         this.queryDict = queryDict;
         this.order = order;
+
+        this.errorOnEmptyResponse = ('error_on_empty_reponse' in options && options.error_on_empty_response === true);
+        this.errorOnEmptyTransaction = ('error_on_empty_transaction' in options && options.error_on_empty_transaction === true);
+        this.dropFromResults = ('drop_from_results' in options && options.drop_from_results);
+
+        if (this.order.length === 0 && this.errorOnEmptyTransaction) {
+            throw new QueryTemplateError('Template contains no queries');
+        }
+
+        if (this.dropFromResults) {
+            if (this.dropFromResults.some(q => !this.order.includes(q))) {
+                throw new QueryTemplateError('Query to drop not in template');
+            } else if (this.errorOnEmptyResponse && !this.order.some(q => !this.dropFromResults.includes(q))) {
+                throw new QueryTemplateError('Dropping every query in template');
+            }
+        }
 
         // verify some things now, so we don't have to in .build
         this.order.forEach((query, index) => {
@@ -213,7 +230,25 @@ class SQLTemplate {
                 queryList.push(nextqueryobject);
             }
         });
-        return queryList;
+
+        if (queryList.length === 0 && this.errorOnEmptyTransaction) {
+            throw new QueryConstructionError('Transaction contains no queries');
+        }
+
+        return [queryNames, queryList];
+    }
+
+    prepareResults(queryNames, result) {
+        let out = result;
+
+        if (this.dropFromResults) {
+            out = out.filter((_, i) => this.dropFromResults.includes(queryNames[i]));
+        }
+        if (this.errorOnEmptyResponse && !out.some(res => res.length !== 0)) {
+            throw new QueryExecutionError('No values returned from query');
+        }
+
+        return out.length === 1 ? out[0] : out;
     }
 }
 

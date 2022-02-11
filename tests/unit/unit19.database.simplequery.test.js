@@ -68,7 +68,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
             
             // assert
             expect(mockQuery).toBeCalledWith(q, []);
-            expect(res).toBe(testObject.rows);
+            expect(res[0]).toBe(testObject.rows);
         });
     });
 
@@ -78,7 +78,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         mockQueryInner.mockReturnValueOnce(testObject);
         return db.simpleQuery(q, v).then(res => {
             expect(mockQuery).toBeCalledWith(q, v);
-            expect(res).toBe(testObject.rows);
+            expect(res[0]).toBe(testObject.rows);
         });
     });
 
@@ -86,7 +86,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         let q = 'MOCK query ON Database';
         mockQueryInner.mockReturnValueOnce({rows: [], fields: [], command: 'INSERT', rowCount: 0});
         return db.simpleQuery(q).then(res => {
-            expect(res).toStrictEqual([]);
+            expect(res).toStrictEqual([[]]);
         });
     });
 

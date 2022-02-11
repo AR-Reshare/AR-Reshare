@@ -48,25 +48,38 @@ class Pipeline {
      */
     Store(sqlTemplate, formatObject, accountID) {
         return new Promise((resolve, reject) => {
-            let transaction;
+            
+            let names, transaction;
             // build transaction
             try {
-                transaction = sqlTemplate.build(formatObject, accountID);
+                let built = sqlTemplate.build(formatObject, accountID);
+                names = built[0];
+                transaction = built[1];
             } catch (err) {
                 reject(err); // 400
             }
+            
+            let prepAndResolve = (result) => {
+                let out;
+                try {
+                    out = sqlTemplate.prepareResults(names, result);
+                    resolve(out);
+                } catch (err) {
+                    reject(err);
+                }
+            };
 
             // execute transaction
             if (transaction.length === 0) {
                 resolve([]); // no queries, so don't do anything
             } else if (transaction.length === 1) {
                 if ('values' in transaction[0]) {
-                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(resolve, reject);
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, reject);
                 } else {
-                    this.db.simpleQuery(transaction[0].text).then(resolve, reject);
+                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, reject);
                 }
             } else {
-                this.db.complexQuery(transaction).then(resolve, reject);
+                this.db.complexQuery(transaction).then(prepAndResolve, reject);
             }
         });
     }

@@ -83,7 +83,7 @@
          return new Promise((resolve, reject) => {
              this.pool.query(queryTemplate, values).then(res => {
                  // query executed correctly
-                 resolve(res.rows);
+                 resolve([res.rows]); // put into unit list for consistency with complexQuery
              }).catch(err => {
                  // query failed
                  reject(new QueryExecutionError(err.message));
