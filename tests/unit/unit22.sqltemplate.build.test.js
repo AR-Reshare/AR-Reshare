@@ -1,5 +1,5 @@
 const SQLTemplate = require('../../classes/sqltemplate');
-const {QueryConstructionError, QueryTemplateError} = require('../../classes/errors');
+const {QueryConstructionError} = require('../../classes/errors');
 
 describe('Unit Test 21 - SQLTemplate.build', () => {
     test('Class 1: immediate query', () => {
@@ -13,7 +13,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
@@ -34,7 +34,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(2);
         expect(result[0]).toHaveProperty('text', queries.test1.text);
@@ -55,7 +55,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
@@ -76,7 +76,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
@@ -104,7 +104,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         ]];
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(2);
         expect(result[0]).toHaveProperty('text', queries.test1.text);
@@ -127,7 +127,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
@@ -146,7 +146,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toStrictEqual([]);
     });
@@ -163,7 +163,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(5);
         for (let i=0; i<inputObject.times; i++) {
@@ -199,7 +199,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         ];
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(10);
         for (let i=0; i<inputObject.times; i++) {
@@ -227,7 +227,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
@@ -241,61 +241,12 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
-        let result = template.build(inputObject, accountID);
+        let [names, result] = template.build(inputObject, accountID);
 
         expect(result).toStrictEqual([]);
     });
 
-    test('Class 11: query doesn\'t exist', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-            },
-        };
-        let order = ['test2'];
-
-        // let template = new SQLTemplate(queries, order);
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 12: query with no text', () => {
-        let queries = {
-            test: {
-                values: [],
-            },
-        };
-        let order = ['test'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 13: query with values containing string except for accountID', () => {
-        let queries = {
-            test: {
-                text: 'w/e',
-                values: ['invalid'],
-            },
-        };
-        let order = ['test'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 14: query where value object does not contain required key(s)', () => {
-        let queries = {
-            test: {
-                text: 'w/e',
-                values: [{
-                    invalid: 'test',
-                }],
-            },
-        };
-        let order = ['test'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 15: query with from_input where key doesn\'t exist', () => {
+    test('Class 11: query with from_input where key doesn\'t exist', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -312,75 +263,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 16: backreferencing non-existant query', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-            },
-            test2: {
-                text: 'w/e',
-                values: [{
-                    from_query: ['invalid', 'userid'],
-                }],
-            },
-        };
-        let order = ['test1', 'test2'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 17: backreferencing future query', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-                values: [{
-                    from_query: ['test2', 'userid'],
-                }],
-            },
-            test2: {
-                text: 'w/e',
-            },
-        };
-        let order = ['test1', 'test2'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 18: backreferencing no query', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-            },
-            test2: {
-                text: 'w/e',
-                values: [{
-                    from_query: null,
-                }],
-            },
-        };
-        let order = ['test1', 'test2'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 19: backreferencing query but not field', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-            },
-            test2: {
-                text: 'w/e',
-                values: [{
-                    from_query: ['test1'],
-                }],
-            },
-        };
-        let order = ['test1', 'test2'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 20: query with exceptional condition', () => {
+    test('Class 12: query with exceptional condition', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -395,7 +278,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 21: query with exceptional times', () => {
+    test('Class 13: query with exceptional times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -410,7 +293,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 22: query with non-numeric times', () => {
+    test('Class 14: query with non-numeric times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -425,7 +308,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 23: query with non-integer times', () => {
+    test('Class 15: query with non-integer times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -440,7 +323,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 24: query with negative times', () => {
+    test('Class 16: query with negative times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -455,7 +338,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 25: query with multiple backreference but different number of times', () => {
+    test('Class 17: query with multiple backreference but different number of times', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -477,7 +360,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 26: query with exceptional arbitrary callable parameter', () => {
+    test('Class 18: query with exceptional arbitrary callable parameter', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -492,37 +375,7 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 
-    test('Class 27: query with both from_input and from_query in single value', () => {
-        let queries = {
-            test1: {
-                text: 'w/e',
-            },
-            test2: {
-                text: 'w/e',
-                values: [{
-                    from_input: 'test',
-                    from_query: ['test2', 'userid'],
-                }],
-            },
-        };
-        let order = ['test1', 'test2'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 28: query with unparsable value', () => {
-        let queries = {
-            test: {
-                text: 'w/e',
-                values: [5],
-            },
-        };
-        let order = ['test'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 29: query with backreference to conditional-negative query', () => {
+    test('Class 19: query with backreference to conditional-negative query', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -540,6 +393,22 @@ describe('Unit Test 21 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order);
+        expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
+    });
+
+    test('Class 20: no queries with error on empty transaction', () => {
+        let queries = {
+            test: {
+                text: 'w/e',
+                condition: (inp, acc) => false,
+            },
+        };
+        let order = ['test'];
+        let options = {error_on_empty_transaction: true};
+        let inputObject = {};
+        let accountID = 42;
+
+        let template = new SQLTemplate(queries, order, options);
         expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
     });
 });

@@ -23,7 +23,7 @@ class SQLTemplate {
         this.queryDict = queryDict;
         this.order = order;
 
-        this.errorOnEmptyResponse = ('error_on_empty_reponse' in options && options.error_on_empty_response === true);
+        this.errorOnEmptyResponse = ('error_on_empty_response' in options && options.error_on_empty_response === true);
         this.errorOnEmptyTransaction = ('error_on_empty_transaction' in options && options.error_on_empty_transaction === true);
         this.dropFromResults = ('drop_from_results' in options && options.drop_from_results);
 

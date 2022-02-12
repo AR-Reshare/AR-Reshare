@@ -114,10 +114,11 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             values: ['Gary Cheeseman'],
         }]];
         let db_response = [[{'userid': 1234}], [{'userid': 4321}]];
+        let prep_response = [[{'userid': 1234}]];
 
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         mockDBInner.mockReturnValueOnce(db_response);
-        mockSQLTemplatePrep.mockReturnValueOnce(db_response);
+        mockSQLTemplatePrep.mockReturnValueOnce(prep_response);
         let inputObject = {
             test: 'test',
         };
@@ -128,7 +129,7 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).toBeCalledWith(built_query[1]);
             expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);
-            expect(res).toBe(db_response);
+            expect(res).toBe(prep_response);
         });
     });
 
@@ -228,14 +229,14 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             expect(err).toBe(exec_err);
         });
     });
-
+    
     test('Class 8: no queries', () => {
         let built_query = [[], []];
         let inputObject = {
             test: 'test',
         };
         let accountID = 42;
-
+        
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         
         return pipe.Store(template, inputObject, accountID).then(res => {
@@ -243,6 +244,30 @@ describe('Unit Test 14 - Pipeline.Store', () => {
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(res).toStrictEqual([]);
+        });
+    });
+    
+    test('Class 9: exceptional preparation', () => {
+        let built_query = [['test'],[{
+            text: 'SELECT NOW() AS now',
+        }]];
+        let db_response = [[{'now': 1234}]];
+        let prep_err = new QueryExecutionError('Prep failed');
+
+        mockSQLTemplateBuild.mockReturnValueOnce(built_query);
+        mockDBInner.mockReturnValueOnce(db_response);
+        mockSQLTemplatePrep.mockImplementation(() => {throw prep_err;});
+        let inputObject = {
+            test: 'test',
+        };
+        let accountID = 42;
+
+        return pipe.Store(template, inputObject, accountID).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+            expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text);
+            expect(mockDatabaseComplex).not.toBeCalled();
+            expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);
+            expect(err).toBe(prep_err);
         });
     });
 });

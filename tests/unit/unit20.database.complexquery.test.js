@@ -253,7 +253,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let cmd1 = {text: q1};
         let cmds = [cmd0, cmd1];
         let msg = 'Something broked'
-        mockQueryInner.mockImplementation(() => new QueryExecutionError(msg));
+        mockQueryInner.mockImplementation(() => new Error(msg));
         mockQueryInner2.mockImplementation(() => testObject);
         expect.assertions(7);
         return db.complexQuery(cmds).catch(err => {
@@ -275,7 +275,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
         let cmds = [cmd0, cmd1];
         let msg = 'Something broked'
         mockQueryInner.mockImplementation(() => testObject);
-        mockQueryInner2.mockImplementation(() => new QueryExecutionError(msg));
+        mockQueryInner2.mockImplementation(() => new Error(msg));
         expect.assertions(8);
         return db.complexQuery(cmds).catch(err => {
             expect(mockQuery).toBeCalledTimes(4);
