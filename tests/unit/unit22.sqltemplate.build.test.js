@@ -179,6 +179,9 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
                 times: (inp, acc) => inp['times'],
             },
             test2: {
+                text: 'SELECT NOW() AS next',
+            },
+            test3: {
                 text: 'SELECT userid FROM Account WHERE creationdate = $1',
                 times: (inp, acc) => inp['times'],
                 values: [{
@@ -186,28 +189,29 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
                 }],
             },
         };
-        let order = ['test1', 'test2'];
+        let order = ['test1', 'test2', 'test3'];
         let inputObject = {times: 5};
         let accountID = 42;
 
         let partResults = [
-            [{now: 5}],
             [{now: 6}],
             [{now: 7}],
             [{now: 8}],
             [{now: 9}],
+            [{now: 10}],
+            [{next: 11}],
         ];
 
         let template = new SQLTemplate(queries, order);
         let [names, result] = template.build(inputObject, accountID);
 
-        expect(result).toHaveLength(10);
-        for (let i=0; i<inputObject.times; i++) {
+        expect(result).toHaveLength(11);
+        for (let i=0; i<5; i++) {
             expect(result[i]).toHaveProperty('text', queries.test1.text);
             expect(result[i]).not.toHaveProperty('values');
         }
-        for (let i=5; i<inputObject.times*2; i++) {
-            expect(result[i]).toHaveProperty('text', queries.test2.text);
+        for (let i=6; i<11; i++) {
+            expect(result[i]).toHaveProperty('text', queries.test3.text);
             expect(result[i]).toHaveProperty('values');
             expect(result[i].values[0](partResults)).toBe(i);
         }
