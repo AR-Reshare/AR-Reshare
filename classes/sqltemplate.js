@@ -242,13 +242,13 @@ class SQLTemplate {
         let out = result;
 
         if (this.dropFromResults) {
-            out = out.filter((_, i) => this.dropFromResults.includes(queryNames[i]));
+            out = out.filter((_, i) => !this.dropFromResults.includes(queryNames[i]));
         }
         if (this.errorOnEmptyResponse && !out.some(res => res.length !== 0)) {
             throw new QueryExecutionError('No values returned from query');
         }
 
-        return out.length === 1 ? out[0] : out;
+        return out;
     }
 }
 

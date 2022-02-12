@@ -1,7 +1,7 @@
 const SQLTemplate = require('../../classes/sqltemplate');
 const {QueryConstructionError} = require('../../classes/errors');
 
-describe('Unit Test 21 - SQLTemplate.build', () => {
+describe('Unit Test 22 - SQLTemplate.build', () => {
     test('Class 1: immediate query', () => {
         let queries = {
             test: {
