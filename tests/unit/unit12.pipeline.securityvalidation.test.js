@@ -33,3 +33,26 @@ const jwt = require("jsonwebtoken");
 // C13. Authorisation is optional for the request.
 // C14. The request is to generate a token.
 // C15. The request is to update a token.
+
+// NOTE: These components are stateless, that mean that there should be no need to perform setup/teardowns for
+// states. So far, the basic functionality of this component shouldn't have any dependencies (although, the recent
+// decision to merge verification and signing components together will most likley change this).
+
+describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", () => {
+    test("Class 1: Token String Empty", () => {
+        //pass
+    });
+    test("Class 2: Token String is not valid base64", () => {
+        //pass
+    });
+    test("Class 3: Token String is not in valid JWT format", () => {
+        //pass
+    });
+    test("Class 4: Token String isn't parsed into valid JSON object", () => {
+        //pass
+    });
+    test("Class 5: Token String is in a valid format", () => {
+        //pass
+    });
+});
+
