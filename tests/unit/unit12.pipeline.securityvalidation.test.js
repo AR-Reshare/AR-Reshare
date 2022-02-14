@@ -72,7 +72,15 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
     test("Class 9: The token can be verified successfully", () => {
         //pass
     });
-
-
 });
+
+describe("Unit Test 12 - Pipeline.SecurityValidation (Authorizing User)", () => {
+    test("Class 10: The user is not authorized", () => {
+        //pass
+    });
+    test("Class 11: The user is authorized", () => {
+        //pass
+    });
+});
+
 
