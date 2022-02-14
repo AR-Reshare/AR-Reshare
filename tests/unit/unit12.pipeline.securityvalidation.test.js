@@ -56,3 +56,23 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", 
     });
 });
 
+
+describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
+    // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
+    test("Class 6: Empty", () => {
+        //pass
+    });
+    // NOTE: We cannot absolutely say if a token has been tampered with, only that the token information doesn't add up
+    test("Class 7: The token has been tampered with", () => {
+        //pass
+    });
+    test("Class 8: The token has expired", () => {
+        //pass
+    });
+    test("Class 9: The token can be verified successfully", () => {
+        //pass
+    });
+
+
+});
+
