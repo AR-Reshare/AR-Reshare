@@ -7,7 +7,7 @@ class RequestTemplate {
             let out = {};
 
             // in_name
-            if ('in_name' in parameter && (typeof parameter['in_name'] === 'string' || parameter['in_name'] instanceof String)) {
+            if ('in_name' in parameter && (typeof parameter['in_name'] === 'string' || parameter['in_name'] instanceof String) && parameter['in_name'].length > 0) {
                 out.in_name = parameter['in_name'];
             } else {
                 throw new TemplateError('in_name not provided');
@@ -15,7 +15,7 @@ class RequestTemplate {
 
             // out_name
             if ('out_name' in parameter) {
-                if (typeof parameter['out_name'] === 'string' || parameter['out_name'] instanceof String) {
+                if ((typeof parameter['out_name'] === 'string' || parameter['out_name'] instanceof String ) && parameter['out_name'].length > 0) {
                     out.out_name = parameter['out_name'];
                 } else {
                     throw new TemplateError('out_name is not a string');
@@ -26,10 +26,8 @@ class RequestTemplate {
 
             // required
             if ('required' in parameter) {
-                if (parameter['required'] === true) {
-                    out.required = true;
-                } else if (parameter['required'] === false) {
-                    out.required = false;
+                if (parameter['required'] === true || parameter['required'] === false) {
+                    out.required = parameter['required'];
                 } else {
                     throw new TemplateError('required is not a boolean');
                 }
@@ -38,11 +36,15 @@ class RequestTemplate {
             }
 
             // conditions
-            if ('conditions' in parameter && Array.isArray(parameter['conditions'])) {
-                if (parameter['conditions'].every(c => isCallable(c))) {
-                    out.conditions = parameter['conditions'];
+            if ('conditions' in parameter) {
+                if (Array.isArray(parameter['conditions'])) {
+                    if (parameter['conditions'].every(c => isCallable(c))) {
+                        out.conditions = parameter['conditions'];
+                    } else {
+                        throw new TemplateError('one or more conditions is not callable');
+                    }
                 } else {
-                    throw new TemplateError('one or more conditions is not callable');
+                    throw new TemplateError('conditions is not array');
                 }
             } else {
                 out.conditions = [];
