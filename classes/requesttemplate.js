@@ -65,21 +65,23 @@ class RequestTemplate {
         let outputObject = {};
 
         this.params.forEach(parameter => {
-            if (parameter.in_name in inputObject) {
-                if (parameter.conditions.every(c => c(inputObject[parameter.in_name], inputObject))) {
-                    let clean;
-                    try {
-                        clean = parameter.sanitise(inputObject[parameter.in_name]);
-                    } catch (err) {
-                        throw new DirtyArgumentError(`Unable to sanitise ${parameter.in_name}`);
-                    }
-                    outputObject[parameter.out_name] = clean;
-                    return;
-                } else {
-                    throw new InvalidArguementError(`${parameter.in_name} is not valid`);
+            if (!(parameter.in_name in inputObject)) {
+                // check for presence in input
+                if (parameter.required) {
+                    throw new AbsentArguementError(`${parameter.in_name} is required and not provided`);
                 }
-            } else if (parameter.required) {
-                throw new AbsentArguementError(`${parameter.in_name} is required and not provided`);
+            } else if (!parameter.conditions.every(c => c(inputObject[parameter.in_name], inputObject))) {
+                // validate
+                throw new InvalidArguementError(`${parameter.in_name} is not valid`);
+            } else {
+                // transform
+                let clean;
+                try {
+                    clean = parameter.sanitise(inputObject[parameter.in_name]);
+                    outputObject[parameter.out_name] = clean;
+                } catch (err) {
+                    throw new DirtyArgumentError(`Unable to sanitise ${parameter.in_name}`);
+                }
             }
         });
 
