@@ -1,4 +1,5 @@
 const isCallable = require("is-callable");
+const { TemplateError, AbsentArguementError, InvalidArguementError, DirtyArgumentError } = require("./errors");
 
 class RequestTemplate {
     constructor(params) {
@@ -9,7 +10,7 @@ class RequestTemplate {
             if ('in_name' in parameter && (typeof parameter['in_name'] === 'string' || parameter['in_name'] instanceof String)) {
                 out.in_name = parameter['in_name'];
             } else {
-                throw new Error('fuck');
+                throw new TemplateError('in_name not provided');
             }
 
             // out_name
@@ -17,7 +18,7 @@ class RequestTemplate {
                 if (typeof parameter['out_name'] === 'string' || parameter['out_name'] instanceof String) {
                     out.out_name = parameter['out_name'];
                 } else {
-                    throw new Error('fuck');
+                    throw new TemplateError('out_name is not a string');
                 }
             } else {
                 out.out_name = out.in_name;
@@ -30,7 +31,7 @@ class RequestTemplate {
                 } else if (parameter['required'] === false) {
                     out.required = false;
                 } else {
-                    throw new Error('fuck');
+                    throw new TemplateError('required is not a boolean');
                 }
             } else {
                 out.required = false;
@@ -41,7 +42,7 @@ class RequestTemplate {
                 if (parameter['conditions'].every(c => isCallable(c))) {
                     out.conditions = parameter['conditions'];
                 } else {
-                    throw new Error('fuck');
+                    throw new TemplateError('one or more conditions is not callable');
                 }
             } else {
                 out.conditions = [];
@@ -52,7 +53,7 @@ class RequestTemplate {
                 if (isCallable(parameter['sanitise'])) {
                     out.sanitise = parameter['sanitise'];
                 } else {
-                    throw new Error('fuck');
+                    throw new TemplateError('sanitise is not callable');
                 }
             } else {
                 out.sanitise = a=>a;
@@ -72,15 +73,15 @@ class RequestTemplate {
                     try {
                         clean = parameter.sanitise(inputObject[parameter.in_name]);
                     } catch (err) {
-                        throw new Error('fuck');
+                        throw new DirtyArgumentError(`Unable to sanitise ${parameter.in_name}`);
                     }
                     outputObject[parameter.out_name] = clean;
                     return;
                 } else {
-                    throw new Error('fuck');
+                    throw new InvalidArguementError(`${parameter.in_name} is not valid`);
                 }
             } else if (parameter.required) {
-                throw new Error('fuck');
+                throw new AbsentArguementError(`${parameter.in_name} is required and not provided`);
             }
         });
 
