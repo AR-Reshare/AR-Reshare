@@ -7,58 +7,54 @@ class RequestTemplate {
             let out = {};
 
             // in_name
-            if ('in_name' in parameter && (typeof parameter['in_name'] === 'string' || parameter['in_name'] instanceof String) && parameter['in_name'].length > 0) {
-                out.in_name = parameter['in_name'];
-            } else {
+            if (!('in_name' in parameter)) {
                 throw new TemplateError('in_name not provided');
+            } else if (!(typeof parameter['in_name'] === 'string' || parameter['in_name'] instanceof String)) {
+                throw new TemplateError('in_name not a string');
+            } else if (parameter['in_name'].length === 0) {
+                throw new TemplateError('in_name empty');
+            } else {
+                out.in_name = parameter['in_name'];
             }
 
             // out_name
-            if ('out_name' in parameter) {
-                if ((typeof parameter['out_name'] === 'string' || parameter['out_name'] instanceof String ) && parameter['out_name'].length > 0) {
-                    out.out_name = parameter['out_name'];
-                } else {
-                    throw new TemplateError('out_name is not a string');
-                }
-            } else {
+            if (!('out_name' in parameter)) {
                 out.out_name = out.in_name;
+            } else if (!(typeof parameter['out_name'] === 'string' || parameter['out_name'] instanceof String )) {
+                throw new TemplateError('out_name not a string');
+            } else if (parameter['out_name'].length === 0) {
+                throw new TemplateError('out_name empty');
+            } else {
+                out.out_name = parameter['out_name'];
             }
 
             // required
-            if ('required' in parameter) {
-                if (parameter['required'] === true || parameter['required'] === false) {
-                    out.required = parameter['required'];
-                } else {
-                    throw new TemplateError('required is not a boolean');
-                }
-            } else {
+            if (!('required' in parameter)) {
                 out.required = false;
+            } else if (!(parameter['required'] === true || parameter['required'] === false)) {
+                throw new TemplateError('required is not a boolean');
+            } else {
+                out.required = parameter['required'];
             }
 
             // conditions
-            if ('conditions' in parameter) {
-                if (Array.isArray(parameter['conditions'])) {
-                    if (parameter['conditions'].every(c => isCallable(c))) {
-                        out.conditions = parameter['conditions'];
-                    } else {
-                        throw new TemplateError('one or more conditions is not callable');
-                    }
-                } else {
-                    throw new TemplateError('conditions is not array');
-                }
-            } else {
+            if (!('conditions' in parameter)) {
                 out.conditions = [];
+            } else if (!Array.isArray(parameter['conditions'])) {
+                throw new TemplateError('conditions is not array');
+            } else if (parameter['conditions'].some(c => !isCallable(c))) {
+                throw new TemplateError('one or more conditions is not callable');
+            } else {
+                out.conditions = parameter['conditions'];
             }
 
             // sanitise
-            if ('sanitise' in parameter) {
-                if (isCallable(parameter['sanitise'])) {
-                    out.sanitise = parameter['sanitise'];
-                } else {
-                    throw new TemplateError('sanitise is not callable');
-                }
-            } else {
+            if (!('sanitise' in parameter)) {
                 out.sanitise = a=>a;
+            } else if (!isCallable(parameter['sanitise'])) {
+                throw new TemplateError('sanitise is not callable');
+            } else {
+                out.sanitise = parameter['sanitise'];
             }
 
             return out;
