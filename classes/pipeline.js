@@ -27,39 +27,14 @@ class Pipeline {
         //      with an accountID property added (the result of SecurityValidate)
 
         return new Promise((resolve, reject) => {
-            // each parameter has:
-            /*  in_name
-                out_name
-                type
-                validation conditions
-                sanitisation function
-                required/optional
-            */
-            let outputObject = {};
+            let outputObject;
 
             try {
-                requestSchema.forEach((parameter) => {
-                    if (parameter.in_name in inputObject) {
-                        if (parameter.conditions.every(c => c(inputObject[parameter.in_name], inputObject))) {
-                            outputObject[parameter.out_name] = parameter.sanitise(inputObject[parameter.in_name]);
-                            return;
-                        }
-                    }
-                    if (parameter.required) {
-                        throw new Error('fuck');
-                    }
-                });
+                outputObject = requestSchema.process(inputObject);
                 resolve(outputObject);
             } catch (err) {
                 reject(err);
             }
-
-            // if the validation is successful
-                // resolve(outputObject);
-                // outputObject: an object containing the validated and possibly transformed parameters specified in the requestSchema
-            // otherwise
-                // reject(err);
-                // err: an Error object representing the type of error, most likely 400 or 404
         });
     }
 
