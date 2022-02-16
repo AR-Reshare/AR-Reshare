@@ -153,6 +153,30 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(names).toStrictEqual(['test', 'test', 'test', 'test', 'test']);
     });
 
+    test('Class 8: queries with multiple from_input parameter', () => {
+        let queries = {
+            test: {
+                text: 'SELECT userid FROM Account WHERE username = $1',
+                times: inp => inp['username'].length,
+                values: [{
+                    from_input: 'username',
+                }],
+            },
+        };
+        let order = ['test'];
+        let inputObject = {username: ['Testy McTestface', 'Kevin McTestface', 'Ronnie Omelettes']};
+
+        let template = new SQLTemplate(queries, order);
+        let [names, result] = template.build(inputObject);
+
+        expect(result).toHaveLength(3);
+        for (let i=0; i<3; i++) {
+            expect(result[i]).toHaveProperty('text', queries.test.text);
+            expect(result[i]).toHaveProperty('values', [inputObject.username[i]]);
+        }
+        expect(names).toStrictEqual(['test', 'test', 'test']);
+    });
+
     test('Class 8: queries with multiple backreference parameter', () => {
         let queries = {
             test1: {

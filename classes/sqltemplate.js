@@ -161,8 +161,19 @@ class SQLTemplate {
                     // handle from_input
                     } else if (typeof valueCons === 'object' && 'from_input' in valueCons) {
                         if (valueCons['from_input'] in inputObject) {
-                            for (let i=0; i<queryTimes; i++) {
-                                nextqueryvalueses[i].push(inputObject[valueCons['from_input']]);
+                            let val = inputObject[valueCons['from_input']];
+
+                            // value is array and length matches times
+                            if (Array.isArray(val) && val.length === queryTimes) {
+                                for (let i=0; i<queryTimes; i++) {
+                                    nextqueryvalueses[i].push(inputObject[valueCons['from_input']][i]);
+                                }
+
+                            // value is not array or length does not match times
+                            } else {
+                                for (let i=0; i<queryTimes; i++) {
+                                    nextqueryvalueses[i].push(inputObject[valueCons['from_input']]);
+                                }
                             }
 
                         } else {
