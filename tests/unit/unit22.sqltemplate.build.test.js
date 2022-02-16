@@ -177,7 +177,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(names).toStrictEqual(['test', 'test', 'test']);
     });
 
-    test('Class 8: queries with multiple backreference parameter', () => {
+    test('Class 9: queries with multiple backreference parameter', () => {
         let queries = {
             test1: {
                 text: 'SELECT NOW() AS now',
@@ -226,7 +226,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         ]);
     });
 
-    test('Class 9: query with arbitrary callable parameter', () => {
+    test('Class 10: query with arbitrary callable parameter', () => {
         let queries = {
             test: {
                 text: 'SELECT userid FROM Account WHERE username = $1',
@@ -247,7 +247,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(names).toStrictEqual(['test']);
     });
 
-    test('Class 10: no queries', () => {
+    test('Class 11: no queries', () => {
         let queries = {};
         let order = [];
         let inputObject = {};
@@ -259,7 +259,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(names).toStrictEqual([]);
     });
 
-    test('Class 11: query with from_input where key doesn\'t exist', () => {
+    test('Class 12: query with from_input where key doesn\'t exist', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -275,7 +275,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 12: query with exceptional condition', () => {
+    test('Class 13: query with exceptional condition', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -289,7 +289,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 13: query with exceptional times', () => {
+    test('Class 14: query with exceptional times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -303,7 +303,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 14: query with non-numeric times', () => {
+    test('Class 15: query with non-numeric times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -317,7 +317,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 15: query with non-integer times', () => {
+    test('Class 16: query with non-integer times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -331,7 +331,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 16: query with negative times', () => {
+    test('Class 17: query with negative times', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -345,7 +345,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 17: query with multiple backreference but different number of times', () => {
+    test('Class 18: query with multiple backreference but different number of times', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -366,7 +366,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 18: query with exceptional arbitrary callable parameter', () => {
+    test('Class 19: query with exceptional arbitrary callable parameter', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -380,7 +380,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 19: query with backreference to conditional-negative query', () => {
+    test('Class 20: query with backreference to conditional-negative query', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -400,7 +400,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
     });
 
-    test('Class 20: no queries with error on empty transaction', () => {
+    test('Class 21: no queries with error on empty transaction', () => {
         let queries = {
             test: {
                 text: 'w/e',
