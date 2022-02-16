@@ -1,4 +1,4 @@
-const { AbsentArgumentError, InvalidArgumentError, DirtyArgumentError } = require('../../classes/errors');
+const { AbsentArgumentError, InvalidArgumentError, DirtyArgumentError, UnprocessableArgumentError } = require('../../classes/errors');
 const RequestTemplate = require('../../classes/requesttemplate');
 
 describe('Unit Test 25 - RequestTemplate process', () => {
@@ -225,5 +225,26 @@ describe('Unit Test 25 - RequestTemplate process', () => {
         let template = new RequestTemplate([param1, param2]);
 
         expect(() => template.process(inputObject)).toThrow(DirtyArgumentError);
+    });
+
+    test('Class 11: unprocessable object', () => {
+        let param1 = {
+            in_name: 'username',
+            conditions: [(username) => {throw new Error('oops');}],
+        };
+        let param2 = {
+            in_name: 'password',
+            conditions: [
+                (password, object) => (object['username'] === 'Testy McTestface' && password === 'Password123'),
+            ],
+        };
+
+        let inputObject = {
+            username: 'Testy McTestface',
+            password: 'Password123',
+        };
+
+        let template = new RequestTemplate([param1, param2]);
+        expect(() => template.process(inputObject)).toThrow(UnprocessableArgumentError);
     });
 });
