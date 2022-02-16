@@ -20,12 +20,13 @@ class Pipeline {
         });
     }
 
+    /**
+     * Validates an input object against a request schema
+     * @param {RequestTemplate} requestSchema An instance of RequestTemplate to validate against
+     * @param {object} inputObject An object, most likely request.body or request.query, to validate
+     * @returns {Promise<object>} Key/value pairs selected from inputObject by requestSchema and sanitised
+     */
     DataValidate(requestSchema, inputObject) {
-        // requestSchema: an object detailing which properties to validate, whether to include them in the output, and so on
-        //      (see schemas/request-schemas.js)
-        // inputObject: an object to validate. In most cases, this will be either request.body or request.query,
-        //      with an accountID property added (the result of SecurityValidate)
-
         return new Promise((resolve, reject) => {
             let outputObject;
 

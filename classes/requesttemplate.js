@@ -2,6 +2,11 @@ const isCallable = require("is-callable");
 const { TemplateError, AbsentArguementError, InvalidArguementError, DirtyArgumentError } = require("./errors");
 
 class RequestTemplate {
+
+    /**
+     * Constructs a RequestTemplate and validates it
+     * @param {Array<object>} params An array of parameter objects. Each must contain a string in_name, plus optional string out_name, boolean required, Array<callable> conditions, and callable sanitise.
+     */
     constructor(params) {
         this.params = params.map(parameter => {
             let out = {};
@@ -61,6 +66,11 @@ class RequestTemplate {
         });
     }
 
+    /**
+     * Validates and sanitises the input object
+     * @param {object} inputObject The object to validate
+     * @returns {object} A sanitised version of the object, possibly with keys removed and/or renamed
+     */
     process(inputObject) {
         let outputObject = {};
 
