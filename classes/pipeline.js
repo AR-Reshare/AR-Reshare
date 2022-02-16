@@ -43,16 +43,15 @@ class Pipeline {
      * Creates and executes a transaction on the database
      * @param {SQLTemplate} sqlTemplate Template of the SQL transaction, from the SQLTemplate class
      * @param {object} formatObject Object whose values to insert into the transaction
-     * @param {number} accountID ID of the user who is performing this request
      * @returns 
      */
-    Store(sqlTemplate, formatObject, accountID) {
+    Store(sqlTemplate, formatObject) {
         return new Promise((resolve, reject) => {
             
             let names, transaction;
             // build transaction
             try {
-                let built = sqlTemplate.build(formatObject, accountID);
+                let built = sqlTemplate.build(formatObject);
                 names = built[0];
                 transaction = built[1];
             } catch (err) {

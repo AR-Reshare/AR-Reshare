@@ -148,37 +148,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 10: query with accountID parameter', () => {
-        let queries = {
-            test: {
-                text: 'SELECT username FROM Account WHERE accountid = $1',
-                values: ['accountID'],
-            },
-        };
-        let order = ['test'];
-
-        let template = new SQLTemplate(queries, order);
-
-        expect(template).toHaveProperty('queryDict', queries);
-        expect(template).toHaveProperty('order', order);
-        expect(template).toHaveProperty('errorOnEmptyResponse', false);
-        expect(template).toHaveProperty('errorOnEmptyTransaction', false);
-        expect(template).toHaveProperty('dropFromResults', false);
-    });
-
-    test('Class 11: query with values containing string except for accountID', () => {
-        let queries = {
-            test: {
-                text: 'w/e',
-                values: ['invalid'],
-            },
-        };
-        let order = ['test'];
-
-        expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
-    });
-
-    test('Class 12: query with callable parameter', () => {
+    test('Class 10: query with callable parameter', () => {
         let queries = {
             test: {
                 text: 'SELECT userid FROM Account WHERE username = $1',
@@ -198,7 +168,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(template).toHaveProperty('dropFromResults', false);
     });
 
-    test('Class 13: query with both from_input and from_query in single value', () => {
+    test('Class 11: query with both from_input and from_query in single value', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -216,7 +186,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 14: query with value neither from_input nor from_query', () => {
+    test('Class 12: query with value neither from_input nor from_query', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -230,7 +200,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 15: query with valid from_input', () => {
+    test('Class 13: query with valid from_input', () => {
         let queries = {
             test: {
                 text: 'SELECT username FROM Account WHERE email = $1',
@@ -250,7 +220,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(template).toHaveProperty('dropFromResults', false);
     });
 
-    test('Class 16: query with valid backreference', () => {
+    test('Class 14: query with valid backreference', () => {
         let queries = {
             test1: {
                 text: 'SELECT userid FROM Account WHERE email = \'ronnieo@yahoo.com\'',
@@ -273,7 +243,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(template).toHaveProperty('dropFromResults', false);
     });
 
-    test('Class 17: backreference empty', () => {
+    test('Class 15: backreference empty', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -290,7 +260,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 18: backreference doesn\'t specify field', () => {
+    test('Class 16: backreference doesn\'t specify field', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -307,7 +277,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 19: backreferencing future query', () => {
+    test('Class 17: backreferencing future query', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -324,7 +294,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 20: backreferencing non-existant query', () => {
+    test('Class 18: backreferencing non-existant query', () => {
         let queries = {
             test1: {
                 text: 'w/e',
@@ -341,7 +311,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 21: backreferencing self', () => {
+    test('Class 19: backreferencing self', () => {
         let queries = {
             test: {
                 text: 'w/e',
@@ -355,7 +325,7 @@ describe('Unit Test 21 - SQLTemplate.constructor', () => {
         expect(() => new SQLTemplate(queries, order)).toThrow(QueryTemplateError);
     });
 
-    test('Class 22: query with unparsable value', () => {
+    test('Class 20: query with unparsable value', () => {
         let queries = {
             test: {
                 text: 'w/e',

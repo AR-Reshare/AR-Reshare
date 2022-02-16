@@ -55,17 +55,10 @@ class SQLTemplate {
             }
 
             if ('values' in q) {
-                // values can be one of 4 things
+                // values can be one of 3 things
                 q.values.forEach(elem => {
-                    // the string "accountID"
-                    if (typeof elem === 'string' || elem instanceof String) {
-                        if (elem !== 'accountID') {
-                            throw new QueryTemplateError(`Value argument "${elem}" not recognised`);
-                        }
-                        return;
-
                     // callables
-                    } else if (isCallable(elem)) {
+                    if (isCallable(elem)) {
                         return;
                     
                     // or objects containing exactly one of from_input or from_query
@@ -104,10 +97,9 @@ class SQLTemplate {
     /**
      * Build the set of queries from an input object and account ID.
      * @param {*} inputObject Object containing values which can be used as parameters to the queries.
-     * @param {*} accountID ID of the user who is performing this request.
      * @returns A list of queries which can be passed to Database.complexQuery.
      */
-    build(inputObject, accountID) {
+    build(inputObject) {
         let queryList = [], queryNames = [];
 
         this.order.forEach(query => {
@@ -118,7 +110,7 @@ class SQLTemplate {
             // handle the query's condition (conditional execution)
             if ('condition' in this.queryDict[query]) {
                 try {
-                    if (!this.queryDict[query].condition(inputObject, accountID)) {
+                    if (!this.queryDict[query].condition(inputObject)) {
                         return; // skip this query
                     }
 
@@ -130,7 +122,7 @@ class SQLTemplate {
             // handle the query's times (multiple execution)
             if ('times' in this.queryDict[query]) {
                 try {
-                    queryTimes = this.queryDict[query].times(inputObject, accountID);
+                    queryTimes = this.queryDict[query].times(inputObject);
                 } catch {
                     throw new QueryConstructionError('Error in callable times function');
                 }
@@ -152,18 +144,11 @@ class SQLTemplate {
 
                 this.queryDict[query].values.forEach(valueCons => {
 
-                    // handle "accountID"
-                    if (valueCons === 'accountID') {
-                        for (let i=0; i<queryTimes; i++) {
-                            nextqueryvalueses[i].push(accountID);
-                        }
-                        return;
-                    
                     // handle callable
-                    } else if (isCallable(valueCons)) {
+                    if (isCallable(valueCons)) {
                         let value;
                         try {
-                            value = valueCons(inputObject, accountID, queryNames);
+                            value = valueCons(inputObject, queryNames);
                         } catch {
                             throw new QueryConstructionError('Error in callable value constructor');
                         }

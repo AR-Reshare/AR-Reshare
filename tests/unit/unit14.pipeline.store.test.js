@@ -70,10 +70,9 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
-        return pipe.Store(template, inputObject, accountID).then(res => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).then(res => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text);
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);
@@ -94,10 +93,9 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
-        return pipe.Store(template, inputObject, accountID).then(res => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).then(res => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text, built_query[1][0].values);
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);
@@ -122,10 +120,9 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
-        return pipe.Store(template, inputObject, accountID).then(res => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).then(res => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).toBeCalledWith(built_query[1]);
             expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);
@@ -140,12 +137,11 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
         expect.assertions(5);
 
-        return pipe.Store(template, inputObject, accountID).catch(err => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).not.toBeCalled();
@@ -161,15 +157,14 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         mockDBInner.mockReturnValueOnce(exec_err);
 
         expect.assertions(5);
 
-        return pipe.Store(template, inputObject, accountID).catch(err => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text);
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).not.toBeCalled();
@@ -186,15 +181,14 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         mockDBInner.mockReturnValueOnce(exec_err);
 
         expect.assertions(5);
 
-        return pipe.Store(template, inputObject, accountID).catch(err => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text, built_query[1][0].values);
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).not.toBeCalled();
@@ -214,15 +208,14 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         mockDBInner.mockReturnValueOnce(exec_err);
 
         expect.assertions(5);
 
-        return pipe.Store(template, inputObject, accountID).catch(err => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).toBeCalledWith(built_query[1]);
             expect(mockSQLTemplatePrep).not.toBeCalled();
@@ -235,12 +228,11 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
         
         mockSQLTemplateBuild.mockReturnValueOnce(built_query);
         
-        return pipe.Store(template, inputObject, accountID).then(res => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).then(res => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).not.toBeCalled();
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(res).toStrictEqual([]);
@@ -260,10 +252,9 @@ describe('Unit Test 14 - Pipeline.Store', () => {
         let inputObject = {
             test: 'test',
         };
-        let accountID = 42;
 
-        return pipe.Store(template, inputObject, accountID).catch(err => {
-            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject, accountID);
+        return pipe.Store(template, inputObject).catch(err => {
+            expect(mockSQLTemplateBuild).toBeCalledWith(inputObject);
             expect(mockDatabaseSimple).toBeCalledWith(built_query[1][0].text);
             expect(mockDatabaseComplex).not.toBeCalled();
             expect(mockSQLTemplatePrep).toBeCalledWith(built_query[0], db_response);

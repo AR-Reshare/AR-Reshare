@@ -44,4 +44,4 @@ const sqlTemplatesDict = {
     'create-admin': CreateAdminAccountTemplate,
 };
 
-module.exports = {SQLTemplate, ConstructionError, sqlTemplatesDict};
+module.exports = {SQLTemplate, sqlTemplatesDict};
