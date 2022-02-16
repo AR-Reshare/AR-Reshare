@@ -15,7 +15,7 @@ class ValidationError extends Error {
     }
 }
 
-class AbsentArguementError extends ValidationError {
+class AbsentArgumentError extends ValidationError {
     constructor(message) {
         super(message);
         this.name = 'AbsentArgumentError';
@@ -39,7 +39,7 @@ class DirtyArgumentError extends ValidationError {
 module.exports = {
     TemplateError,
     ValidationError,
-    AbsentArguementError,
+    AbsentArgumentError,
     InvalidArguementError,
     DirtyArgumentError,
 };

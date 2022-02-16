@@ -1,5 +1,5 @@
 const isCallable = require("is-callable");
-const { TemplateError, AbsentArguementError, InvalidArguementError, DirtyArgumentError } = require("./errors");
+const { TemplateError, AbsentArgumentError, InvalidArguementError, DirtyArgumentError } = require("./errors");
 
 class RequestTemplate {
 
@@ -78,7 +78,7 @@ class RequestTemplate {
             if (!(parameter.in_name in inputObject)) {
                 // check for presence in input
                 if (parameter.required) {
-                    throw new AbsentArguementError(`${parameter.in_name} is required and not provided`);
+                    throw new AbsentArgumentError(`${parameter.in_name} is required and not provided`);
                 }
             } else if (!parameter.conditions.every(c => c(inputObject[parameter.in_name], inputObject))) {
                 // validate
