@@ -17,6 +17,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
         expect(result[0]).not.toHaveProperty('values');
+        expect(names).toStrictEqual(['test']);
     });
 
     test('Class 2: multiple immediate queries', () => {
@@ -39,6 +40,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result[0]).not.toHaveProperty('values');
         expect(result[1]).toHaveProperty('text', queries.test2.text);
         expect(result[1]).not.toHaveProperty('values');
+        expect(names).toStrictEqual(['test1', 'test2']);
     })
 
     test('Class 3: query with parameter from input', () => {
@@ -59,6 +61,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
         expect(result[0]).toHaveProperty('values', [inputObject.email]);
+        expect(names).toStrictEqual(['test']);
     });
 
     test('Class 4: query with backreference parameter', () => {
@@ -90,6 +93,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result[1]).toHaveProperty('values');
         expect(result[1].values).toHaveLength(1);
         expect(result[1].values[0](partResults)).toBe(13);
+        expect(names).toStrictEqual(['test1', 'test2']);
     });
 
     test('Class 5: query with conditional execution (positive)', () => {
@@ -108,6 +112,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
         expect(result[0]).not.toHaveProperty('values');
+        expect(names).toStrictEqual(['test']);
     });
 
     test('Class 6: query with conditional execution (negative)', () => {
@@ -124,6 +129,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         let [names, result] = template.build(inputObject);
 
         expect(result).toStrictEqual([]);
+        expect(names).toStrictEqual([]);
     });
 
     test('Class 7: query with multiple execution', () => {
@@ -144,6 +150,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
             expect(result[i]).toHaveProperty('text', queries.test.text);
             expect(result[i]).not.toHaveProperty('values');
         }
+        expect(names).toStrictEqual(['test', 'test', 'test', 'test', 'test']);
     });
 
     test('Class 8: queries with multiple backreference parameter', () => {
@@ -188,6 +195,11 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
             expect(result[i]).toHaveProperty('values');
             expect(result[i].values[0](partResults)).toBe(i);
         }
+        expect(names).toStrictEqual([
+            'test1', 'test1', 'test1', 'test1', 'test1',
+            'test2',
+            'test3', 'test3', 'test3', 'test3', 'test3'
+        ]);
     });
 
     test('Class 9: query with arbitrary callable parameter', () => {
@@ -208,6 +220,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         expect(result).toHaveLength(1);
         expect(result[0]).toHaveProperty('text', queries.test.text);
         expect(result[0]).toHaveProperty('values', [inputObject.name42]);
+        expect(names).toStrictEqual(['test']);
     });
 
     test('Class 10: no queries', () => {
@@ -219,6 +232,7 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         let [names, result] = template.build(inputObject);
 
         expect(result).toStrictEqual([]);
+        expect(names).toStrictEqual([]);
     });
 
     test('Class 11: query with from_input where key doesn\'t exist', () => {
