@@ -22,7 +22,14 @@ class AbsentArgumentError extends ValidationError {
     }
 }
 
-class InvalidArguementError extends ValidationError {
+class UnprocessableArgumentError extends ValidationError {
+    constructor(message) {
+        super(message);
+        this.name = 'UnprocessableArgumentError';
+    }
+}
+
+class InvalidArgumentError extends ValidationError {
     constructor(message) {
         super(message);
         this.name = 'InvalidArgumentError';
@@ -40,6 +47,7 @@ module.exports = {
     TemplateError,
     ValidationError,
     AbsentArgumentError,
-    InvalidArguementError,
+    UnprocessableArgumentError,
+    InvalidArgumentError,
     DirtyArgumentError,
 };

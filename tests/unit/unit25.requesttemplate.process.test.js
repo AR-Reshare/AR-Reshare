@@ -1,4 +1,4 @@
-const { AbsentArgumentError, InvalidArguementError, DirtyArgumentError } = require('../../classes/errors');
+const { AbsentArgumentError, InvalidArgumentError, DirtyArgumentError } = require('../../classes/errors');
 const RequestTemplate = require('../../classes/requesttemplate');
 
 describe('Unit Test 25 - RequestTemplate process', () => {
@@ -180,7 +180,7 @@ describe('Unit Test 25 - RequestTemplate process', () => {
         };
 
         let template = new RequestTemplate([param1, param2]);
-        expect(() => template.process(inputObject)).toThrow(InvalidArguementError);
+        expect(() => template.process(inputObject)).toThrow(InvalidArgumentError);
     });
 
     test('Class 9: valid object, sanitise', () => {

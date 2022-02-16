@@ -1,4 +1,4 @@
-const { AbsentArgumentError, InvalidArguementError, DirtyArgumentError } = require('../../classes/errors');
+const { AbsentArgumentError, InvalidArgumentError, DirtyArgumentError } = require('../../classes/errors');
 const Pipeline = require('../../classes/pipeline');
 const RequestTemplate = require('../../classes/requesttemplate');
 
@@ -77,12 +77,12 @@ describe('Unit Test 13 - Pipeline.DataValidate', () => {
             password: 'Password123',
         };
 
-        mockProcess.mockImplementation(() => {throw new InvalidArguementError('something done broked');});
+        mockProcess.mockImplementation(() => {throw new InvalidArgumentError('something done broked');});
         expect.assertions(2);
 
         return pipe.DataValidate(template, inputObject).catch(err => {
             expect(mockProcess).toBeCalledWith(inputObject);
-            expect(err).toBeInstanceOf(InvalidArguementError);
+            expect(err).toBeInstanceOf(InvalidArgumentError);
         });
     });
 

@@ -1,5 +1,5 @@
 const isCallable = require("is-callable");
-const { TemplateError, AbsentArgumentError, InvalidArguementError, DirtyArgumentError } = require("./errors");
+const { TemplateError, AbsentArgumentError, UnprocessableArgumentError, InvalidArgumentError, DirtyArgumentError } = require("./errors");
 
 class RequestTemplate {
 
@@ -80,9 +80,15 @@ class RequestTemplate {
                 if (parameter.required) {
                     throw new AbsentArgumentError(`${parameter.in_name} is required and not provided`);
                 }
-            } else if (!parameter.conditions.every(c => c(inputObject[parameter.in_name], inputObject))) {
+            } else if (!parameter.conditions.every(c => {
+                    try{
+                        return c(inputObject[parameter.in_name], inputObject);
+                    } catch (err) {
+                        throw new UnprocessableArgumentError(`${parameter.in_name} could not be processed`);
+                    }
+                })) {
                 // validate
-                throw new InvalidArguementError(`${parameter.in_name} is not valid`);
+                throw new InvalidArgumentError(`${parameter.in_name} is not valid`);
             } else {
                 // transform
                 let clean;
