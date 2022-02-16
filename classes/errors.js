@@ -34,12 +34,33 @@ class QueryTemplateError extends QueryError {
     }
 }
 
+class EmptyQueryError extends QueryError {
+    constructor(message) {
+        super(message);
+        this.name = 'EmptyQueryError';
+    }
+}
+
+class EmptyResponseError extends QueryError {
+    constructor(message) {
+        super(message);
+        this.name = 'EmptyResponseError';
+    }
+}
+
 class QueryConstructionError extends QueryError {
     // Represents an error in constructing a query
     // i.e. Node-side
     constructor(message) {
         super(message);
         this.name = 'QueryConstructionError';
+    }
+}
+
+class BackreferenceError extends QueryError {
+    constructor(message) {
+        super(message);
+        this.name = 'BackreferenceError';
     }
 }
 
@@ -57,7 +78,10 @@ module.exports = {
     DatabaseConnectionError,
     DBClientNotAvailableError,
     QueryTemplateError,
+    EmptyQueryError,
+    EmptyResponseError,
     QueryConstructionError,
+    BackreferenceError,
     QueryExecutionError,
     // ...
 }

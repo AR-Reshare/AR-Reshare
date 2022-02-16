@@ -1,6 +1,6 @@
 const Database = require('../../classes/database');
 const {Pool} = require('pg');
-const { QueryExecutionError, DBClientNotAvailableError, QueryConstructionError } = require('../../classes/errors');
+const { QueryExecutionError, DBClientNotAvailableError, QueryConstructionError, BackreferenceError } = require('../../classes/errors');
 
 // test values
 const mockQueryText = 'MOCK query ON Database';
@@ -206,7 +206,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toBeInstanceOf(QueryConstructionError);
+            expect(err).toBeInstanceOf(BackreferenceError);
         });
     });
 
@@ -229,7 +229,7 @@ describe('Unit Test 20 - Database.complexQuery', () => {
             expect(mockQuery).nthCalledWith(2, q0, []);
             expect(mockQuery).nthCalledWith(3, 'ROLLBACK');
             expect(mockRelease).toBeCalledTimes(1);
-            expect(err).toBeInstanceOf(QueryConstructionError);
+            expect(err).toBeInstanceOf(BackreferenceError);
         });
     });
 

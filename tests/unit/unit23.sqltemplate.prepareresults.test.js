@@ -1,4 +1,4 @@
-const { QueryExecutionError } = require('../../classes/errors');
+const { EmptyResponseError } = require('../../classes/errors');
 const SQLTemplate = require('../../classes/sqltemplate');
 
 describe('Unit Test 23 - SQLTemplate.prepareResults', () => {
@@ -126,7 +126,7 @@ describe('Unit Test 23 - SQLTemplate.prepareResults', () => {
         let db_response = [[]];
 
         let template = new SQLTemplate(queries, order, options);
-        expect(() => template.prepareResults(queryNames, db_response)).toThrow(QueryExecutionError);
+        expect(() => template.prepareResults(queryNames, db_response)).toThrow(EmptyResponseError);
     });
 
     test('Class 7: drop all but empty, with error', () => {
@@ -151,6 +151,6 @@ describe('Unit Test 23 - SQLTemplate.prepareResults', () => {
         let db_response = [[{now: 123}], [{now: 456}], [{next: 789}], []];
 
         let template = new SQLTemplate(queries, order, options);
-        expect(() => template.prepareResults(queryNames, db_response)).toThrow(QueryExecutionError);
+        expect(() => template.prepareResults(queryNames, db_response)).toThrow(EmptyResponseError);
     });
 });

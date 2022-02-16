@@ -1,5 +1,5 @@
 const isCallable = require('is-callable');
-const {QueryTemplateError, QueryConstructionError, QueryExecutionError} = require('./errors');
+const {QueryTemplateError, QueryConstructionError, EmptyResponseError, EmptyQueryError} = require('./errors');
 
 const getAllIndexes = (arr, elem) => {
     let indexes = [];
@@ -232,7 +232,7 @@ class SQLTemplate {
         });
 
         if (queryList.length === 0 && this.errorOnEmptyTransaction) {
-            throw new QueryConstructionError('Transaction contains no queries');
+            throw new EmptyQueryError('Transaction contains no queries');
         }
 
         return [queryNames, queryList];
@@ -245,7 +245,7 @@ class SQLTemplate {
             out = out.filter((_, i) => !this.dropFromResults.includes(queryNames[i]));
         }
         if (this.errorOnEmptyResponse && !out.some(res => res.length !== 0)) {
-            throw new QueryExecutionError('No values returned from query');
+            throw new EmptyResponseError('No values returned from query');
         }
 
         return out;

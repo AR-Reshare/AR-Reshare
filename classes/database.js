@@ -3,7 +3,7 @@
  * Pipeline.Store, and whatever other functions end up accessing the database, should do so by calling something in this file.
  */
 
-const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError} = require('./errors');
+const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError, BackreferenceError} = require('./errors');
 const {Pool} = require('pg');
 const isCallable = require('is-callable');
 
@@ -31,12 +31,12 @@ const nextQueryHandler = (client, queries, result=[]) => {
                     try {
                         temp = elem(result);
                     } catch (e) {
-                        reject(new QueryConstructionError('Error in Backreference'));
+                        reject(new BackreferenceError('Error in Backreference'));
                         return;
                     }
 
                     if (temp === undefined) {
-                        throw new QueryConstructionError('Backreference did not resolve to a value');
+                        throw new BackreferenceError('Backreference did not resolve to a value');
                     }
                 }
 

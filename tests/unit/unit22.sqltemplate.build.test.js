@@ -1,5 +1,5 @@
 const SQLTemplate = require('../../classes/sqltemplate');
-const {QueryConstructionError} = require('../../classes/errors');
+const {QueryConstructionError, EmptyQueryError} = require('../../classes/errors');
 
 describe('Unit Test 22 - SQLTemplate.build', () => {
     test('Class 1: immediate query', () => {
@@ -413,6 +413,6 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         let accountID = 42;
 
         let template = new SQLTemplate(queries, order, options);
-        expect(() => template.build(inputObject, accountID)).toThrow(QueryConstructionError);
+        expect(() => template.build(inputObject, accountID)).toThrow(EmptyQueryError);
     });
 });
