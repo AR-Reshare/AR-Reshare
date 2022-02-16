@@ -4,7 +4,7 @@ const creds = require('../../connection.json');
 
 describe('Integration Test 18 - Database constructor', () => {
     test('Class 1: valid credentials', () => {
-        let db = new Database(creds['dev']);
+        let db = new Database(creds['test']);
         return db.testConnection().then(res => {
             expect(res).toBe(undefined);
             db.end();
@@ -12,7 +12,7 @@ describe('Integration Test 18 - Database constructor', () => {
     });
 
     test('Class 2: invalid credentials', () => {
-        let invalid_creds = creds['dev'];
+        let invalid_creds = creds['test'];
         invalid_creds['user'] = 'User McDoesntexist';
 
         let db = new Database(invalid_creds);
