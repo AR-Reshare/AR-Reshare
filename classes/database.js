@@ -65,11 +65,17 @@ class Database {
      * @param {Object} db_credentials The credentials to use to access the database (e.g. connection.json).
      */
     constructor (db_credentials) {
-        try {
-            this.pool = new Pool(db_credentials);
-        } catch (e) {
-            throw new DatabaseConnectionError('Unable to connect to Postgres instance');
-        }
+        this.pool = new Pool(db_credentials);
+    }
+
+    testConnection () {
+        return new Promise((resolve, reject) => {
+            this.pool.query('SELECT NOW() AS now').then(() => {
+                resolve()
+            }).catch(() => {
+                reject(new DatabaseConnectionError('Unable to connect to Postgres instance'));
+            });
+        });
     }
 
     /**
