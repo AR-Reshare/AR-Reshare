@@ -2,11 +2,12 @@
 
 FROM node:17.4-alpine3.15
 ENV NODE_ENV=production
-RUN mkdir /app
+
 WORKDIR /app
 COPY ["package.json", "package-lock.json*", "./"]
-RUN npm install --production 
+
+RUN npm install
 # TODO: Edit the COPY src path
-COPY ./src .
-CMD ["node" "server.js"]
+COPY . .
+CMD ["node", "server.js"]
 
