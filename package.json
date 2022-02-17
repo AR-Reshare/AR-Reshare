@@ -7,8 +7,6 @@
     "doc": "docs"
   },
   "scripts": {
-    "postinstall": "node scripts/db-setup.js",
-    "setup": "node scripts/db-setup.js",
     "test": "jest --verbose"
   },
   "repository": {
