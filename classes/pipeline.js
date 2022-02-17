@@ -1,5 +1,8 @@
 class Pipeline {
-    constructor() {} // constructor is deliberately empty
+    constructor(db, logger=console) {
+        this.db = db; // expected to implement simpleQuery and complexQuery
+        this.logger = logger; // expected to implement .log, .error, and .warn
+    }
 
     SecurityValidate(authenticationType, token, rejectIfBanned) {
         // authType: a string from the following set:
@@ -39,21 +42,47 @@ class Pipeline {
         });
     }
 
+    /**
+     * Creates and executes a transaction on the database
+     * @param {SQLTemplate} sqlTemplate Template of the SQL transaction, from the SQLTemplate class
+     * @param {object} formatObject Object whose values to insert into the transaction
+     * @returns 
+     */
     Store(sqlTemplate, formatObject) {
-        // sqlTemplate: the template SQL string, as in schemas/sql-templates.js
-        // formatObject: an object containing values which can be passed into the template string. Can be the output of DataValidate
-
         return new Promise((resolve, reject) => {
-            // if the operation is successful, and was a SELECT query (i.e. something that returns data)
-                resolve(dbResponse);
-                // dbResponse: an object containing the response from the database
-            // if the operation is successful, and was an INSERT, UPDATE, or other non-data-returning query
-                resolve(rowPK);
-                // rowPK: the primary key of the row that was inserted/changed.
-                //      If multiple rows were changed, rowPK will be an array of them
-            // otherwise
-                reject(err);
-                // err: an Error object representing the type of error, most likely 404
+            
+            let names, transaction;
+            // build transaction
+            try {
+                let built = sqlTemplate.build(formatObject);
+                names = built[0];
+                transaction = built[1];
+            } catch (err) {
+                reject(err); // 400
+            }
+            
+            let prepAndResolve = (result) => {
+                let out;
+                try {
+                    out = sqlTemplate.prepareResults(names, result);
+                    resolve(out);
+                } catch (err) {
+                    reject(err);
+                }
+            };
+
+            // execute transaction
+            if (transaction.length === 0) {
+                resolve([]); // no queries, so don't do anything
+            } else if (transaction.length === 1) {
+                if ('values' in transaction[0]) {
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, reject);
+                } else {
+                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, reject);
+                }
+            } else {
+                this.db.complexQuery(transaction).then(prepAndResolve, reject);
+            }
         });
     }
 
