@@ -113,8 +113,8 @@ class CreateEntityPipeline extends Pipeline {
     }
 }
 
-module.exports({
+module.exports = {
     CreateEntityPipeline,
     // ...
     // add other pipeline types here as they are defined
-});
+};
