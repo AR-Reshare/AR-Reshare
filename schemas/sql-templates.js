@@ -2,6 +2,11 @@
 */
 const SQLTemplate = require('../classes/sqltemplate');
 
+/**
+ * Some things to bear in mind when creating these:
+ *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
+ */
+
 // define a bunch of SQLTemplates, including maybe some custom ones that overwrite .build
 const CreateAccountTemplate = new SQLTemplate({
     create: {

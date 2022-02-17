@@ -78,15 +78,21 @@ class CreateEntityPipeline extends Pipeline {
         }
     }
 
+    /**
+     * Executes the pipeline on a particular request and response
+     * @param {Object} req The request object provided by Express
+     * @param {Object} res The response object provided by Express
+     */
     Execute(req, res) {
-        // req: the request object as per Express
-        // res: the response object as per Express
-
+        let user_accountID = null;
         let result_final = null;
         let error_final = null;
 
+        // check user's authorisation
         this.SecurityValidate(this.authMode, req.headers.authorization).then(accountID => {
+            // build the object to validate
             let inputObject;
+            user_accountID = accountID;
             if (this.method === 'query') {
                 inputObject = {...req.query, ...req.params};
             } else {
@@ -95,11 +101,18 @@ class CreateEntityPipeline extends Pipeline {
             inputObject['accountID'] = accountID;
             return this.DataValidate(this.requestTemplate, inputObject);
         }).then(validated => {
+            // database operations
             return this.Store(this.sqlTemplate, validated);
         }).then(results => {
+            // send notifications as needed
             if (this.notify) {
-                // TODO - identify targetAccounts
-                let targetAccounts = [];
+                let targetAccounts;
+                if (this.notify === 'self') {
+                    targetAccounts = [user_accountID];
+                } else { // this.notify === 'affected'
+                    targetAccounts = results[results.length - 1];
+                    // Create queries should always have the last row be of affected users' IDs
+                }
                 this.PushRespond(this.pushTemplate, results, targetAccounts);
             }
             result_final = results;
@@ -108,6 +121,7 @@ class CreateEntityPipeline extends Pipeline {
             error_final = err;
             return;
         }).finally(() => {
+            // build response
             this.APIRespond(this.responseTemplate, res, result_final, error_final);
         });
     }
