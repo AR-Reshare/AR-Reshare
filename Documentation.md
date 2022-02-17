@@ -56,3 +56,21 @@ If the promise rejects, it will do so with one of the following errors:
 ### APIResond
 
 ### PushRespond
+
+## Database (classes/database.js)
+The Database class can be used to interact with the database by passing queries. It is recommended that these queries be built first by an SQLTemplate, but that is not necessary.
+
+### Connection
+When an instance of Database is initialised, it should be passed a credentials object. This object must specify the user, password, hostname, and database. Calling `.testConnection()` is recommended - it will resolve if the connection is successful and reject if it failed.
+
+### Issuing queries
+There are two methods for querying the database, `simpleQuery` and `complexQuery`. The former takes two arguments, the SQL statement and an optional array of values to substitute into it. The latter takes one argument, a list of objects representing queries which must each have a text property (the SQL statement) and an optional values property (the values to substitute in). The values may be callables, in which case they are called with the current results of the queries and the return value is used as the parameter.
+
+These functions will usually resolve with an array of arrays corresponding to the results of the queries, as per `Pipeline.Store`. If they reject, they will reject with one of the following:
+
+| error | description |
+|-------|-------------|
+| QueryConstructionError | One of the query objects does not contain a text property |
+| DBClientNotAvailableError | No database clients were available to service the request |
+| QueryExecutionError | The query threw an error at the database |
+| BackreferenceError | A callable value threw an error or did not return a value |
