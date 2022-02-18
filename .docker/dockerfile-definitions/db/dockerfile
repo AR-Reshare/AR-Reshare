@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+
+# TODO: Reorganize the steps for this dockerfile
+# TODO: Sort out the paths
+# TODO: Test the dockerfile
+# NOTE: We are using a node base image instead of a postgres img due to the db build scripts written in node
+
+FROM postgres
+
+ENV POSTGRES_PASSWORD docker
+# RUN apk add openrc
+# RUN apk add nodejs npm
+RUN apt-get update -y
+RUN apt-get install npm nodejs -yy
+
+RUN mkdir -p /usr/db/
+WORKDIR /usr/db/
+
+COPY ["./db/database-init.pgsql", "./database-init.pgsql"]
+COPY ["package.json", "package-lock.json", "./"]
+
+## Consider reducing the number of dependencies required (maybe a packag.json specifically for setup?)
+# RUN apk add postgres postgres-contrib
+RUN npm install
+
+RUN pg_createcluster 14 main
+RUN ["service", "postgresql", "start"]
+RUN ["service", "postgresql", "start"]
+RUN ["psql", "-f", "/db/database-init.pgsq", "-v", "account=arreshare", "-v", "password=password"]
+
+USER postgres
+# NOTE: db is ran automatically
+# RUN [ "rc-service", "postgresql", "start"]
+
+## TODO: Sort out the variable names
+# RUN psql -f /db/database-init.pgsql -v account=accountreshare -v password=password
+
+
+# -- NOTE: This sets up the database with the correct user
+## -f = from filename, -v is assingment of parameter values
+## psql -f /db/database-init.pgsql -v account=arreshare-{dbtype} password={password}
+
+# USER postgres
+
+CMD ["service", "postgres", "start"]
+
