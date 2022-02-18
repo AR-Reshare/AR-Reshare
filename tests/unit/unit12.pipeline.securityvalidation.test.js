@@ -38,38 +38,87 @@ const jwt = require("jsonwebtoken");
 // states. So far, the basic functionality of this component shouldn't have any dependencies (although, the recent
 // decision to merge verification and signing components together will most likley change this).
 
+// TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityvalidate
+const Pipeline = require('../../classes/pipeline');
+const jwt = required('jsonwebtoken');
+const definitions
+
+let pipe, validPayload, validToken;
+
+beforeAll(() => {
+    pipe = new Pipeline();
+    validPayload = {};
+    validToken = jwt.sign(validPayload)
+});
+
+
+
 describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", () => {
     test("Class 1: Token String Empty", () => {
-        //pass
+        let inputToken = "";
+        let resourceName = "/";
+
+        return expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(InvalidTokenError);
     });
+
     test("Class 2: Token String is not valid base64", () => {
-        //pass
+        let inputToken = "!(xfdsa]x";
+        let resourceName = "/";
+
+        return expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(InvalidTokenError);
     });
+
     test("Class 3: Token String is not in valid JWT format", () => {
-        //pass
+        // inputToken = base64.encode("hello") + "." + base64.encode("there")
+        let inputToken = "aGVsbG8K.dGhlcmUK";
+        let resourceName = "/";
+
+        return expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(InvalidTokenError);
     });
+
     test("Class 4: Token String isn't parsed into valid JSON object", () => {
-        //pass
+        // inputToken = base64.encode("{'username','password','invalidformat'}")
+        let inputToken = "eyJ1c2VybmFtZSIsInBhc3N3b3JkIiwiaW52YWxpZGZvcm1hdCJ9";
+        let resourceName = "/";
+        
+        return expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(InvalidTokenError);
     });
+
     test("Class 5: Token String is in a valid format", () => {
-        //pass
+        // inputToken = default encoded token example from https://jwt.io/
+        let inputToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+        // NOTE: This isn't tested as the below test set are subsets of class 5
     });
 });
 
 
 describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
-    test("Class 6: Empty", () => {
+    test("Class 6: Unknown Class", () => {
         //pass
     });
     // NOTE: We cannot absolutely say if a token has been tampered with, only that the token information doesn't add up
     test("Class 7: The token has been tampered with", () => {
+        let inputToken;
+        let resourceName;
         //pass
     });
     test("Class 8: The token has expired", () => {
+        let inputToken;
+        let resourceName;
         //pass
     });
     test("Class 9: The token can be verified successfully", () => {
+        let inputToken;
+        let resourceName;
         //pass
     });
 });
