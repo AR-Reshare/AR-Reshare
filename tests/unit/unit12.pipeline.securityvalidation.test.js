@@ -41,14 +41,13 @@ const jwt = require("jsonwebtoken");
 // TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityvalidate
 const Pipeline = require('../../classes/pipeline');
 const jwt = required('jsonwebtoken');
-const definitions
+const crypto = require('crypto');
+const definitions;
 
 let pipe, validPayload, validToken;
 
 beforeAll(() => {
     pipe = new Pipeline();
-    validPayload = {};
-    validToken = jwt.sign(validPayload)
 });
 
 
@@ -107,24 +106,63 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
     });
     // NOTE: We cannot absolutely say if a token has been tampered with, only that the token information doesn't add up
     test("Class 7: The token has been tampered with", () => {
-        let inputToken;
-        let resourceName;
-        //pass
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let modifiedPayload = {
+            name: "Dolores Haze",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+        let signedToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
+        let tokenSections = signedToken.split(".");
+        tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
+        let inputToken = tokenSections.join(".");
+
+        let resourceName = "/";
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(TamperedTokenError);
     });
+
     test("Class 8: The token has expired", () => {
-        let inputToken;
-        let resourceName;
-        //pass
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+        let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256", exp: Date.now() - 1})
+        let resourceName = "/";
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toThrow(ExpiredTokenError);
     });
+
     test("Class 9: The token can be verified successfully", () => {
-        let inputToken;
-        let resourceName;
-        //pass
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+        let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
+        let resourceName = "/";
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, inputToken);
+        }).toBeInstanceOf(string);
     });
+
 });
 
 describe("Unit Test 12 - Pipeline.SecurityValidation (Authorizing User)", () => {
-    test("Class 10: The user is not authorized", () => {
+    test("Class 10: The user is not authorized"W, () => {
         //pass
     });
     test("Class 11: The user is authorized", () => {
