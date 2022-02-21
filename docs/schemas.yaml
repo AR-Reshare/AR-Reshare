@@ -224,6 +224,7 @@ components:
     listing-modify:
       type: object
       required:
+      - listingID
       - password
       - modifiedDetails
       properties:
@@ -320,6 +321,7 @@ components:
     account-modify:
       type: object
       required:
+      # accountId not neccessary since we should be able to retrieve the accountId from a valid and verified JWT token
       - password
       - modifiedDetails
       properties:
@@ -478,6 +480,7 @@ components:
       type: object
       required:
       - reportID
+      - password
       - modifiedDetails
       properties:
         reportID:
