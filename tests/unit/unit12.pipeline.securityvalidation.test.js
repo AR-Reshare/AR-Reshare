@@ -42,12 +42,13 @@ const jwt = require("jsonwebtoken");
 const Pipeline = require('../../classes/pipeline');
 const jwt = required('jsonwebtoken');
 const crypto = require('crypto');
-const definitions;
 
-let pipe, validPayload, validToken;
+let pipe, validPayload, validToken, key, query;
 
 beforeAll(() => {
     pipe = new Pipeline();
+    key = "testsecretkeybase";
+    query = {};
 });
 
 
@@ -58,7 +59,7 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", 
         let resourceName = "/";
 
         return expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(InvalidTokenError);
     });
 
@@ -67,7 +68,7 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", 
         let resourceName = "/";
 
         return expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(InvalidTokenError);
     });
 
@@ -77,7 +78,7 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", 
         let resourceName = "/";
 
         return expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(InvalidTokenError);
     });
 
@@ -87,7 +88,7 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)", 
         let resourceName = "/";
         
         return expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(InvalidTokenError);
     });
 
@@ -120,12 +121,12 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
         let signedToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
         let tokenSections = signedToken.split(".");
         tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
-        let inputToken = tokenSections.join(".");
 
+        let inputToken = tokenSections.join(".");
         let resourceName = "/";
 
         expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(TamperedTokenError);
     });
 
@@ -136,11 +137,12 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
         };
 
         let privateKey = crypto.createHmac("sha256", key);
+
         let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256", exp: Date.now() - 1})
         let resourceName = "/";
 
         expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toThrow(ExpiredTokenError);
     });
 
@@ -151,22 +153,67 @@ describe("Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)", () => {
         };
 
         let privateKey = crypto.createHmac("sha256", key);
+
         let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
         let resourceName = "/";
 
         expect(() => {
-            pipe.SecurityValidate(resourceName, inputToken);
+            pipe.SecurityValidate(resourceName, query, inputToken);
         }).toBeInstanceOf(string);
     });
 
 });
 
 describe("Unit Test 12 - Pipeline.SecurityValidation (Authorizing User)", () => {
-    test("Class 10: The user is not authorized"W, () => {
-        //pass
+    test("Class 10a: The user is not authorized (user mismatch)", () => {
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+        let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
+        let resourceName = "/listing/modify"; // BUG: This resource is actually incorrectly defined in OAS - (The OAS doesn't use a listingID)
+        let query = {listingId: "0"};
+        // NOTE: Eventhough, the query is incomplete for the entire pipeline, since we are testing the security-val (which is the first part)
+        // no error should occur
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, query, inputToken);
+        }).toThrow(UnauthroizedUserError);
+
+    })
+    test("Class 10b: The user is not authorized (admin mismatch)", () => {
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+        let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
+        let resourceName = "/admin/user/view";
+        query = {userId: "ssepiol123"};
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, query, inputToken);
+        }).toThrow(UnauthroizedUserError);
+
     });
     test("Class 11: The user is authorized", () => {
-        //pass
+        let payload = {
+            name: "Sam Sepiol",
+            admin: false
+        };
+
+        let privateKey = crypto.createHmac("sha256", key);
+
+        let inputToken = jwt.sign(payload, privateKey, {algorithm: "HS256"});
+        let resourceName = "/account/modify";
+
+        expect(() => {
+            pipe.SecurityValidate(resourceName, query, inputToken);
+        }).toBeInstanceOf(string);
+
     });
 });
 
