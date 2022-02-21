@@ -233,6 +233,8 @@ components:
           $ref: '#/components/schemas/password'
         variable-modification:
           $ref: '#/components/schemas/listing-modifiedDetails'
+        listingId:
+          $ref: '#/components/schemas/id'
     
     listing-modifiedDetails:
       type: object
@@ -375,16 +377,15 @@ components:
     conversation-message:
       type: object
       required:
-      - senderId
-      - receiverId
+      # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
+      - receiverID
+      - listingID
       - datetime
       - mediaContent
       - textContent
       properties:
-        senderId:
-          $ref: '#/components/schemas/id'
-        receiverId:
-          $ref: '#/components/schemas/id'
+        listingID:
+          $ref: '#/components/schemas/listingID'
         datetime:
           $ref: '#/components/schemas/datetime'
         mediaContent:
