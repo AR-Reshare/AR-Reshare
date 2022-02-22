@@ -1,4 +1,4 @@
-const { PipelineInitialisationError, PipelineExecutionError } = require('./classes/errors');
+const { PipelineInitialisationError } = require('./classes/errors');
 const Pipeline = require('./classes/pipeline');
 const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
