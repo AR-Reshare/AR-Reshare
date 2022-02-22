@@ -127,11 +127,41 @@ function SecurityValidate(resourceName, query, token){
 
         }
 
+        category = authDefinitions.resource;
+        // categories are as follows:
+        // NoAuth = "NA", TokenCreation = "TC", TokenRegeneration = "TR", Authorize+Authenticate = "AA"
 
+        if (category === "NA"){
+            return [true, null];
 
+        } else if (category === "TC"){
+            if (validToken) {
+                throw new AlreadyAuthenticatedError;
+            } else if (!isValidUserCredentials(userID, password)) {
+                throw new InvalidCredentialsError;
+            } else {
+                return [true, createNewToken(resourceName, token)]; // At this point, there should be no current token, and the user has valid creds
+            }
 
+        } else if (category === "TR"){
+            if (validToken === null){
+                throw new InvalidTokenError;
+            } else {
+                return [true, regenerateToken(token)];
+            }
 
+        } else if (category === "AA"){
+            if (!validToken){
+                throw new UnauthenticatedUserError;
+            } else if (!isUserAuthorized(resource, userID)){
+                throw new UnauthorizedUserError;
+            } else {
+                return [true, null];
+            }
 
+        } else {
+            throw new ServerException;
+        }
 
     })
 }
@@ -144,7 +174,8 @@ function isUserAuthorized(resource, token){};
 // This should encapsulate the token-related code in 1.1
 function isUserAuthenticated(token){};
 
+function regenerateToken(token){};
 
-function generateNewToken(resource, token){};
+function createNewToken(userID){};
 
-function createNewToken(resource, token){};
+function isValidUserCredentials(userID, password){};
