@@ -2,7 +2,7 @@ jwt = require("jsonwebtoken");
 
 // NOTE: This is NOT the token signing system - That hasn't been constructed yet
 
-function SecurityValidate(resource, token) {
+// function SecurityValidate(resource, token) {
     // There are two parts to the securityValidation
 
     // 1. We start by authenticating the user (i.e. is the token valid, legal etc)
@@ -91,6 +91,49 @@ function SecurityValidate(resource, token) {
     // TODO: Consider splitting InvalidTokenError to more specific errors maybe -- they are raised in different situations/scenarios
     // TODO: Update the Exceptions to be more descriptive
 
+// }
+
+function SecurityValidate(resourceName, query, token){
+    return new Promise((resolve, reject) => {
+
+        let decodedToken, category;
+
+        // Checking the format of the token and verifying whether it is a valid token
+        validToken = null;
+        if (token !== null){
+            // TODO: After creating the token signing module, add the neccessary verify() arguments (e.g. maybe audience, issuers, jwtid, etc.)
+            jwt.verify(token, secret, function(err, decoded){
+                switch (err.name){
+                    case "JsonWebTokenError":
+                        switch (err.message){
+                            case "invalid signature":
+                                throw new TamperedTokenError;
+                            default:
+                                throw new InvalidTokenError;
+                        }
+                    case "TokenExpiredError":
+                        throw new ExpiredTokenError;
+                    case "NotBeforeError":
+                        // NOTE: We are not implementing NBE so this error should never be raise -- Make sure to add it to tests though
+                        throw new  NotBeforeTokenError;
+                    default:
+                        decodedToken = decoded;
+                }
+            });
+            // Token here should be successfully verified
+            // TODO: Getting identifiable and important information from valid token
+            validToken = True;
+            console.log(decodedToken);
+
+        }
+
+
+
+
+
+
+
+    })
 }
 
 
