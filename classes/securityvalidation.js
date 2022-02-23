@@ -1,5 +1,6 @@
 jwt = require("jsonwebtoken");
-
+const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
+    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException} = require("./errors");
 // NOTE: This is NOT the token signing system - That hasn't been constructed yet
 
 // function SecurityValidate(resource, token) {
@@ -130,7 +131,7 @@ function SecurityValidate(resourceName, query, token){
 
         category = authDefinitions.resource;
         // categories are as follows:
-        // NoAuth = "NA", TokenCreation = "TC", TokenRegeneration = "TR", Authorize+Authenticate = "AA"
+        // NoAuth = "NA", TokenCreation = "TC", TokenRegeneration = "TR", Authorize+Authenticate (Token Only) = "AA_TO", "Authorize + Authenticate (Token And Password)"
 
         if (category === "NA"){
             return [true, null];
@@ -151,7 +152,7 @@ function SecurityValidate(resourceName, query, token){
                 return [true, regenerateToken(token)];
             }
 
-        } else if (category === "AA"){
+        } else if (category === "AA_TO"){
             if (!validToken){
                 throw new UnauthenticatedUserError();
             } else if (!isUserAuthorized(resource, userID)){
@@ -160,7 +161,18 @@ function SecurityValidate(resourceName, query, token){
                 return [true, null];
             }
 
-        } else {
+        } else if (cateogry === "AA_TAP"){
+            if (!validToken){
+                throw new UnauthenticatedUserError();
+            } else if (!isValidUserCredentials(userID, password)){
+                throw new InvalidCredentialsError();
+            } else if (!isUserAuthorized(resource, userID)){
+                throw new UnauthorizedUserError();
+            } else {
+                return [true, null];
+            }
+        }
+         else {
             throw new ServerException();
         }
 
