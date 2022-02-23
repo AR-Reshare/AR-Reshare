@@ -93,38 +93,39 @@ jwt = require("jsonwebtoken");
 
 // }
 
+// NOTE: https://stackoverflow.com/questions/27715275/whats-the-difference-between-returning-value-or-promise-resolve-from-then
+
 function SecurityValidate(resourceName, query, token){
     return new Promise((resolve, reject) => {
 
-        let decodedToken, category;
-
+        let decodedToken, validToken, category;
         // Checking the format of the token and verifying whether it is a valid token
         validToken = null;
         if (token !== null){
             // TODO: After creating the token signing module, add the neccessary verify() arguments (e.g. maybe audience, issuers, jwtid, etc.)
-            jwt.verify(token, secret, function(err, decoded){
-                switch (err.name){
-                    case "JsonWebTokenError":
-                        switch (err.message){
-                            case "invalid signature":
-                                throw new TamperedTokenError;
-                            default:
-                                throw new InvalidTokenError;
-                        }
-                    case "TokenExpiredError":
-                        throw new ExpiredTokenError();
-                    case "NotBeforeError":
-                        // NOTE: We are not implementing NBE so this error should never be raise -- Make sure to add it to tests though
-                        throw new  NotBeforeTokenError();
-                    default:
-                        decodedToken = decoded;
+            // NOTE: The asynchronous version is essentially the same as synchrnous (except for a wrapper) (Doesnt return a promise)
+            decodedToken = jwt.verify(token, secret);
+            switch (err.name){
+                case "JsonWebTokenError":
+                    switch (err.message){
+                        case "invalid signature":
+                            throw new TamperedTokenError();
+                        default:
+                            throw new InvalidTokenError();
+                    }
+                case "TokenExpiredError":
+                    throw new ExpiredTokenError();
+                case "NotBeforeError":
+                    // NOTE: We are not implementing NBE so this error should never be raise -- Make sure to add it to tests though
+                    throw new  NotBeforeTokenError();
+                default:
+                    decodedToken = decoded;
                 }
-            });
+
             // Token here should be successfully verified
-            // TODO: Getting identifiable and important information from valid token
+            // TODO: Getting identifiable and important information from valid token and the query (url query + body args)
             validToken = True;
             console.log(decodedToken);
-
         }
 
         category = authDefinitions.resource;
