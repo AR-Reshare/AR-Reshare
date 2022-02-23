@@ -112,10 +112,10 @@ function SecurityValidate(resourceName, query, token){
                                 throw new InvalidTokenError;
                         }
                     case "TokenExpiredError":
-                        throw new ExpiredTokenError;
+                        throw new ExpiredTokenError();
                     case "NotBeforeError":
                         // NOTE: We are not implementing NBE so this error should never be raise -- Make sure to add it to tests though
-                        throw new  NotBeforeTokenError;
+                        throw new  NotBeforeTokenError();
                     default:
                         decodedToken = decoded;
                 }
@@ -136,39 +136,38 @@ function SecurityValidate(resourceName, query, token){
 
         } else if (category === "TC"){
             if (validToken) {
-                throw new AlreadyAuthenticatedError;
+                throw new AlreadyAuthenticatedError();
             } else if (!isValidUserCredentials(userID, password)) {
-                throw new InvalidCredentialsError;
+                throw new InvalidCredentialsError();
             } else {
                 return [true, createNewToken(resourceName, token)]; // At this point, there should be no current token, and the user has valid creds
             }
 
         } else if (category === "TR"){
             if (validToken === null){
-                throw new InvalidTokenError;
+                throw new InvalidTokenError();
             } else {
                 return [true, regenerateToken(token)];
             }
 
         } else if (category === "AA"){
             if (!validToken){
-                throw new UnauthenticatedUserError;
+                throw new UnauthenticatedUserError();
             } else if (!isUserAuthorized(resource, userID)){
-                throw new UnauthorizedUserError;
+                throw new UnauthorizedUserError();
             } else {
                 return [true, null];
             }
 
         } else {
-            throw new ServerException;
+            throw new ServerException();
         }
 
-    })
+    });
 }
 
 
 // These are boilerplate functions, who's arguments and return types will be subject to change:
-
 function isUserAuthorized(resource, token){};
 
 // This should encapsulate the token-related code in 1.1
