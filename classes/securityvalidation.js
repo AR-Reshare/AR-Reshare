@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const securitySchemaDefinitions = require("../schemas/security-schemas.js");
 const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
-    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException} = require("./errors");
+    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require("./errors");
 
 
 // There are two parts to the securityValidation
@@ -140,7 +140,21 @@ function createNewToken(userID){
 function isUserCredentialsValid(userID, password){
     // TODO: Interact with db object
     // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
-    
+    const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
+    // TODO you'll need to pass the Database object from the pipeline into this function somehow
+    return db.simpleQuery(getHash, [email]).then(res => {
+        if (res.length === 0) {
+            throw new InvalidCredentialsError();
+        } else if (res.length > 1) {
+            throw new QueryExecutionError();
+        } else {
+            // salt = get_salt(res[0].passhash)
+            // hash = hash(password, salt)
+            // if (hash === res[0].passhash)
+            // return userID
+            // else throw error
+        }
+    })
 }
 
 function isUserAuthorized(resource, query, userID){
