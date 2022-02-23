@@ -109,7 +109,7 @@ function SecurityValidate(resourceName, query, token){
         } else if (cateogry === "AA_TAP"){
             if (!validToken){
                 throw new UnauthenticatedUserError();
-            } else if (!isUserCredentialsValid(userID, query.password)){
+            } else if (!isUserPasswordValid(userID, query.password)){
                 throw new InvalidCredentialsError();
             } else if (!isUserAuthorized(userID, resource)){
                 throw new UnauthorizedUserError();
@@ -140,12 +140,31 @@ function createNewToken(userID){
     return token;
 }
 
-function isUserCredentialsValid(userID, password){
+function isUserCredentialsValid(email, password){
     // TODO: Interact with db object
     // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
     const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
     // TODO you'll need to pass the Database object from the pipeline into this function somehow
     return db.simpleQuery(getHash, [email]).then(res => {
+        if (res.length === 0) {
+            throw new InvalidCredentialsError();
+        } else if (res.length > 1) {
+            throw new QueryExecutionError();
+        } else {
+            // salt = get_salt(res[0].passhash)
+            // hash = hash(password, salt)
+            // if (hash === res[0].passhash)
+            // return userID
+            // else throw error
+        }
+    })
+}
+
+function isUserPasswordValid(userID, password){
+    // TODO: Check whether this sql query string is correct
+    const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
+    
+    return db.simpleQuery(getHash, [userID]).then(res => {
         if (res.length === 0) {
             throw new InvalidCredentialsError();
         } else if (res.length > 1) {
