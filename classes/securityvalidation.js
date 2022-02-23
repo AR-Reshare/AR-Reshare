@@ -2,100 +2,40 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException} = require("./errors");
-// NOTE: This is NOT the token signing system - That hasn't been constructed yet
-
-// function SecurityValidate(resource, token) {
-    // There are two parts to the securityValidation
-
-    // 1. We start by authenticating the user (i.e. is the token valid, legal etc)
-    // 2. We end by checking whether the user should be able to access the said resource
-  
-    // NOTES:
-    // Certain resources do not require authentication - If the user provides a invalid token (regardless of not requiring auth, we reject)
-
-    // Scenarios (Authentication):
-    // 0. Malformed token provided by user
-    // 1. Non-authenticated resource with non-authenticated user (Good)
-    // 2. Non-authenticated resource with invalidly authenticated user (Bad)
-    // 3. Non-authenticated resource with correctly authenticated user (Good)
-    
-    // 4. Authenticated resource with non-authenitcated user (Reject)
-    // 5. Authenticated resource with validly authenticated user (Pending on authorization)
-    // 6. Authenticated resource with invalidly authenticated user (Pending on authorization)
-
-    // Scenarios (Authorization) - At the point where this is called, the JWT token must be verified succesfully
-    // 7. Authenticated resource with validly authenticated user (ext 5.) (Accept)
-    // 8. Authenticated resource with invalidly authenticated user (ext 6.) (Reject)
- 
-    // Scenarios (Token-Creation Request)
-    // 1. Non-authenticated users
-
-    // Scenarios (Token-Update Request)
-    // 2. Authenticated Users ()
-
-    
-    
-    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    // Resource categorization
-    // 1. Require no Authentication
-    // 2. Require details to create a new Token
-    // 3. Require a unexpired token to generate a new Token
-    // 4. Require Authentication + Authorization 
+// There are two parts to the securityValidation
 
+// 1. We start by authenticating the user (i.e. is the token valid, legal etc)
+// 2. We end by checking whether the user should be able to access the said resource
 
-    // Proposed Logic Pseudocode:
+// NOTES:
+// Certain resources do not require authentication - If the user provides a invalid token (regardless of not requiring auth, we reject)
 
-    // 1.1 We start by checking whether a token has been provided and whether we have a valid resource - If so verify that it is correct (This saves a lot of hassel later)
-    // NOTE: Jwt verify checks the format aswell before verifing
+// Scenarios (Authentication):
+// 0. Malformed token provided by user
+// 1. Non-authenticated resource with non-authenticated user (Good)
+// 2. Non-authenticated resource with invalidly authenticated user (Bad)
+// 3. Non-authenticated resource with correctly authenticated user (Good)
 
-    // validToken = None
-    // if token == None:
-    //      validToken = jwt.verify(token)
-    //      if validToken == False: raise the corresponding exception
+// 4. Authenticated resource with non-authenitcated user (Reject)
+// 5. Authenticated resource with validly authenticated user (Pending on authorization)
+// 6. Authenticated resource with invalidly authenticated user (Pending on authorization)
 
-    // bIsResourceValid = resource.isValid()                    // This is checked by using a lookup to a definition
-    // if bIsResourceValid == False: raise ResourceNotFound     // NOTE: I feel like this should be some function that is called just before the one we are in right now
+// Scenarios (Authorization) - At the point where this is called, the JWT token must be verified succesfully
+// 7. Authenticated resource with validly authenticated user (ext 5.) (Accept)
+// 8. Authenticated resource with invalidly authenticated user (ext 6.) (Reject)
 
+// Scenarios (Token-Creation Request)
+// 1. Non-authenticated users
 
-    // 1.2 Once receiving a valid and verified token, we use it to fill in important variables
-    // userId = ...
-    // Admin = ...
+// Scenarios (Token-Update Request)
+// 2. Authenticated Users ()
 
-
-    // 2. We perform a lookup of the resource name (url) to determine what category it is
-    // if category1:
-    //      accept request
-    //      return 1, None
-    // elif category2:
-    //      if validToken == True: raise AlreadyAuthenticatedUserError
-    //      ...
-    //      TODO: Requires checking that credentials are valid              // TOOD: Need to query the database to check whether the credentials exist and are correct
-    //      ...
-    //      err, newtoken = createNewToken(userId)    
-    //      if err.exists: raise Err.exception()
-    //      return 2, newtoken
-    // elif category3:
-    //      if validToken == None: raise InvalidTokenError
-    //      err, token = generateToken(userId, token)                       // the token should be valid
-    //      if err.exists: raise Err.exception()
-    //      return 2, newtoken
-    // elif category4:                              
-    //      if validToken == None: raise InvalidTokenError                  // If the token was invalid, we would have already raised an exception previously
-    //      isAuth = isUserAuthorized(user, token)
-    //      if isAuth == False: raise UnauthorizedUserError
-    //      return 1, None
-    // else:
-    //      raise ServerErrorException                                      // The resource has been verified to exist, yet we are here
-    //
-
-    // TODO: Consider splitting InvalidTokenError to more specific errors maybe -- they are raised in different situations/scenarios
-    // TODO: Update the Exceptions to be more descriptive
-
-// }
 
 // NOTE: https://stackoverflow.com/questions/27715275/whats-the-difference-between-returning-value-or-promise-resolve-from-then
+// TODO: Consider splitting InvalidTokenError to more specific errors maybe -- they are raised in different situations/scenarios
+// TODO: Update the Exceptions to be more descriptive
 
 function SecurityValidate(resourceName, query, token){
     return new Promise((resolve, reject) => {
