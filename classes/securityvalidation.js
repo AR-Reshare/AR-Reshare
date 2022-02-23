@@ -1,4 +1,5 @@
-jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException} = require("./errors");
 // NOTE: This is NOT the token signing system - That hasn't been constructed yet
@@ -139,7 +140,7 @@ function SecurityValidate(resourceName, query, token){
         } else if (category === "TC"){
             if (validToken) {
                 throw new AlreadyAuthenticatedError();
-            } else if (!isValidUserCredentials(userID, password)) {
+            } else if (!isUserCredentialsValid(userID, password)) {
                 throw new InvalidCredentialsError();
             } else {
                 return [true, createNewToken(resourceName, token)]; // At this point, there should be no current token, and the user has valid creds
@@ -164,9 +165,9 @@ function SecurityValidate(resourceName, query, token){
         } else if (cateogry === "AA_TAP"){
             if (!validToken){
                 throw new UnauthenticatedUserError();
-            } else if (!isValidUserCredentials(userID, password)){
+            } else if (!isUserCredentialsValid(userID, password)){
                 throw new InvalidCredentialsError();
-            } else if (!isUserAuthorized(resource, userID)){
+            } else if (!isUserAuthorized(resource, query, userID)){
                 throw new UnauthorizedUserError();
             } else {
                 return [true, null];
@@ -181,13 +182,24 @@ function SecurityValidate(resourceName, query, token){
 
 
 // These are boilerplate functions, who's arguments and return types will be subject to change:
-function isUserAuthorized(resource, token){};
 
-// This should encapsulate the token-related code in 1.1
-function isUserAuthenticated(token){};
+function regenerateToken(decodedToken){
+    let privateKey = fs.readFileSync("private.key");
+    let token = jwt.sign({"userID": `${decodedToken.userID}`}, privateKey, {algorithm: "HS256", expiresIn: "20m"});
+    return token;
+}
 
-function regenerateToken(token){};
+function createNewToken(userID){
+    let privateKey = fs.readFileSync("private.key");
+    // TODO: There may be more information we want to add in the future
+    let token = jwt.sign({"userID": `${userID}`}, privateKey, {algorithm: "HS256", expiresIn: "20m"});
+    return token;
+}
 
-function createNewToken(userID){};
+function isUserCredentialsValid(userID, password){
+    // TODO: Interact with db object
+}
 
-function isValidUserCredentials(userID, password){};
+function isUserAuthorized(resource, query, userID){
+    // TODO: Interact with the db object
+}
