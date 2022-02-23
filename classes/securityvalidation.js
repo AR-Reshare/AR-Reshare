@@ -37,11 +37,13 @@ const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserErro
 // NOTE: https://stackoverflow.com/questions/27715275/whats-the-difference-between-returning-value-or-promise-resolve-from-then
 // TODO: Consider splitting InvalidTokenError to more specific errors maybe -- they are raised in different situations/scenarios
 // TODO: Update the Exceptions to be more descriptive
+// TODO: Fix inconsistencies between userID and email
+// TODO: Define the query object to fix access to request attributes.
 
 function SecurityValidate(resourceName, query, token){
     return new Promise((resolve, reject) => {
 
-        let decodedToken, validToken, category;
+        let decodedToken, validToken, category, userID, email;
         // Checking the format of the token and verifying whether it is a valid token
         validToken = null;
         if (token !== null){
@@ -68,6 +70,7 @@ function SecurityValidate(resourceName, query, token){
             // Token here should be successfully verified
             // TODO: Getting identifiable and important information from valid token and the query (url query + body args)
             validToken = True;
+            userID = decodedToken.userID;
             console.log(decodedToken);
         }
 
@@ -81,7 +84,7 @@ function SecurityValidate(resourceName, query, token){
         } else if (category === "TC"){
             if (validToken) {
                 throw new AlreadyAuthenticatedError();
-            } else if (!isUserCredentialsValid(userID, password)) {
+            } else if (!isUserCredentialsValid(query.email, query.password)) {
                 throw new InvalidCredentialsError();
             } else {
                 return [true, createNewToken(resourceName, token)]; // At this point, there should be no current token, and the user has valid creds
@@ -97,7 +100,7 @@ function SecurityValidate(resourceName, query, token){
         } else if (category === "AA_TO"){
             if (!validToken){
                 throw new UnauthenticatedUserError();
-            } else if (!isUserAuthorized(resource, userID)){
+            } else if (!isUserAuthorized(userID, resourceName)){
                 throw new UnauthorizedUserError();
             } else {
                 return [true, null];
@@ -106,9 +109,9 @@ function SecurityValidate(resourceName, query, token){
         } else if (cateogry === "AA_TAP"){
             if (!validToken){
                 throw new UnauthenticatedUserError();
-            } else if (!isUserCredentialsValid(userID, password)){
+            } else if (!isUserCredentialsValid(userID, query.password)){
                 throw new InvalidCredentialsError();
-            } else if (!isUserAuthorized(resource, query, userID)){
+            } else if (!isUserAuthorized(userID, resource)){
                 throw new UnauthorizedUserError();
             } else {
                 return [true, null];
@@ -157,7 +160,9 @@ function isUserCredentialsValid(userID, password){
     })
 }
 
-function isUserAuthorized(resource, query, userID){
+// NOTE: For our project, I don't believe that request query arguments would modify the outcome of the below function
+// --> If an example is found, the query argument will be reintroduced into this function.
+function isUserAuthorized(userID, resource){
     // TODO: Interact with the db object
     // 1. First we check whether the user is an "owner"/"contributer" of the resource"
     // 2. We then check whether the user has any sanctions

@@ -7,6 +7,7 @@
 // THe security validation component checks whether the neccessary data exists in a request to bestow trust on a user
 // /account/create doesn't form trust in this sense (we are not creating, regenerating a token, or authenticating+authorizing a user)
 
+// TODO: Specify a Token Regeneration path, for the front-end to be able to request from
 var securitySchemaDefinitions = {
     "/": "NA", // NOTE: Might be redundant
     "/index": "NA",
