@@ -57,3 +57,5 @@ var securitySchemaDefinitions = {
     "/conversation/view": "AA_TO",
 
 };
+
+module.exports(securitySchemaDefinitions);

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const securitySchemaDefinitions = require("../schemas/security-schemas.js");
 const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException} = require("./errors");
 
@@ -70,7 +71,7 @@ function SecurityValidate(resourceName, query, token){
             console.log(decodedToken);
         }
 
-        category = authDefinitions.resource;
+        category = securitySchemaDefinitions.resource;
         // categories are as follows:
         // NoAuth = "NA", TokenCreation = "TC", TokenRegeneration = "TR", Authorize+Authenticate (Token Only) = "AA_TO", "Authorize + Authenticate (Token And Password)"
 
@@ -138,8 +139,13 @@ function createNewToken(userID){
 
 function isUserCredentialsValid(userID, password){
     // TODO: Interact with db object
+    // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
+    
 }
 
 function isUserAuthorized(resource, query, userID){
     // TODO: Interact with the db object
+    // 1. First we check whether the user is an "owner"/"contributer" of the resource"
+    // 2. We then check whether the user has any sanctions
+
 }
