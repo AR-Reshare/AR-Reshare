@@ -1,5 +1,5 @@
 const { CreateEntityPipeline } = require('../../pipeline');
-const { PipelineInitialisationError } = require('../../classes/errors');
+const { PipelineInitialisationError, MissingTemplateError } = require('../../classes/errors');
 const Pipeline = require('../../classes/pipeline');
 const RequestTemplateDict = require('../../schemas/request-schemas');
 const SQLTemplateDict = require('../../schemas/sql-templates');
@@ -16,7 +16,18 @@ jest.mock('../../schemas/request-schemas', () => {
     return {
         'create-test': {
             property: 'some-object',
-        }
+        },
+        'create-': {}, // make sure empty entityType is throwing for the right reason
+        'create-5': {},
+        'create-nosql': {
+            property: 'some-object',
+        },
+        'create-noresponse': {
+            property: 'some-object',
+        },
+        'create-nopush': {
+            property: 'some-object',
+        },
     };
 });
 
@@ -24,7 +35,18 @@ jest.mock('../../schemas/sql-templates', () => {
     return {
         'create-test': {
             property: 'some-object',
-        }
+        },
+        'create-': {},
+        'create-5': {},
+        'create-norequest': {
+            property: 'some-object',
+        },
+        'create-noresponse': {
+            property: 'some-object',
+        },
+        'create-nopush': {
+            property: 'some-object',
+        },
     };
 });
 
@@ -32,7 +54,18 @@ jest.mock('../../schemas/response-schemas', () => {
     return {
         'create-test': {
             property: 'some-object',
-        }
+        },
+        'create-': {},
+        'create-5': {},
+        'create-norequest': {
+            property: 'some-object',
+        },
+        'create-nosql': {
+            property: 'some-object',
+        },
+        'create-nopush': {
+            property: 'some-object',
+        },
     };
 });
 
@@ -40,7 +73,18 @@ jest.mock('../../schemas/push-schemas', () => {
     return {
         'create-test': {
             property: 'some-object',
-        }
+        },
+        'create-': {},
+        'create-5': {},
+        'create-norequest': {
+            property: 'some-object',
+        },
+        'create-nosql': {
+            property: 'some-object',
+        },
+        'create-noresponse': {
+            property: 'some-object',
+        },
     };
 });
 
@@ -64,18 +108,73 @@ describe('Unit Test 1 - Create Entity Pipeline constructor', () => {
         expect(pipe).toHaveProperty('pushTemplate', null);
     });
 
-    // Class 2: invalid initialisation: entity type empty
+    test('Class 2: invalid initialisation: entity type empty', () => {
+        let entityType = '';
+        let options = {};
 
-    // Class 3: invalid initialisation: entity type not string
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(PipelineInitialisationError);
+    });
 
-    // Class 4a: init with notify: affected
+    test('Class 3: invalid initialisation: entity type not string', () => {
+        let entityType = 5;
+        let options = {};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(PipelineInitialisationError);
+    });
+
+    test('Class 4a: init with notify: affected', () => {
+        let entityType = 'test';
+        let options = {notify: 'affected'};
+
+        let pipe = new CreateEntityPipeline(entityType, options);
+        expect(pipe).toHaveProperty('actionType', 'create-test');
+        expect(pipe).toHaveProperty('notify', 'affected');
+        expect(pipe).toHaveProperty('authMode', 'logged_in');
+        expect(pipe).toHaveProperty('method', 'body');
+        expect(pipe).toHaveProperty('requestTemplate', RequestTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('sqlTemplate', SQLTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('responseTemplate', ResponseTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('pushTemplate', PushTemplateDict['create-test']);
+    });
     
-    // Class 4b: init with notify: self
+    test('Class 4b: init with notify: self', () => {
+        let entityType = 'test';
+        let options = {notify: 'self'};
 
-    // Class 4c: init with notify: false
+        let pipe = new CreateEntityPipeline(entityType, options);
+        expect(pipe).toHaveProperty('actionType', 'create-test');
+        expect(pipe).toHaveProperty('notify', 'self');
+        expect(pipe).toHaveProperty('authMode', 'logged_in');
+        expect(pipe).toHaveProperty('method', 'body');
+        expect(pipe).toHaveProperty('requestTemplate', RequestTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('sqlTemplate', SQLTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('responseTemplate', ResponseTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('pushTemplate', PushTemplateDict['create-test']);
+    });
 
-    // Class 4d: init with notify: invalid
+    test('Class 4c: init with notify: false', () => {
+        let entityType = 'test';
+        let options = {notify: false};
 
+        let pipe = new CreateEntityPipeline(entityType, options);
+        expect(pipe).toHaveProperty('actionType', 'create-test');
+        expect(pipe).toHaveProperty('notify', false);
+        expect(pipe).toHaveProperty('authMode', 'logged_in');
+        expect(pipe).toHaveProperty('method', 'body');
+        expect(pipe).toHaveProperty('requestTemplate', RequestTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('sqlTemplate', SQLTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('responseTemplate', ResponseTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('pushTemplate', null);
+    });
+
+    test('Class 4d: init with notify: invalid', () => {
+        let entityType = 'test';
+        let options = {notify: 'invalid'};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(PipelineInitialisationError);
+    });
+
+    /* Leaving out auth-related stuff until that system is built
     // Class 5a: init with auth_mode: logged_in
 
     // Class 5b: init with auth_mode: optional
@@ -83,18 +182,70 @@ describe('Unit Test 1 - Create Entity Pipeline constructor', () => {
     // Class 5c: init with auth_mode: logged_out
 
     // Class 5d: init with auth_mode: invalid
+    */
 
-    // Class 6a: init with method: query
+    test('Class 6a: init with method: query', () => {
+        let entityType = 'test';
+        let options = {method: 'query'};
 
-    // Class 6b: init with method: body
+        let pipe = new CreateEntityPipeline(entityType, options);
+        expect(pipe).toHaveProperty('actionType', 'create-test');
+        expect(pipe).toHaveProperty('notify', false);
+        expect(pipe).toHaveProperty('authMode', 'logged_in');
+        expect(pipe).toHaveProperty('method', 'query');
+        expect(pipe).toHaveProperty('requestTemplate', RequestTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('sqlTemplate', SQLTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('responseTemplate', ResponseTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('pushTemplate', null);
+    });
 
-    // Class 6c: init with method: invalid
+    test('Class 6b: init with method: body', () => {
+        let entityType = 'test';
+        let options = {method: 'body'};
 
-    // Class 7: init with no request template
+        let pipe = new CreateEntityPipeline(entityType, options);
+        expect(pipe).toHaveProperty('actionType', 'create-test');
+        expect(pipe).toHaveProperty('notify', false);
+        expect(pipe).toHaveProperty('authMode', 'logged_in');
+        expect(pipe).toHaveProperty('method', 'body');
+        expect(pipe).toHaveProperty('requestTemplate', RequestTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('sqlTemplate', SQLTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('responseTemplate', ResponseTemplateDict['create-test']);
+        expect(pipe).toHaveProperty('pushTemplate', null);
+    });
 
-    // Class 8: init with no SQL template
+    test('Class 6c: init with method: invalid', () => {
+        let entityType = 'test';
+        let options = {method: 'invalid'};
 
-    // Class 9: init with no response template
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(PipelineInitialisationError);
+    });
 
-    // Class 10: init with no push template
+    test('Class 7: init with no request template', () => {
+        let entityType = 'norequest';
+        let options = {};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(MissingTemplateError);
+    });
+
+    test('Class 8: init with no SQL template', () => {
+        let entityType = 'nosql';
+        let options = {};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(MissingTemplateError);
+    });
+
+    test('Class 9: init with no response template', () => {
+        let entityType = 'noresponse';
+        let options = {};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(MissingTemplateError);
+    });
+
+    test('Class 10: init with no push template', () => {
+        let entityType = 'nopush';
+        let options = {notify: 'self'};
+
+        expect(() => new CreateEntityPipeline(entityType, options)).toThrow(MissingTemplateError);
+    });
 });

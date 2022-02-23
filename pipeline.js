@@ -1,4 +1,4 @@
-const { PipelineInitialisationError } = require('./classes/errors');
+const { PipelineInitialisationError, MissingTemplateError } = require('./classes/errors');
 const Pipeline = require('./classes/pipeline');
 const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
@@ -26,6 +26,9 @@ class CreateEntityPipeline extends Pipeline {
      */
     constructor(entityType, options, ...args) {
         super(...args);
+        if (typeof entityType !== 'string' && !(entityType instanceof String) || entityType.length === 0) {
+            throw new PipelineInitialisationError('entityType must be a non-empty string');
+        }
         this.actionType = `create-${entityType}`;
         this.notify = false;
         if ('notify' in options) {
@@ -56,24 +59,24 @@ class CreateEntityPipeline extends Pipeline {
 
         this.requestTemplate = RequestTemplateDict[this.actionType];
         if (this.requestTemplate === undefined) {
-            throw new PipelineInitialisationError(`Unable to find request template for ${this.actionType}`);
+            throw new MissingTemplateError(`Unable to find request template for ${this.actionType}`);
         }
 
         this.sqlTemplate = SQLTemplateDict[this.actionType];
         if (this.sqlTemplate === undefined) {
-            throw new PipelineInitialisationError(`Unable to find SQL template for ${this.actionType}`);
+            throw new MissingTemplateError(`Unable to find SQL template for ${this.actionType}`);
         }
 
         this.responseTemplate = ResponseTemplateDict[this.actionType];
         if (this.responseTemplate === undefined) {
-            throw new PipelineInitialisationError(`Unable to find response template for ${this.actionType}`);
+            throw new MissingTemplateError(`Unable to find response template for ${this.actionType}`);
         }
         
         this.pushTemplate = null;
         if (this.notify) {
             this.pushTemplate = PushTemplateDict[this.actionType];
-            if (this.responseTemplate === undefined) {
-                throw new PipelineInitialisationError(`Unable to find push notification template for ${this.actionType}`);
+            if (this.pushTemplate === undefined) {
+                throw new MissingTemplateError(`Unable to find push notification template for ${this.actionType}`);
             }
         }
     }

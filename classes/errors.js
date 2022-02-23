@@ -8,6 +8,13 @@ class PipelineInitialisationError extends Error {
     }
 }
 
+class MissingTemplateError extends PipelineInitialisationError {
+    constructor(message) {
+        super(message);
+        this.name = 'MissingTemplateError';
+    }
+}
+
 class PipelineExecutionError extends Error {
     constructor(message) {
         super(message);
@@ -131,6 +138,7 @@ class QueryExecutionError extends QueryError {
 
 module.exports = {
     PipelineInitialisationError,
+    MissingTemplateError,
     PipelineExecutionError,
     TemplateError,
     ValidationError,
