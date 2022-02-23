@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
+const fs = require("fs").promises;
 const securitySchemaDefinitions = require("../schemas/security-schemas.js");
 const {AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require("./errors");
@@ -128,13 +128,13 @@ function SecurityValidate(resourceName, query, token){
 // These are boilerplate functions, who's arguments and return types will be subject to change:
 
 function regenerateToken(decodedToken){
-    let privateKey = fs.readFileSync("private.key");
+    const privateKey = await fs.readFile("private.key");
     let token = jwt.sign({"userID": `${decodedToken.userID}`}, privateKey, {algorithm: "HS256", expiresIn: "20m"});
     return token;
 }
 
 function createNewToken(userID){
-    let privateKey = fs.readFileSync("private.key");
+    const privateKey = await fs.readFile("private.key");
     // TODO: There may be more information we want to add in the future
     let token = jwt.sign({"userID": `${userID}`}, privateKey, {algorithm: "HS256", expiresIn: "20m"});
     return token;
