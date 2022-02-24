@@ -4,22 +4,21 @@ class Pipeline {
         this.logger = logger; // expected to implement .log, .error, and .warn
     }
 
-    SecurityValidate(authenticationType, token, rejectIfBanned) {
-        // authType: a string from the following set:
-        //      'admin' - the user must be logged in as an administrator
-        //      an action (e.g. 'create-listing') - the user must be logged in, and must not have a sanction against the specified action
-        //      'optional' - the user does not need to be logged in, but retrieve their user info if they are
-        //      'logged-out' - the user should not be logged in
-        // token: a JWT token for the function to validate against
-        // rejectIfBanned: boolean value. If true, and authType is an action, reject when the user has a general OR specific sanction
-
+    /**
+     * Validates an input object against a request schema
+     * @param {SecurityValidate} The SecuritySchema is an instance of a validation object for a given resource
+     * @param {object} inputObject An object, most likely request.body or request.query, to validate
+     * @returns {Promise<object>} Key/value pairs selected from inputObject by requestSchema and sanitised
+     */
+    SecurityValidate(securitySchema, inputObject) {
         return new Promise((resolve, reject) => {
-            // if the validation is satisfied then
-                resolve(accountID);
-                // accountID: primary key of the account in the database
-            // otherwise
+            let outputObject;
+            try {
+                outputObject = securitySchema.process(inputObject);
+                resolve(outputObject);
+            } catch (err) {
                 reject(err);
-                // err: an Error object representing the type of error, most likely 401 or 403
+            }
         });
     }
 
