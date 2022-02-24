@@ -1,66 +1,76 @@
 /* This will define the custom error classes to use throughout the project
 */
 
+
+
+class PrivateKeyReadError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'PrivateKeyReadError';
+    }
+}
+
+
 class AlreadyAuthenticatedError extends Error {
     constructor(message) {
         super(message);
-        this.name = "AlreadyAuthenticatedError";
+        this.name = 'AlreadyAuthenticatedError';
     }
 }
 
 class UnauthenticatedUserError extends Error {
     constructor(message) {
         super(message);
-        this.name = "UnauthenticatedUserError";
+        this.name = 'UnauthenticatedUserError';
     }
 }
 
 class UnauthorizedUserError extends Error {
     constructor(message) {
         super(message);
-        this.name = "UnauthorizedUserError";
+        this.name = 'UnauthorizedUserError';
     }
 }
 
 class InvalidCredentialsError extends Error {
     constructor(message) {
         super(message);
-        this.name = "InvalidCredentialsError";
+        this.name = 'InvalidCredentialsError';
     }
 }
 
 class InvalidTokenError extends Error {
     constructor(message) {
         super(message);
-        this.name = "InvalidTokenError";
+        this.name = 'InvalidTokenError';
     }
 }
 
 class TamperedTokenError extends Error {
     constructor(message) {
         super(message);
-        this.name = "TamperedTokenError";
+        this.name = 'TamperedTokenError';
     }
 }
 
 class ExpiredTokenError extends Error {
     constructor(message) {
         super(message);
-        this.name = "ExpiredTokenError";
+        this.name = 'ExpiredTokenError';
     }
 }
 
 class NotBeforeTokenError extends Error {
     constructor(message) {
         super(message);
-        this.name = "NotBeforeTokenError";
+        this.name = 'NotBeforeTokenError';
     }
 }
 
 class ServerException extends Error {
     constructor(message) {
         super(message);
-        this.name = "ServerException";
+        this.name = 'ServerException';
     }
 }
 
@@ -179,6 +189,7 @@ class QueryExecutionError extends QueryError {
 }
 
 module.exports = {
+    PrivateKeyReadError,
     AlreadyAuthenticatedError,
     UnauthenticatedUserError,
     UnauthorizedUserError,
