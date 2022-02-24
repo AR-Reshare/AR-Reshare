@@ -126,18 +126,36 @@ class ResponseTemplate {
     getResponse(inputArray) {
         let outputObject = {};
         this.params.forEach(parameter => {
-            // TODO
             let value;
-            // search for fields in the inputArray and put the appropriate things in value
-
-            // if field in paramater: get the first occurence of it in the inputArray
-
-            // if rowsWithFields in parameter: find all rows which have those fields
-
-            // if oneRowWithFields in parameter: get the first row which matches
+            if (parameter.field !== null) {
+                // if field in paramater: get the first occurence of it in the inputArray
+                inputArray.forEach(query => query.some(row => {
+                    if (parameter.field in row) {
+                        value = row[parameter.field];
+                        return true;
+                    } else return false;
+                }));
+            } else if (parameter.rowsWithFields !== null) {
+                // if rowsWithFields in parameter: find all rows which have those fields
+                value = [];
+                inputArray.forEach(query => query.forEach(row => {
+                    if (parameter.rowsWithFields.every(field => field in row)) {
+                        value.push(row);
+                    }
+                }));
+            } else { // parameter.oneRowWithFields !== null
+                // if oneRowWithFields in parameter: get the first row which matches
+                inputArray.forEach(query => query.some(row => {
+                    if (parameter.oneRowWithFields.every(field => field in row)) {
+                        value = row;
+                        return true;
+                    } else return false;
+                }));
+            }
 
             outputObject[parameter.outName] = value;
         });
+        return outputObject;
     }
 }
 
