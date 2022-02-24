@@ -10,13 +10,19 @@ const isString = (aString) => {
 }
 
 class ResponseTemplate {
+
+    /**
+     * Create a new ResponseTemplate object from a list of parameters (to include in the output) and a mapping of error objects to status codes
+     * @param {Object[]} params List of objects representing parameters to include in the output. Each one must have a property out_name which gives the name of the parameter in the output, as well as exactly one of field, rows_with_fields, or one_row_with_fields
+     * @param {Object} errorMap Dictionary mapping the names of errors, defined in classes/errors.js or elsewhere, to the appropriate HTTP status code to return. "null" should be mapped to a success code
+     */
     constructor(params, errorMap={}) {
         /**
          * each param has:
          * - out_name: the name the field will be given in the output
          * exactly one of:
          * - field: the name of a field in one row of one query. The value of that field is returned
-         * - rows_with_fields: a field, or array of fields. The value is an array of rows that have all of those fields
+         * - rows_with_fields: a field, or array of fields. The value is an array of every row that has all of those fields
          * - one_row_with_fields: as above, but the value is an object representing the first row that matches
          */
 
@@ -113,6 +119,11 @@ class ResponseTemplate {
         this.errorMap = errorMap;
     }
 
+    /**
+     * Get the status code to respond with from an error object.
+     * @param {Error} err The error to look up, or null
+     * @returns The integer status code matching the error, either from this object or the default mapping
+     */
     getStatus(err) {
         if (err === null) {
             return this.errorMap[null] || DefaultErrorMap[null];
@@ -123,6 +134,11 @@ class ResponseTemplate {
         }
     }
 
+    /**
+     * Get the response object from an array (as per the result of Pipeline.Store)
+     * @param {Object[][]} inputArray Array of query results, which are arrays of rows, which are objects to search through for the fields described in the params
+     * @returns An object containing keys described in params and properties lifted from the inputArray
+     */
     getResponse(inputArray) {
         let outputObject = {};
         this.params.forEach(parameter => {
