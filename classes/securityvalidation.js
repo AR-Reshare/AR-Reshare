@@ -74,6 +74,7 @@ class SecurityValidate{
                 // if (hash === res[0].passhash)
                 // return userID
                 // else throw error
+                return true;
             }
         });
     }
@@ -93,8 +94,12 @@ class SecurityValidate{
                 // if (hash === res[0].passhash)
                 // return userID
                 // else throw error
-            }
+                return true;
+            }   
+            
         });
+
+
     }
 
     // NOTE: For our project, I don't believe that request query arguments would modify the outcome of the below function
@@ -117,13 +122,14 @@ class SecurityValidate{
         let splitPath = resource.split('/');
         if ('listing' in splitPath){
             return db.simpleQuery(getListingHash, [userID]).then(res => {
-                if (res.length === 0) {
-                    throw new InvalidCredentialsError();
-                } else if (res.length > 1) {
+                if (res.length === 1) {
+                    return true;
+                } else if (res.length === 0){
+                    return false;
+                } else{
                     throw new QueryExecutionError();
-                } else {
-                    return;
                 }
+
             });
         }
     }
