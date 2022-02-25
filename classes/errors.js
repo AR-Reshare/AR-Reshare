@@ -40,7 +40,9 @@ class DirtyArgumentError extends ValidationError {
     constructor(message) {
         super(message);
         this.name = 'DirtyArgumentError';
-=======
+    }
+}
+
 class QueryError extends Error {
     // Represents an error in constructing or executing a query
     constructor(message) {
