@@ -92,39 +92,30 @@ class SecurityValMethods{
 // TODO: Review the exception propogation and fix any issues
 class AuthenticationHandler extends SecurityValMethods{
 
-    static async accountLogin(db, email, deviceID, password){
-        if (!this.isUserCredentialsValid(db, email, deviceID, password)){
-            throw new InvalidCredentialsError;
-        } else {
-            // we need to get the userID from the email, then pass it to the createNewToken
-            const newToken = await this._createNewToken(db, userID, password);
-            return [true, newToken];
-        }
-        // Nothing should be returned, as isUserCredentialsValid
-
-    }
-
+    // Authentication Type: TokenRegeneration (TR)
     static async regenerateToken(token){
         // TODO: Provide checking that the decodedToken is valid
         const [validToken, decodedToken] = await this.verifyToken(token);
-        return this._regenerateToken(decodedToken);
+        if (!validToken){
+            throw new InvalidTokenError();
+        }
+        return await this._regenerateToken(decodedToken);
     }
-
-    static async createNewToken(db, userID, password){
-        // TODO: Provide checking that the userID is valid
-        const ret = await this.isUserPasswordValid(db, userID, password);
-        return this._createNewToken(userID);
-    }
-
 
     static async _regenerateToken(decodedToken){
         return fs.readFile('private.key', (err, privateKey) => {
             if (err) {
                 throw new PrivateKeyReadError();
             }
-            let token = jwt.sign({'userID': `${decodedToken.userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
-            return token;
+            return jwt.sign({'userID': `${decodedToken.userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
         });
+    }
+    
+    // Authentication Type: TokenCreation (TC)
+    static async createNewToken(db, email, password){
+        // TODO: Provide checking that the userID is valid
+        const userID = await this.isUserCredentialsValid(db, email, password);
+        return await this._createNewToken(userID);
     }
 
     static async _createNewToken(userID){
@@ -138,46 +129,29 @@ class AuthenticationHandler extends SecurityValMethods{
         });
     }
 
-    static isUserCredentialsValid(db, email, password){
+    static async isUserCredentialsValid(db, email, password){
         // TODO: Interact with db object
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
         // TODO you'll need to pass the Database object from the pipeline into this function somehow
-        return this.db.simpleQuery(getHash, [email]).then(res => {
+        return db.simpleQuery(getHash, [email]).then(res => {
             if (res.length === 0){
-                return false;
+                throw new InvalidCredentialsError();
             } else if (res.length > 1){
                 throw new QueryExecutionError();
             } else {
+                let userID = 'samsepi0l';
                 // salt = get_salt(res[0].passhash)
                 // hash = hash(password, salt)
                 // if (hash === res[0].passhash)
                 // return userID
                 // else throw error
-                return true;
+                return userID;
             }
         });
     }
 
-    static isUserPasswordValid(db, userID, password){
-        // TODO: Check whether this sql query string is correct
-        const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
-        return this.db.simpleQuery(getHash, [userID]).then(res => {
-            if (res.length === 0){
-                return false;
-            } else if (res.length > 1){
-                throw new QueryExecutionError();
-            } else {
-                // salt = get_salt(res[0].passhash)
-                // hash = hash(password, salt)
-                // if (hash === res[0].passhash)
-                // return userID
-                // else throw error
-                return true;
-            }
-        });
-    }
-
+   
 }
 
 
@@ -193,45 +167,63 @@ class SecurityValidate extends SecurityValMethods{
         // Authentication Requirement: [AA_TAP, AA_TO, NA] and [TC, TR]
         this.auth = params.authenticationType;
         this.resource = params.resourceName;
+        this.db = params.db;
     }
 
     // NOTE: This is the main function that will be called
-    async process(db, token, query){
-        this.db = db;
+    async process(token, query){
         // First we check whether the token is correct
         const [validToken, decodedToken] = await this.verifyToken(token);
         // We may need to add verification that there exists the correct arguments
-        return this.verifyAuthentication(validToken, decodedToken, query); // TODO: Rename this function to something more correclty descriptive
+        return this.verifyAuthentication(validToken, decodedToken, query); 
     }
 
-    
-    verifyAuthentication(validToken, decodedToken, query = {}){
+    // TODO: Rename this function to something more correctly descriptive
+    verifyAuthentication(validToken, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
-        // TODO: Fix return types
         if (this.authenticationType === 'NA'){
-            return [true, null];
+            return true;
         } else if (this.authenticationType === 'AA_TO'){
             if (!validToken){
                 throw new UnauthenticatedUserError();
             } else {
-                return [true, null];
+                return true;
             }
         } else if (this.authenticationType === 'AA_TAP'){
             if (!validToken){
                 throw new UnauthenticatedUserError();
-                // NOTE: If query.password is an error, this will exit out
             } else if (query.password === undefined){
                 throw new BadArgumentError(); // TODO: Check whether this is the correct error
             } else if (!this.isUserPasswordValid(decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
-                return [true, null];
+                return true;
             }
         } else {
             throw new ServerException();
         }
     }
+
+    isUserPasswordValid(userID, password){
+        // TODO: Check whether this sql query string is correct
+        const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
+        return this.db.simpleQuery(getHash, [userID]).then(res => {
+            if (res.length === 0){
+                throw new InvalidCredentialsError();
+            } else if (res.length > 1){
+                throw new QueryExecutionError();
+            } else {
+                // salt = get_salt(res[0].passhash)
+                // hash = hash(password, salt)
+                // if (hash === res[0].passhash)
+                // return userID
+                // else throw error
+                return true;
+            }
+        });
+    }
+
 }
 
 
