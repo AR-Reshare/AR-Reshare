@@ -31,11 +31,10 @@
 // decision to merge verification and signing components together will most likley change this).
 
 // TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityvalidate
-const Pipeline = require('../../classes/pipeline.js');
-const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
 const jwt = require('jsonwebtoken');
 
-const crypto = require('crypto');
+const Pipeline = require('../../classes/pipeline.js');
+const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
 const {PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('../../classes/errors.js');
 
@@ -48,7 +47,7 @@ beforeAll(() => {
 });
 
 
-// console.log('setup beforeAll() -- Nice!!');
+console.log('setup beforeAll() -- Nice!!');
 
 describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', () => {
     test('Class 1: Token String Empty', () => {
@@ -169,58 +168,4 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     });
 
 });
-
-// describe('Unit Test 12 - Pipeline.SecurityValidation (Authorizing User)', () => {
-//     test('Class 10a: The user is not authorized (user mismatch)', () => {
-//         let payload = {
-//             name: 'Sam Sepiol',
-//             admin: false
-//         };
-
-//         let privateKey = crypto.createHmac('sha256', key);
-//         let inputToken = jwt.sign(payload, privateKey, {algorithm: 'HS256'});
-//         let resourceName = '/listing/modify'; // BUG: This resource is actually incorrectly defined in OAS - (The OAS doesn't use a listingID)
-//         let query = {listingId: '0'};
-//         // NOTE: Eventhough, the query is incomplete for the entire pipeline, since we are testing the security-val (which is the first part)
-//         // no error should occur
-
-//         expect(() => {
-//             pipe.SecurityValidate(resourceName, query, inputToken);
-//         }).toThrow(UnauthorizedUserError);
-
-//     })
-//     test('Class 10b: The user is not authorized (admin mismatch)', () => {
-//         let payload = {
-//             name: 'Sam Sepiol',
-//             admin: false
-//         };
-
-//         let privateKey = crypto.createHmac('sha256', key);
-//         let inputToken = jwt.sign(payload, privateKey, {algorithm: 'HS256'});
-//         let resourceName = '/admin/user/view';
-//         query = {userId: 'ssepiol123'};
-
-//         expect(() => {
-//             pipe.SecurityValidate(resourceName, query, inputToken);
-//         }).toThrow(UnauthorizedUserError);
-
-//     });
-//     test('Class 11: The user is authorized', () => {
-//         let payload = {
-//             name: 'Sam Sepiol',
-//             admin: false
-//         };
-
-//         let privateKey = crypto.createHmac('sha256', key);
-
-//         let inputToken = jwt.sign(payload, privateKey, {algorithm: 'HS256'});
-//         let resourceName = '/account/modify';
-
-//         expect(() => {
-//             pipe.SecurityValidate(resourceName, query, inputToken);
-//         }).toBeInstanceOf(String);
-
-//     });
-// });
-
 
