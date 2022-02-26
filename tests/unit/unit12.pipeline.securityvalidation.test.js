@@ -144,7 +144,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
             admin: false
         };
 
-        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', exp: Date.now() - 1})
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
         let resourceName = '/';
         let query = null;
         let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
@@ -162,10 +162,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let resourceName = '/';
+        let query = null;
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
 
-        expect(() => {
-            pipe.SecurityValidate(resourceName, query, inputToken);
-        }).toBeInstanceOf(String);
+        return expect(securitySchema.process(inputToken, query)).resolves.toEqual(true);
     });
 
 });
