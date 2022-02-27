@@ -31,23 +31,57 @@
 // decision to merge verification and signing components together will most likley change this).
 
 // TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityvalidate
-const jwt = require('jsonwebtoken');
 
+// TODO: Test AA_TAP type methods
+// TODO: Check whether all 5 authenticationTYpes are defined in the security-schemas.js
+
+const jwt = require('jsonwebtoken');
+const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
 const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
-const {PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
+const {AbsentArgumentError, DirtyArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('../../classes/errors.js');
 
-let pipe, key, query;
+// Based on unit14.pipeline.store.test.js
+const mockDBInner = jest.fn();
+const mockDBPromise = () => {
+    return new Promise((res, rej) => {
+        let result = mockDBInner();
+        if (result instanceof Error) {
+            rej(result);
+        } else {
+            res(result);
+        }
+    });
+};
+    
+jest.mock('../../classes/database', () => {
+    return jest.fn().mockImplementation(() => {
+        return {
+            simpleQuery: mockDatabaseSimple,
+            complexQuery: mockDatabaseComplex,
+        };
+    });
+});
 
+const mockDatabaseSimple = jest.fn().mockImplementation(mockDBPromise);
+const mockDatabaseComplex = jest.fn().mockImplementation(mockDBPromise);
+
+let db, pipe, key, query;
 beforeAll(() => {
-    pipe = new Pipeline();
+    db = new Database();
+    pipe = new Pipeline(db);
     key = 'testsecretkeybase';
     query = {};
 });
 
+beforeEach(() => {
+    Database.mockClear();
+    mockDBInner.mockClear();
+    mockDatabaseComplex.mockClear();
+    mockDatabaseSimple.mockClear();
+});
 
-console.log('setup beforeAll() -- Nice!!');
 
 describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', () => {
     test('Class 1: Token String Empty', () => {
@@ -114,12 +148,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     test('Class 7: The token has been tampered with', () => {
         let payload = {
             name: 'BasicUser12345',
-            admin: false
         };
 
         let modifiedPayload = {
             name: 'samsepi0l',
-            admin: false
         };
 
         let signedToken = jwt.sign(payload, key, {algorithm: 'HS256'});
@@ -140,7 +172,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     test('Class 8: The token has expired', () => {
         let payload = {
             name: 'Sam Sepiol',
-            admin: false
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
@@ -156,7 +187,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     test('Class 9: The token can be verified successfully', () => {
         let payload = {
             name: 'Sam Sepiol',
-            admin: false
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
@@ -168,4 +198,22 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     });
 
 });
+
+//TODO: We need to create mock objects for the db that's referenced by the pipeline
+describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
+    // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
+    test('Class 13: No Username', () => {
+
+        mockDatabaseSimple.mockReturnValueOnce(["hashedpassword"]);
+        let payload = {name: 'Sam Sepiol'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
+        let resourceName = '/account/login';
+        let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
+
+        return expect(() => {
+            return AuthenticationHandler.accountLogin(pipe.db, query);
+        }).rejects.toEqual(new AbsentArgumentError());
+    });
+});
+
 
