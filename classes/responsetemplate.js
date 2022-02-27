@@ -169,7 +169,9 @@ class ResponseTemplate {
                 }));
             }
 
-            outputObject[parameter.outName] = value;
+            if (value !== undefined) {
+                outputObject[parameter.outName] = value;
+            }
         });
         return outputObject;
     }
