@@ -109,4 +109,23 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(out).toHaveProperty('result', null);
         });
     });
+
+    test('Class 5: null error, null input array', () => {
+        let inputArray = null;
+        let err = null;
+        let status = 200;
+
+        mockGetStatus.mockReturnValueOnce(status);
+
+        return pipe.APIRespond(schema, res, inputArray, err).then(out => {
+            expect(mockGetStatus).toBeCalledWith(err);
+            expect(mockGetResponse).not.toBeCalled();
+            expect(mockStatus).toBeCalledWith(status);
+            expect(mockSend).not.toBeCalled();
+            expect(mockEnd).toBeCalled();
+
+            expect(out).toHaveProperty('status', status);
+            expect(out).toHaveProperty('result', null);
+        });
+    });
 });

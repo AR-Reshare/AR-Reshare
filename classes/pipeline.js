@@ -100,7 +100,7 @@ class Pipeline {
             res.status(statusCode);
             
             let outputObject = null;
-            if (statusCode >= 200 && statusCode < 300) {
+            if (statusCode >= 200 && statusCode < 300 && inputArray !== null) {
                 outputObject = responseSchema.getResponse(inputArray);
             }
 
