@@ -101,21 +101,19 @@ class AuthenticationHandler extends SecurityValMethods{
         if (!query){
             throw new AbsentArgumentError();
         } else if (query.email === undefined){
-            console.log(query.email);
             throw new AbsentArgumentError();
         } else if (query.password === undefined){
             throw new AbsentArgumentError();
         } 
-
         // Checking format
         check(query.email).isEmail()
         // The main format validation/sanitaiton should be performed by the db execution
         check(query.password).isLength({min:10});
-        
         const errors = validationResult(query);
         if (!errors.isEmpty()){
             throw new DirtyArgumentError();
         } else {
+            console.log("No errors found in query argument formats");
             return await AuthenticationHandler.createNewToken(db, query.email, query.password);
         }
     }
@@ -158,11 +156,9 @@ class AuthenticationHandler extends SecurityValMethods{
     }
 
     static async isUserCredentialsValid(db, email, password){
-        // TODO: Interact with db object
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
         // TODO you'll need to pass the Database object from the pipeline into this function somehow
-        console.log(db);
         return db.simpleQuery(getHash, [email]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();

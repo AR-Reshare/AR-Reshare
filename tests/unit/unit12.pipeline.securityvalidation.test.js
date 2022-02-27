@@ -239,20 +239,18 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
         }).rejects.toEqual(new InvalidTokenError());
     });
 
-
+    // BUG: The test isn't properly implemented
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
     test('Class 17: Correct Username + Password', () => {
         let db_response = [[{'user': 'ssepi0l742'}]];
-        mockDBInner.mockReturnValueOnce(db_response);
+        mockDatabaseSimple.mockReturnValueOnce(db_response);
 
-        let payload = {password: 'password12345'};
-        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let resourceName = '/account/login';
         let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
 
         return expect(() => {
             return AuthenticationHandler.accountLogin(pipe.db, query);
-        });
+        }).resolves.toBeInstanceOf(String);
     });
 });
 
