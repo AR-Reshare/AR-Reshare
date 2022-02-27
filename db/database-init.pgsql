@@ -55,7 +55,8 @@ CREATE TABLE Listing (
     CategoryID int4 REFERENCES Category ON DELETE SET NULL,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ModificationDate timestamp,
-    ClosedDate timestamp
+    ClosedDate timestamp,
+    ReceiverID int4 REFERENCES Account ON DELETE SET NULL
 );
 
 CREATE TABLE SavedListing (
