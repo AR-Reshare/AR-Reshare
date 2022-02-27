@@ -1,8 +1,10 @@
 const fs = require('fs/promises');
 const jwt = require('jsonwebtoken');
+const {check, validationResult} = require('express-validator');
 const securitySchemaDefinitions = require('../schemas/security-schemas.js');
-const {BadArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
+const {AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('./errors.js');
+const errors = require('./errors.js');
 
 // There are two parts to the securityValidation
 
@@ -46,25 +48,24 @@ const {BadArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, Unauthe
 // Split up into (Token Creation and Token Generation) && (evnerything else)
 
 class SecurityValMethods{
-    // constructor(){
-    //     //pass
-    // }
+    static PrivatekeyLocation = 'classes\\private.key';
 
     static async verifyToken(token){
         let privateKey, decodedToken;
-
         if (token !== null){
             // TODO: After creating the token signing module, add the neccessary verify() arguments (e.g. maybe audience, issuers, jwtid, etc.)
             // NOTE: The asynchronous version is essentially the same as synchrnous (except for a wrapper) (Doesnt return a promise)
             try {
-                privateKey = await fs.readFile('private.key');
+                privateKey = await fs.readFile(SecurityValMethods.PrivatekeyLocation);
             } catch (err) {
                 throw new PrivateKeyReadError();
             }
 
             try {
                 decodedToken = jwt.verify(token, privateKey);
+                console.log(decodedToken);
             } catch (err) {
+                console.log(err);
                 switch (err.name){
                 case 'JsonWebTokenError':
                     switch (err.message){
@@ -91,11 +92,36 @@ class SecurityValMethods{
 
 // TODO: Review the exception propogation and fix any issues
 class AuthenticationHandler extends SecurityValMethods{
+    static async emailValidation(email){}
+    static async passwordValidation(password){}
+
+    static async accountLogin(db, query){
+        // Checking existence
+        if (!query){
+            throw new InvalidArgumentError();
+        } else if (query.email === undefined){
+            throw new AbsentArgumentError();
+        } else if (query.password === undefined){
+            throw new AbsentArgumentError();
+        } 
+
+        // Checking format
+        check(query.email).isEmail()
+        // The main format validation/sanitaiton should be performed by the db execution
+        check(query.password).isLength({min:10});
+        
+        const errors = validationResult(query);
+        if (!errors.isEmpty()){
+            throw new DirtyArgumentError();
+        } else {
+            return await AuthenticationHandler.createNewToken(db, query.email, query.password);
+        }
+    }
 
     // Authentication Type: TokenRegeneration (TR)
     static async regenerateToken(token){
         // TODO: Provide checking that the decodedToken is valid
-        const [validToken, decodedToken] = await this.verifyToken(token);
+        const [validToken, decodedToken] = await SecurityValMethods.verifyToken(token);
         if (!validToken){
             throw new InvalidTokenError();
         }
@@ -134,6 +160,7 @@ class AuthenticationHandler extends SecurityValMethods{
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
         // TODO you'll need to pass the Database object from the pipeline into this function somehow
+        console.log(db);
         return db.simpleQuery(getHash, [email]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();
@@ -165,7 +192,7 @@ class SecurityValidate extends SecurityValMethods{
     constructor(params){
         super(); // SecurityValMethods provide static methods
         // Authentication Requirement: [AA_TAP, AA_TO, NA] and [TC, TR]
-        this.auth = params.authenticationType;
+        this.authenticationType = params.auth;
         this.resource = params.resourceName;
         this.db = params.db;
     }
@@ -173,15 +200,16 @@ class SecurityValidate extends SecurityValMethods{
     // NOTE: This is the main function that will be called
     async process(token, query){
         // First we check whether the token is correct
-        const [validToken, decodedToken] = await this.verifyToken(token);
+        const [validToken, decodedToken] = await SecurityValMethods.verifyToken(token);
         // We may need to add verification that there exists the correct arguments
-        return this.verifyAuthentication(validToken, decodedToken, query); 
+        return await this.verifyAuthentication(validToken, decodedToken, query); 
     }
 
     // TODO: Rename this function to something more correctly descriptive
     verifyAuthentication(validToken, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
+        console.log(this.authenticationType);
         if (this.authenticationType === 'NA'){
             return true;
         } else if (this.authenticationType === 'AA_TO'){
@@ -227,7 +255,10 @@ class SecurityValidate extends SecurityValMethods{
 }
 
 
-
+module.exports = {
+    SecurityValidate,
+    AuthenticationHandler
+}
 
 
 
