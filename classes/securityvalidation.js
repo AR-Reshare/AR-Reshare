@@ -5,6 +5,7 @@ const securitySchemaDefinitions = require('../schemas/security-schemas.js');
 const {AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('./errors.js');
 const errors = require('./errors.js');
+const path = require('path');
 
 // There are two parts to the securityValidation
 
@@ -48,7 +49,7 @@ const errors = require('./errors.js');
 // Split up into (Token Creation and Token Generation) && (evnerything else)
 
 class SecurityValMethods{
-    static PrivatekeyLocation = 'classes\\private.key';
+    static PrivatekeyLocation = `classes${path.sep}private.key`;
 
     static async verifyToken(token){
         let privateKey, decodedToken;

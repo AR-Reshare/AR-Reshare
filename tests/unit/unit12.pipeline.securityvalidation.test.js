@@ -41,10 +41,11 @@ const Pipeline = require('../../classes/pipeline.js');
 const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
 const {AbsentArgumentError, DirtyArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('../../classes/errors.js');
+const { expect } = require('@jest/globals');
 
 // Based on unit14.pipeline.store.test.js
 const mockDBInner = jest.fn();
-const mockDBPromise = () => {
+const mockDatabaseSimple = jest.fn().mockImplementation(() => {
     return new Promise((res, rej) => {
         let result = mockDBInner();
         if (result instanceof Error) {
@@ -53,19 +54,15 @@ const mockDBPromise = () => {
             res(result);
         }
     });
-};
+});
     
 jest.mock('../../classes/database', () => {
     return jest.fn().mockImplementation(() => {
         return {
             simpleQuery: mockDatabaseSimple,
-            complexQuery: mockDatabaseComplex,
         };
     });
 });
-
-const mockDatabaseSimple = jest.fn().mockImplementation(mockDBPromise);
-const mockDatabaseComplex = jest.fn().mockImplementation(mockDBPromise);
 
 let db, pipe, key, query;
 beforeAll(() => {
@@ -78,7 +75,6 @@ beforeAll(() => {
 beforeEach(() => {
     Database.mockClear();
     mockDBInner.mockClear();
-    mockDatabaseComplex.mockClear();
     mockDatabaseSimple.mockClear();
 });
 
@@ -194,9 +190,11 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         let query = null;
         let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
 
-        return expect(securitySchema.process(inputToken, query)).resolves.toEqual(true);
+        return securitySchema.process(inputToken, query).then(res => {
+            expect(res).toBe(true);
+        });
+        // return expect(securitySchema.process(inputToken, query)).resolves.toEqual(true);
     });
-
 });
 
 //TODO: We need to create mock objects for the db that's referenced by the pipeline
@@ -239,18 +237,19 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
         }).rejects.toEqual(new InvalidTokenError());
     });
 
-    // BUG: The test isn't properly implemented
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
     test('Class 17: Correct Username + Password', () => {
         let db_response = [[{'user': 'ssepi0l742'}]];
-        mockDatabaseSimple.mockReturnValueOnce(db_response);
+        mockDBInner.mockReturnValueOnce(db_response);
 
         let resourceName = '/account/login';
         let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
 
-        return expect(() => {
-            return AuthenticationHandler.accountLogin(pipe.db, query);
-        }).resolves.toBeInstanceOf(String);
+        return AuthenticationHandler.accountLogin(pipe.db, query).then(res => {
+            console.log(res);
+            expect(res).toBeInstanceOf(Buffer);
+            expect(res.toString()).toBe('testsecretkeybase');
+        });
     });
 });
 
