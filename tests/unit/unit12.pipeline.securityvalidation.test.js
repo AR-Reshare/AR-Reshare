@@ -202,10 +202,11 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 //TODO: We need to create mock objects for the db that's referenced by the pipeline
 describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
-    test('Class 13: No Username', () => {
+    test('Class 17: Correct Username + Password', () => {
+        let db_response = [[{'user': 'ssepi0l742'}]];
+        mockDBInner.mockReturnValueOnce(db_response);
 
-        mockDatabaseSimple.mockReturnValueOnce(["hashedpassword"]);
-        let payload = {name: 'Sam Sepiol'};
+        let payload = {password: 'password12345'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let resourceName = '/account/login';
         let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
