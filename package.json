@@ -7,9 +7,12 @@
     "doc": "docs"
   },
   "scripts": {
-    "postinstall": "node scripts/db-setup.js",
+    "postinstall": "node scripts/db-interactive-setup.js",
     "setup": "node scripts/db-setup.js",
-    "test": "jest --verbose"
+    "teardown": "node scripts/db-teardown.js",
+    "pretest": "node scripts/db-test-setup.js",
+    "test": "echo \"\nRunning Unit Tests\n\" && jest unit && echo \"\nRunning Integration Tests\n\" && jest int",
+    "posttest": "node scripts/db-test-teardown.js"
   },
   "repository": {
     "type": "git",
