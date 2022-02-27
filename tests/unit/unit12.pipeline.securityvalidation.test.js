@@ -201,6 +201,45 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
 //TODO: We need to create mock objects for the db that's referenced by the pipeline
 describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
+    test('Class 13: Absent email', () => {
+        let resourceName = '/account/login';
+        let query = {password: 'testtokencreationpassword'};
+
+        return expect(() => {
+            return AuthenticationHandler.accountLogin(pipe.db, query);
+        }).rejects.toEqual(new AbsentArgumentError());
+    });
+
+    test('Class 14: Absent password', () => {
+        let resourceName = '/account/login';
+        let query = {email: "samsepi0l@protonmail.com"};
+
+        return expect(() => {
+            return AuthenticationHandler.accountLogin(pipe.db, query);
+        }).rejects.toEqual(new AbsentArgumentError());
+    });
+
+    test('Class 15: No query', () => {
+        let resourceName = '/account/login';
+        let query = null;
+
+        return expect(() => {
+            return AuthenticationHandler.accountLogin(pipe.db, query);
+        }).rejects.toEqual(new AbsentArgumentError());
+    });
+
+    test('Class 16: Existing Token', () => {
+        let payload = {username: 'ssepi0l527'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
+        let resourceName = '/account/login';
+        let query = null;
+
+        return expect(() => {
+            return AuthenticationHandler.accountLogin(pipe.db, query, inputToken);
+        }).rejects.toEqual(new InvalidTokenError());
+    });
+
+
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
     test('Class 17: Correct Username + Password', () => {
         let db_response = [[{'user': 'ssepi0l742'}]];
@@ -213,7 +252,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
 
         return expect(() => {
             return AuthenticationHandler.accountLogin(pipe.db, query);
-        }).rejects.toEqual(new AbsentArgumentError());
+        });
     });
 });
 
