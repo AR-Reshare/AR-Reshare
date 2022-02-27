@@ -127,7 +127,7 @@ class AuthenticationHandler extends SecurityValMethods{
     }
 
     static async _regenerateToken(decodedToken){
-        return fs.readFile('private.key', (err, privateKey) => {
+        return fs.readFile(SecurityValMethods.PrivatekeyLocation, (err, privateKey) => {
             if (err) {
                 throw new PrivateKeyReadError();
             }
@@ -143,7 +143,7 @@ class AuthenticationHandler extends SecurityValMethods{
     }
 
     static async _createNewToken(userID){
-        return fs.readFile('private.key', (err, privateKey) => {
+        return fs.readFile(SecurityValMethods.PrivatekeyLocation, (err, privateKey) => {
             if (err) {
                 throw new PrivateKeyReadError();
             }
