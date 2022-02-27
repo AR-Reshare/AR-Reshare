@@ -63,9 +63,7 @@ class SecurityValMethods{
 
             try {
                 decodedToken = jwt.verify(token, privateKey);
-                console.log(decodedToken);
             } catch (err) {
-                console.log(err);
                 switch (err.name){
                 case 'JsonWebTokenError':
                     switch (err.message){
@@ -209,7 +207,6 @@ class SecurityValidate extends SecurityValMethods{
     verifyAuthentication(validToken, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
-        console.log(this.authenticationType);
         if (this.authenticationType === 'NA'){
             return true;
         } else if (this.authenticationType === 'AA_TO'){
