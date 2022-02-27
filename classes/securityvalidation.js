@@ -93,11 +93,15 @@ class AuthenticationHandler extends SecurityValMethods{
     static async emailValidation(email){}
     static async passwordValidation(password){}
 
-    static async accountLogin(db, query){
+    static async accountLogin(db, query, inputToken=null){
+        if (inputToken){
+            throw new InvalidTokenError();
+        }
         // Checking existence
         if (!query){
-            throw new InvalidArgumentError();
+            throw new AbsentArgumentError();
         } else if (query.email === undefined){
+            console.log(query.email);
             throw new AbsentArgumentError();
         } else if (query.password === undefined){
             throw new AbsentArgumentError();
