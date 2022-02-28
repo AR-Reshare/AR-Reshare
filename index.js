@@ -1,9 +1,14 @@
-/* this should just start the app running and listening to a port
-   it should probably have some config stuff as well (logging, database credentials, etc.)
-*/
+const App = require('./app');
+const Database = require('./classes/database');
+const credentials = require('./connection.json');
 
-const app = require('./app');
+const db = new Database(credentials['db']);
+const logger = console;
 
-app.listen(8080, () => {
-   console.log(`Example app listening on port 8080`)
- })
+const app = new App(db, logger);
+
+db.testConnection().then(() => {
+   app.listen(8080, () => {
+      console.log(`Listening on port 8080`);
+   });
+}).catch(console.error);
