@@ -72,9 +72,9 @@ class ResponseTemplate {
             } else if (Array.isArray(parameter['rows_with_fields'])) {
                 if (parameter['rows_with_fields'].length === 0) {
                     throw new TemplateError('rows_with_fields is empty');
-                } else if (parameter['rows_with_fields'].any(field => !isString(field))) {
+                } else if (parameter['rows_with_fields'].some(field => !isString(field))) {
                     throw new TemplateError('rows_with_fields contains non-string field name');
-                } else if (parameter['rows_with_fields'].any(field => field.length === 0)) {
+                } else if (parameter['rows_with_fields'].some(field => field.length === 0)) {
                     throw new TemplateError('rows_with_fields contains empty field name');
                 } else {
                     out.rowsWithFields = parameter['rows_with_fields'];
@@ -95,9 +95,9 @@ class ResponseTemplate {
             } else if (Array.isArray(parameter['one_row_with_fields'])) {
                 if (parameter['one_row_with_fields'].length === 0) {
                     throw new TemplateError('one_row_with_fields is empty');
-                } else if (parameter['one_row_with_fields'].any(field => !isString(field))) {
+                } else if (parameter['one_row_with_fields'].some(field => !isString(field))) {
                     throw new TemplateError('one_row_with_fields contains non-string field name');
-                } else if (parameter['one_row_with_fields'].any(field => field.length === 0)) {
+                } else if (parameter['one_row_with_fields'].some(field => field.length === 0)) {
                     throw new TemplateError('one_row_with_fields contains empty field name');
                 } else {
                     out.oneRowWithFields = parameter['one_row_with_fields'];
