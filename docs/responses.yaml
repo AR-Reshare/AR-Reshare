@@ -48,6 +48,12 @@ components:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
 
+    token-regeneration:
+      description: A token is trying to be regenerated from one that is going to expire soon
+      headers:
+        Authorization:
+          $ref: 'headers.yaml#/headers/auth-token'
+
 
     ####################### COMMS RESPONSES #######################
     conversation-descriptors:

@@ -40,7 +40,18 @@ paths:
         '200':
           description: The index page is succesfully returned
 
-  
+  /token/regeneration:
+    post:
+      description: Regenerates a new token based of a currently valid token (that is about to expire)
+      responses:
+        '201':
+          description: The new token has been successfully generated
+          $ref: 'responses.yaml#/components/responses/token-regeneration'
+        '400':
+          description: A valid old token wasn't provided in the header of the HTTP request
+          $ref: 'responses.yaml#/components/responses/post'
+        
+
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
     post:
