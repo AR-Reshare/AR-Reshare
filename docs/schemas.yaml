@@ -349,6 +349,22 @@ components:
           $ref: '#/components/schemas/password'
 
     
+    ####################### ACCOUNT RESET SCHEMAS ####################
+    reset-request:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          $ref: '#/components/schemas/email'
+
+    reset-execute:
+      type: object
+      required:
+      - password
+      properties:
+        password:
+          $ref: '#/components/schemas/password'
 
 
     #################### CONVERSATION SCHEMAS ########################
