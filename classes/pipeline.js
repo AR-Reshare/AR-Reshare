@@ -2,6 +2,12 @@ class Pipeline {
     constructor(db, logger=console) {
         this.db = db; // expected to implement simpleQuery and complexQuery
         this.logger = logger; // expected to implement .log, .error, and .warn
+
+        this.SecurityValidate = this.SecurityValidate.bind(this);
+        this.DataValidate = this.DataValidate.bind(this);
+        this.Store = this.Store.bind(this);
+        this.APIRespond = this.APIRespond.bind(this);
+        this.PushRespond = this.PushRespond.bind(this);
     }
 
     SecurityValidate(authenticationType, token, rejectIfBanned) {
