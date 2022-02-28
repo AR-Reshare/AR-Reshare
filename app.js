@@ -11,12 +11,13 @@ class App {
         // one pipeline instance per endpoint
         const Index = NA;
         const RegenerateToken = NA;
-        const CreateAccount = NA; // CreateEntity
+        const CreateAccount = NA; // CreateEntity (in question - see issue #25)
         const CloseAccount = NA; // CloseEntity
         const Login = NA;
         const ModifyAccount = NA; // ModifyEntity
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
+        const SearchSavedListing = NA; //SearchEntity
         const RequestReset = NA;
         const ExecuteReset = NA;
         const ViewListing = NA; // ViewEntity
@@ -40,13 +41,16 @@ class App {
         app.put('/account/modify', ModifyAccount.Execute);
         app.get('/account/listing/view', ViewAccountListing.Execute);
         app.get('/account/listings/search', SearchAccountListing.Execute);
-        app.put('/account/reset-request', RequestReset.Execute);
-        app.put('/account/reset-execute', ExecuteReset.Execute);
+        app.get('/account/saved-listings/search', SearchSavedListing.Execute);
+
+        // The below paths are in question. See issue #24
+        // app.put('/account/reset-request', RequestReset.Execute);
+        // app.put('/account/reset-execute', ExecuteReset.Execute);
         
         app.get('/listing/view', ViewListing.Execute);
         app.get('/listings/search', SearchListing.Execute);
         app.post('/listing/create', CreateListing.Execute);
-        app.post('/listing/modify', ModifyListing.Execute);
+        app.put('/listing/modify', ModifyListing.Execute);
         app.post('/listing/close', CloseListing.Execute);
         
         app.post('/conversation/create', CreateConversation.Execute);
