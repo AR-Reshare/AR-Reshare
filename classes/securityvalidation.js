@@ -243,13 +243,13 @@ class SecurityValidate extends SecurityValMethods{
         if (this.authenticationType === 'NA'){
             return (decodedToken ? decodedToken.userID : null); // In case the user is authenticated but accesses a resource that doesn't require auth
         } else if (this.authenticationType === 'AA_TO'){
-            if (!validToken){
+            if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else {
                 return true;
             }
         } else if (this.authenticationType === 'AA_TAP'){
-            if (!validToken){
+            if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
                 throw new BadArgumentError(); // TODO: Check whether this is the correct error
