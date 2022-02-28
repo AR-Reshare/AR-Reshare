@@ -19,8 +19,6 @@
 ##    --> 
 ## 3. Request
 ## 5. Sanctions
-## 6. Admin
-##    -->
 
 components:
   schemas:
@@ -270,7 +268,7 @@ components:
 
 
 
-    ######################## ADMIN SCHEMAS ###########################
+    ######################## ACCOUNT SCHEMAS ###########################
     account-signup:
       type: object
       required:

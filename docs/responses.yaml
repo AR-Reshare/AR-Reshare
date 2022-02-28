@@ -91,21 +91,6 @@ components:
       $ref: '#/components/responses/post'
     
 
-    ###################### ADMIN RESPONSES ########################
-    admin-user-view:
-      description: Returns a view of the user
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/user-view'
-
-    admin-user-search:
-      description: Returns a list of users that satisfy the search parameters
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/user-search'
-
    ###################### LISTING RESPONSES ######################
     listings-private:
       description: Returns a set of listings
