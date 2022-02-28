@@ -115,7 +115,6 @@ class AuthenticationHandler extends SecurityValMethods{
         if (!errors.isEmpty()){
             throw new DirtyArgumentError();
         } else {
-            console.log("No errors found in query argument formats");
             return await AuthenticationHandler.createNewToken(db, query.email, query.password);
         }
     }
@@ -139,14 +138,12 @@ class AuthenticationHandler extends SecurityValMethods{
         }
         return jwt.sign({'userID': `${decodedToken.userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
     }
-        
+
     // Authentication Type: TokenCreation (TC)
     static async createNewToken(db, email, password){
         // TODO: Provide checking that the userID is valid
         const userID = await this.isUserCredentialsValid(db, email, password);
-        const out =  await this._createNewToken(userID);
-        console.log(out.toString());
-        return out;
+        return await this._createNewToken(userID);
     }
 
     static async _createNewToken(userID){
