@@ -20,8 +20,6 @@ info:
     - \/listing\/create
     - \/listing\/modify
     - \/listing\/close
-    - \/report
-    - \/request
 
 
 
@@ -169,8 +167,30 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
+  ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
+  /account/saved-listings/search:
+    get:
+      description: Returns the user's saved listings
+      responses:
+        '200': # Success
+          description: Returns all saved listings
+          $ref: 'responses.yaml#/components/responses/listings-public'
+        '400':
+          description: The request did not include a valid query parameter
+          $ref: 'responses.yaml#/components/responses/listings-public'
+      parameters:
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
+
+ ## TODO: Fix up account-reset endpoints (this has been raise as an issue on GitHub) -- Do not use the below two paths for routing
   /account/reset-request:
-    put: 
+    post: 
       description: Resets the account's password
       responses:
         '200': # Success
@@ -183,7 +203,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/reset-request'
 
   /account/reset-execute:
-    put:
+    post:
       description: Resets the account's password
       responses:
         '200': # Success
@@ -196,7 +216,7 @@ paths:
           description: The user has not presented a token
           $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
-          description: The user has not presented a token with sufficeint priviledges to perform the action
+          description: The user has not presented a token with sufficient priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
     requestBody:
       $ref: 'requestBodies.yaml#/components/requestBodies/reset-execute'
@@ -263,7 +283,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
-    post:
+    put:
       description: Modifies the listings
       responses:
         '200': # Success
