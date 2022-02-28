@@ -16,8 +16,8 @@ function getOS() {
     let uname = type();
 
     if (!(uname in os_dict)) {
-        console.log('Your OS was not recognised.');
-        process.exit(1);
+        console.log('Your OS was not recognised. Unable to set up the test database.');
+        process.exit(0);
     } else {
         console.log(`Your OS was detected as ${os_dict[uname]}.`);
         makePassword(os_dict[uname]);
