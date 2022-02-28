@@ -77,53 +77,7 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-modify'
 
-    ################### REPORT REQUESTBODIES #######################
-    report-review:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/report-review'
     
-    report-create:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/report-create' 
-
-    report-modify:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/report-modify'
-
-    
-    ################## SANCTION REQUESTBODIES ######################
-    sanction-create:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/sanction-create'
-
-    sanction-close:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/sanction-close'
-
-    ################## REQUEST REQUESTBODIES ########################
-    request-create:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/request-create'    
-
-    request-close:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/request-close'
-
-
     ################ ACCOUNT-RESET REQUESTBODIES ####################
     reset-request:
       content:
