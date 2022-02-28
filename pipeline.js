@@ -46,13 +46,9 @@ class NotImplementedPipeline extends Pipeline {
         super(...args);
 
         this.Execute = this.Execute.bind(this);
-        console.log(this.db);
-        console.log(this.logger);
     }
 
     Execute(req, res) {
-        console.log(this);
-        console.log(this.logger);
         this.logger.log(`${req.method} ${req.originalUrl} 501`);
         res.status(501).end();
     }

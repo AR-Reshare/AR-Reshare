@@ -3,18 +3,16 @@
 
 const app = require('express')();
 const pipes = require('./pipeline');
-const Logger = require('./classes/logger');
 const Database = require('./classes/database');
 const credentials = require('./connection.json');
 
 const db = new Database(credentials['db']);
-const log = new Logger();
 
 // e.g.
 // const CreateMessage = new pipes.CreateEntityPipeline('message', false, 'affected', db, console);
 // app.post('/conversation/message', CreateMessage.Execute);
 
-const NA = new pipes.NotImplementedPipeline(db, log);
+const NA = new pipes.NotImplementedPipeline(db, console);
 
 app.get('/', NA.Execute);
 app.post('/token/regeneration', NA.Execute);
