@@ -350,6 +350,7 @@ components:
 
     
     ####################### ACCOUNT RESET SCHEMAS ####################
+    ##TODO: Account-Reset is in desperate need of fixing (raised as an issue on GitHub)
     reset-request:
       type: object
       required:
