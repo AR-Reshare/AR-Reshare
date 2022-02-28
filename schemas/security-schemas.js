@@ -12,6 +12,8 @@ const securitySchemaDefinitions = {
     '/': 'NA', // NOTE: Might be redundant
     '/index': 'NA',
     
+    '/token/regeneration': 'TR',
+    
     '/account/create': 'NA',    // requires email password etc (But not checked by a user)
     '/account/login': 'TC',
     '/account/modify': 'AA_TAP',
