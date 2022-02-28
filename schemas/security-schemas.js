@@ -12,22 +12,6 @@ const securitySchemaDefinitions = {
     '/': 'NA', // NOTE: Might be redundant
     '/index': 'NA',
     
-    '/admin': 'TC',
-    '/admin/dashboard': 'AA_TO', // NOTE: Non-existent in the oas definition
-    '/admin/listing/view': 'AA_TO',
-    '/admin/listings/search': 'AA_TO',
-    '/admin/listing/modify': 'AA_TO',
-    '/admin/user/view': 'AA_TO',
-    '/admin/users/search': 'AA_TO',
-    '/admin/user/modify': 'AA_TO',
-    '/admin/reports/search': 'AA_TO',
-    '/admin/report/search':'AA_TO',
-    '/admin/report/modify':'AA_TO',
-    '/admin/sanction/create':'AA_TO',
-    '/admin/sanction/close':'AA_TO',
-    '/admin/sanction/view':'AA_TO',
-    '/admin/sanctions/search':'AA_TO',
-
     '/account/create': 'NA',    // requires email password etc (But not checked by a user)
     '/account/login': 'TC',
     '/account/modify': 'AA_TAP',
