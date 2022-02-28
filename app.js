@@ -4,7 +4,7 @@ const pipes = require('./pipeline');
 class App {
     constructor(db, logger) {
         let app = express();
-        
+        // NOTE: NA here refers to notImplementedPipelines, which differentiates from NA (noAuth) in SecurityValidate
         const NA = new pipes.NotImplementedPipeline(db, logger); // for unimplemented endpoints
         const NF = new pipes.UnknownEndpointPipeline(db, logger);
 
