@@ -197,7 +197,12 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     });
 });
 
-//TODO: We need to create mock objects for the db that's referenced by the pipeline
+
+// NOTE: Authorization was moved form the securityvalidation component to the datavalidation component
+// Therefore the testcases 10,11,12 have been deleted from here, and they should be transfered over to the 
+// datavalidation component
+
+
 describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     test('Class 13: Absent email', () => {
         let resourceName = '/account/login';
@@ -251,6 +256,38 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
             expect(out[1].userID).toBe("samsepi0l");
         });
     });
+
 });
 
+// TODO: Add Token Regeneration endpoints to the OAS documents
+describe('Unit Test 12 - Pipeline.SecurityValidation (Token Regeneration)', () => {
+    test('Class 18: Absent Token', () => {
+        let inputToken = null;
+        return expect(() => {
+            return AuthenticationHandler.regenerateToken(inputToken);
+        }).rejects.toEqual(new AbsentArgumentError());
+    });
 
+    // No need to check whether SecurityValMethods.verifyToken works since this has already been tested
+    test('Class 19: Expired Token', () => {
+        let payload = {username: 'ssepi0l527'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
+
+        return expect(() => {
+            return AuthenticationHandler.regenerateToken(inputToken);
+        }).rejects.toEqual(new ExpiredTokenError());
+    });
+
+    test('Class 20: Valid Token', () => {
+        let payload = {userID: 'ssepi0l527'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
+
+        return AuthenticationHandler.regenerateToken(inputToken).then(async res => {
+            const out = await AuthenticationHandler.verifyToken(res);
+            expect(out).toBeInstanceOf(Array);
+            console.log(out);
+            expect(out[1].userID).toBe('ssepi0l527');
+        });
+    });
+
+});
