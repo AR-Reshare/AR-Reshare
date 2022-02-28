@@ -124,7 +124,7 @@ class AuthenticationHandler extends SecurityValMethods{
         // TODO: Provide checking that the decodedToken is valid
         const [validToken, decodedToken] = await SecurityValMethods.verifyToken(token);
         if (!validToken){
-            throw new InvalidTokenError();
+            throw new AbsentArgumentError();
         }
         return await this._regenerateToken(decodedToken);
     }
