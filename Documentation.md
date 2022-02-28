@@ -4,7 +4,47 @@
 
 ## Pipeline Base (classes/pipeline.js)
 
-### SecurityValidate
+### Pipeline.SecurityValidate
+Takes two inputs, `securitySchema` and `inputObject`. `inputObject` is the object to validate, `securitySchema` must be an instance of `SecurityValidate`, as defined in classes/securityvalidation.js
+
+The `securitySchema` object must be initialised ahead of time. These arguments can be found by using a resource authentication lookup table that is found at `schemas/security-schemas.js`. The constructor should receive a single object called `params`, with the following attributes:
+
+| key | type | description |
+|-----|------|-------------|
+| `auth` | enum string, required | The authentication type that the security schema will validate against `NA`(NoAuth), `AA_TO` (Authorize+Authenticate (Token Only)), `AA_TAP` (Authorize+Authenticate (Token And Password)) |
+| `resourceName` | string, required | The name of the resource that the security schema will validate against |
+| `db`| Database, required | The Database object that allows the securitySchema object to make database queries |
+
+The following errors can be thrown from the `SecurityValidate` constructor:
+
+| error | description |
+|-------|-------------|
+| AbsentArgumentError | A required parameter was not present in the input object |
+| DirtyArgumentError | One of the params arguments is either of an incorrect type or an unsupported value |
+
+The constructed instance of `SecurityValidate` (i.e. `securitySchema`) is then used to validate requests for the
+previous `resourceName` provided to the constructor. This is done by calling the async function `securitySchema.process`. This uses the arguments:
+
+| arg | type | description |
+|-----|------|-------------|
+| `token` | string, optional | The JWT token that has been provided with the request. It is optional depending on the type of authentication type required by the resource (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
+| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.head e.g. `query.password`, `query.email`|
+
+If the user provided the neccessary and valid credentials to be authenticated (`AA_TO`, `AA_TAP`), then the promise resolves with the `${userID}`. If no authentication (`NA`) was required (and optionally if a valid token was provided), the promise resolves with `null`. If the promise rejects, it will do so with one of the following errors:
+
+| error | description |
+|-------|-------------|
+| UnauthenticatedUserError | The token provided with the request is not valid |
+| InvalidCredentialsError | The password provided with the token for a `AA_TAP` auth type request was not valid |
+| QueryExecutionError | The database query for a single user returned multiple results |
+| BadArgumentError | The query object is not of the expected type/format |
+| ServerException | For some unexpected reason, any unhandled logical paths (that are currently not known) should raise this exception |
+| TamperedTokenError | The token provided with the request was tampered with |
+| ExpiredTokenError | The token provided with the request has expired |
+| NotBeforeError | The token provided with the request has not realized its NotBefore time yet |
+| InvalidTokenError | Encompasses all other `JsonWebTokenError` (from jsonwebtoken npm module) exceptions as the default |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
 
 ### DataValidate
 Takes two inputs, `requestSchema` and `inputObject`. `inputObject` is the object to validate, `requestSchema` must be an instance of `RequestTemplate`, as defined in classes/requesttemplate.js
