@@ -16,7 +16,7 @@ class Pipeline {
             let userID;
             try {
                 userID = securitySchema.process(token, query);
-                console.log(userID);
+                // console.log(userID);
                 resolve(userID);
             } catch (err) {
                 reject(err);

@@ -239,7 +239,7 @@ class SecurityValidate extends SecurityValMethods{
     verifyAuthentication(decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
-        console.log(decodedToken);
+        // console.log(decodedToken);
         if (this.authenticationType === 'NA'){
             return (decodedToken ? decodedToken.userID : null); // In case the user is authenticated but accesses a resource that doesn't require auth
         } else if (this.authenticationType === 'AA_TO'){
