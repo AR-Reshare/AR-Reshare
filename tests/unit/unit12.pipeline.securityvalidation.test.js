@@ -143,11 +143,11 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     // NOTE: We cannot absolutely say if a token has been tampered with, only that the token information doesn't add up
     test('Class 7: The token has been tampered with', () => {
         let payload = {
-            name: 'BasicUser12345',
+            userID: 'BasicUser12345',
         };
 
         let modifiedPayload = {
-            name: 'samsepi0l',
+            userID: 'ssepi0l',
         };
 
         let signedToken = jwt.sign(payload, key, {algorithm: 'HS256'});
@@ -167,7 +167,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
     test('Class 8: The token has expired', () => {
         let payload = {
-            name: 'Sam Sepiol',
+            userID: 'ssepi0l',
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
@@ -182,7 +182,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
     test('Class 9: The token can be verified successfully', () => {
         let payload = {
-            name: 'Sam Sepiol',
+            userID: 'ssepi0l',
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
@@ -191,7 +191,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
 
         return securitySchema.process(inputToken, query).then(res => {
-            expect(res).toBe(true);
+            expect(res).toBe('ssepi0l');
         });
         // return expect(securitySchema.process(inputToken, query)).resolves.toEqual(true);
     });
@@ -232,7 +232,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     });
 
     test('Class 16: Existing Token', () => {
-        let payload = {username: 'ssepi0l527'};
+        let payload = {userID: 'ssepi0l527'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let resourceName = '/account/login';
         let query = null;
@@ -244,7 +244,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
 
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
     test('Class 17: Correct Username + Password', () => {
-        let db_response = [[{'user': 'samsepi0l'}]];
+        let db_response = [[{'user': 'ssepi0l'}]];
         mockDBInner.mockReturnValueOnce(db_response);
 
         let resourceName = '/account/login';
@@ -252,8 +252,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
 
         return AuthenticationHandler.accountLogin(pipe.db, query).then(async res => {
             const out = await AuthenticationHandler.verifyToken(res);
-            expect(out[0]).toBe(true);
-            expect(out[1].userID).toBe("samsepi0l");
+            expect(out.userID).toBe("ssepi0l");
         });
     });
 
@@ -270,7 +269,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Token Regeneration)', () =
 
     // No need to check whether SecurityValMethods.verifyToken works since this has already been tested
     test('Class 19: Expired Token', () => {
-        let payload = {username: 'ssepi0l527'};
+        let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
 
         return expect(() => {
@@ -279,14 +278,12 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Token Regeneration)', () =
     });
 
     test('Class 20: Valid Token', () => {
-        let payload = {userID: 'ssepi0l527'};
+        let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
 
         return AuthenticationHandler.regenerateToken(inputToken).then(async res => {
             const out = await AuthenticationHandler.verifyToken(res);
-            expect(out).toBeInstanceOf(Array);
-            console.log(out);
-            expect(out[1].userID).toBe('ssepi0l527');
+            expect(out.userID).toBe('ssepi0l');
         });
     });
 

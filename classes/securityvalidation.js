@@ -82,9 +82,9 @@ class SecurityValMethods{
                 }
             }
             // Token here should be successfully verified
-            return [true, decodedToken];
+            return decodedToken;
         } else {
-            return [null, null];
+            return null;
         }
     }
 
@@ -122,8 +122,8 @@ class AuthenticationHandler extends SecurityValMethods{
     // Authentication Type: TokenRegeneration (TR)
     static async regenerateToken(token){
         // TODO: Provide checking that the decodedToken is valid
-        const [validToken, decodedToken] = await SecurityValMethods.verifyToken(token);
-        if (!validToken){
+        const decodedToken = await SecurityValMethods.verifyToken(token);
+        if (!decodedToken){
             throw new AbsentArgumentError();
         }
         return await this._regenerateToken(decodedToken);
@@ -166,7 +166,7 @@ class AuthenticationHandler extends SecurityValMethods{
             } else if (res.length > 1){
                 throw new QueryExecutionError();
             } else {
-                let userID = 'samsepi0l';
+                let userID = 'ssepi0l';
                 // salt = get_salt(res[0].passhash)
                 // hash = hash(password, salt)
                 // if (hash === res[0].passhash)
@@ -199,17 +199,18 @@ class SecurityValidate extends SecurityValMethods{
     // NOTE: This is the main function that will be called
     async process(token, query){
         // First we check whether the token is correct
-        const [validToken, decodedToken] = await SecurityValMethods.verifyToken(token);
+        const decodedToken = await SecurityValMethods.verifyToken(token);
         // We may need to add verification that there exists the correct arguments
-        return await this.verifyAuthentication(validToken, decodedToken, query); 
+        return await this.verifyAuthentication(decodedToken, query); 
     }
 
     // TODO: Rename this function to something more correctly descriptive
-    verifyAuthentication(validToken, decodedToken, query){
+    verifyAuthentication(decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
+        console.log(decodedToken);
         if (this.authenticationType === 'NA'){
-            return true;
+            return (decodedToken ? decodedToken.userID : null); // In case the user is authenticated but accesses a resource that doesn't require auth
         } else if (this.authenticationType === 'AA_TO'){
             if (!validToken){
                 throw new UnauthenticatedUserError();
@@ -224,7 +225,7 @@ class SecurityValidate extends SecurityValMethods{
             } else if (!this.isUserPasswordValid(decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
-                return true;
+                return decodedToken.userID;
             }
         } else {
             throw new ServerException();
