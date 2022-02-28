@@ -2,11 +2,12 @@ const fs = require('fs/promises');
 const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
 const securitySchemaDefinitions = require('../schemas/security-schemas.js');
-const {AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
-    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('./errors.js');
+const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
+    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
 const errors = require('./errors.js');
 const path = require('path');
 const { Console } = require('console');
+const Database = require('./database.js');
 
 // There are two parts to the securityValidation
 
@@ -190,9 +191,39 @@ class AuthenticationHandler extends SecurityValMethods{
 class SecurityValidate extends SecurityValMethods{
     constructor(params){
         super(); // SecurityValMethods provide static methods
+        const supportedAuthTypes = ['NA', 'AA_TAP', 'AA_TO'];
         // Authentication Requirement: [AA_TAP, AA_TO, NA] and [TC, TR]
-        this.authenticationType = params.auth;
-        this.resource = params.resourceName;
+        if (!params){
+            throw new TemplateError();
+        } 
+        
+        if (!params.auth){
+            throw new AbsentArgumentError('auth not provided');
+        } else if (!(typeof params['auth'] === 'string' || params['auth'] instanceof String)){
+            throw new DirtyArgumentError('auth not a string');
+        } else if (!(supportedAuthTypes.includes(params['auth'].toUpperCase()))){
+            throw new DirtyArgumentError('auth not a supported type');
+        } else {
+            this.authenticationType = params['auth'];
+        }
+
+        if (!params.resourceName){
+            throw new AbsentArgumentError('resourceName not provided');
+        } else if (!(typeof params['resourceName'] === 'string' || params['resourceName'] instanceof String)){
+            throw new DirtyArgumentError('resourceName not a string');
+        //TODO:  Updated the path validation
+        } else if (!(params['resourceName'].length > 0)){
+            throw new DirtyArgumentError('resourceName not a valid path');
+        } else {
+            this.resource = params['resourceName'];
+        }
+
+        if (!params.db){
+            throw new AbsentArgumentError('db not provided');
+        // NOTE: The below code doesn't work, possibly because of the mock objects?? Fix later
+        // } else if (!(params['db'] instanceof Database)){
+        //     throw new DirtyArgumentError('db argument is not an instance of the class Database');
+        }
         this.db = params.db;
     }
 
