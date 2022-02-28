@@ -2,34 +2,60 @@ const express = require('express');
 const pipes = require('./pipeline');
 
 class App {
-    constructor(db, console) {
+    constructor(db, logger) {
         let app = express();
+        
+        const NA = new pipes.NotImplementedPipeline(db, logger); // for unimplemented endpoints
+        const NF = new pipes.UnknownEndpointPipeline(db, logger);
 
-        const NA = new pipes.NotImplementedPipeline(db, console);
+        // one pipeline instance per endpoint
+        const Index = NA;
+        const RegenerateToken = NA;
+        const CreateAccount = NA; // CreateEntity
+        const CloseAccount = NA; // CloseEntity
+        const Login = NA;
+        const ModifyAccount = NA; // ModifyEntity
+        const ViewAccountListing = NA; // ViewEntity
+        const SearchAccountListing = NA; // SearchEntity
+        const RequestReset = NA;
+        const ExecuteReset = NA;
+        const ViewListing = NA; // ViewEntity
+        const SearchListing = NA; // SearchEntity
+        const CreateListing = NA; // CreateEntity
+        const ModifyListing = NA; // ModifyEntity
+        const CloseListing = NA; // CloseEntity
+        const CreateConversation = NA; // CreateEntity
+        const CloseConversation = NA; // CloseEntity
+        const CreateMessage = NA; // CreateEntity
+        const ListConversation = NA; // SearchEntity
+        const ViewConversation = NA; // ViewEntity
         
-        app.get('/', NA.Execute);
-        app.post('/token/regeneration', NA.Execute);
+        // connect endpoints to their relevant pipeline instances
+        app.get('/', Index.Execute);
+        app.post('/token/regeneration', RegenerateToken.Execute);
         
-        app.post('/account/create', NA.Execute);
-        app.post('/account/close', NA.Execute);
-        app.post('/account/login', NA.Execute);
-        app.put('/account/modify', NA.Execute);
-        app.get('/account/listing/view', NA.Execute);
-        app.get('/account/listings/search', NA.Execute);
-        app.put('/account/reset-request', NA.Execute);
-        app.put('/account/reset-execute', NA.Execute);
+        app.post('/account/create', CreateAccount.Execute);
+        app.post('/account/close', CloseAccount.Execute);
+        app.post('/account/login', Login.Execute);
+        app.put('/account/modify', ModifyAccount.Execute);
+        app.get('/account/listing/view', ViewAccountListing.Execute);
+        app.get('/account/listings/search', SearchAccountListing.Execute);
+        app.put('/account/reset-request', RequestReset.Execute);
+        app.put('/account/reset-execute', ExecuteReset.Execute);
         
-        app.get('/listing/view', NA.Execute);
-        app.get('/listings/search', NA.Execute);
-        app.post('/listing/create', NA.Execute);
-        app.post('/listing/modify', NA.Execute);
-        app.post('/listing/close', NA.Execute);
+        app.get('/listing/view', ViewListing.Execute);
+        app.get('/listings/search', SearchListing.Execute);
+        app.post('/listing/create', CreateListing.Execute);
+        app.post('/listing/modify', ModifyListing.Execute);
+        app.post('/listing/close', CloseListing.Execute);
         
-        app.post('/conversation/create', NA.Execute);
-        app.post('/conversation/close', NA.Execute);
-        app.post('/conversation/message', NA.Execute);
-        app.get('/conversations', NA.Execute);
-        app.get('/conversation/view', NA.Execute);
+        app.post('/conversation/create', CreateConversation.Execute);
+        app.post('/conversation/close', CloseConversation.Execute);
+        app.post('/conversation/message', CreateMessage.Execute);
+        app.get('/conversations', ListConversation.Execute);
+        app.get('/conversation/view', ViewConversation.Execute);
+
+        app.use(NF.Execute); // handle wrong URLs
 
         this.app = app;
         this.listen = this.listen.bind(this);
@@ -39,10 +65,5 @@ class App {
         this.app.listen(port, cb);
     }
 }
-
-// e.g.
-// const CreateMessage = new pipes.CreateEntityPipeline('message', false, 'affected', db, console);
-// app.post('/conversation/message', CreateMessage.Execute);
-
 
 module.exports = App;
