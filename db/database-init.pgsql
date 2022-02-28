@@ -1,18 +1,11 @@
--- Execute from linux via the makefile with: sudo -u postgres npm run db-init
-
 CREATE USER :account WITH ENCRYPTED PASSWORD :password;
 CREATE DATABASE :account WITH OWNER :account;
 
 \c :account;
 
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public TO :account;
-
 CREATE EXTENSION citext;
 
 SET ROLE :account;
--- Define an email type
-CREATE DOMAIN email AS citext
-    CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 
 CREATE DOMAIN mimetype AS citext
     CHECK ( value ~ '^[^/\s]+/[^/\s]+$' );
@@ -29,12 +22,8 @@ CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 CREATE TABLE Account (
     UserID serial4 PRIMARY KEY,
     FullName varchar NOT NULL,
-    Email email NOT NULL,
-    PassHash varchar NOT NULL
-);
-
-CREATE TABLE StdUser (
-    UserID int4 PRIMARY KEY REFERENCES Account ON DELETE CASCADE,
+    Email varchar UNIQUE NOT NULL,
+    PassHash varchar NOT NULL,
     DoB date NOT NULL,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     DeletionDate timestamp
@@ -44,7 +33,7 @@ CREATE TABLE Address (
     AddressID serial4 PRIMARY KEY,
     Country varchar NOT NULL,
     PostCode varchar NOT NULL,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE Category (
@@ -58,7 +47,7 @@ CREATE TABLE Category (
 
 CREATE TABLE Listing (
     ListingID serial4 PRIMARY KEY,
-    ContributorID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ContributorID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     Title varchar NOT NULL,
     Description varchar NOT NULL,
     Condition itemCondition NOT NULL,
@@ -66,12 +55,19 @@ CREATE TABLE Listing (
     CategoryID int4 REFERENCES Category ON DELETE SET NULL,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ModificationDate timestamp,
-    ClosedDate timestamp
+    ClosedDate timestamp,
+    ReceiverID int4 REFERENCES Account ON DELETE SET NULL
+);
+
+CREATE TABLE SavedListing (
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
+    ListingID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
+    PRIMARY KEY(UserID, ListingID)
 );
 
 CREATE TABLE Conversation (
     ConversationID serial4 PRIMARY KEY,
-    ReceiverID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    ReceiverID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ClosedDate timestamp
@@ -79,7 +75,7 @@ CREATE TABLE Conversation (
 
 CREATE TABLE Message (
     MessageID serial4 PRIMARY KEY,
-    SenderID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
+    SenderID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ConversationID int4 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ReadTime timestamp,
@@ -89,7 +85,7 @@ CREATE TABLE Message (
 CREATE TABLE PushToken (
     DeviceToken varchar PRIMARY KEY, -- Nobody can agree on what an FCM token actually looks like. Reported lengths have ranged from 119 chars to 326 chars.
     Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE Media (
@@ -101,7 +97,7 @@ CREATE TABLE Media (
 
 CREATE TABLE ProfilePicture (
     MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
+    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
 CREATE TABLE ListingMedia (
@@ -112,66 +108,4 @@ CREATE TABLE ListingMedia (
 CREATE TABLE MessageMedia (
     MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
     MessageID int4 NOT NULL REFERENCES Message ON DELETE CASCADE
-);
-
-CREATE TABLE Administrator (
-    UserID int4 PRIMARY KEY REFERENCES Account ON DELETE CASCADE
-);
-
-CREATE TABLE Report (
-    ReportID serial4 PRIMARY KEY,
-    ReporterID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
-    Reason reportReason NOT NULL,
-    Description varchar NOT NULL,
-    Outcome varchar NOT NULL,
-    Status reportStatus NOT NULL,
-    CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    AdminID int4 REFERENCES Administrator ON DELETE SET NULL
-);
-
-CREATE TABLE ProfileReport (
-    ReportID int4 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
-);
-
-CREATE TABLE ListingReport (
-    ReportID int4 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
-    ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE
-);
-
-CREATE TABLE MessageReport (
-    ReportID int4 PRIMARY KEY REFERENCES Report ON DELETE CASCADE,
-    MessageID int4 NOT NULL REFERENCES Message ON DELETE CASCADE 
-);
-
-CREATE TABLE Request (
-    ReportID int4 PRIMARY KEY REFERENCES Report ON DELETE CASCADE
-);
-
-CREATE TABLE Sanction (
-    SanctionID serial4 PRIMARY KEY,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE,
-    Type varchar NOT NULL,
-    StartDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    EndDate timestamp,
-    Reason varchar NOT NULL,
-    ReportID int4 REFERENCES Report ON DELETE SET NULL, -- An exception to the usual ON DELETE CASCADE, since if a user is deleted and their report led to a sanction of another user, that user should still be under the sanction
-    AdminID int4 REFERENCES Administrator ON DELETE SET NULL
-);
-
-CREATE TABLE AdminChange (
-    ChangeID serial4 PRIMARY KEY,
-    Reason varchar NOT NULL,
-    Date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    AdminID int4 REFERENCES Administrator ON DELETE SET NULL
-);
-
-CREATE TABLE ProfileChange (
-    ChangeID int4 PRIMARY KEY REFERENCES AdminChange ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES StdUser ON DELETE CASCADE
-);
-
-CREATE TABLE ListingChange (
-    ChangeID int4 PRIMARY KEY REFERENCES AdminChange ON DELETE CASCADE,
-    ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE
 );

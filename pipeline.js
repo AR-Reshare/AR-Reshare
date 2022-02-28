@@ -16,14 +16,16 @@ class CreateEntityPipeline extends Pipeline {
     // const Login = new LoginPipeline();
     // app.post('/account/login', Login.Execute);
 
-    constructor(entityType, isAdmin, notify) {
+    constructor(entityType, isAdmin, notify, ...args) {
         // entityType: string describing the type of entity e.g. 'listing' or 'account'
         // isAdmin: boolean indicating whether this action is being performed by an administrator
         // notify: an optional string with one of the following values:
         //      'affected' - push notifications will be sent to other users who are connected to the new entity,
         //                   or to entities connected to the new entity
         //      'self' - push notifications will be sent to any other device the user who made the request is logged in to
+        // args should be the db and logger from the Pipeline
 
+        super(...args);
         this.actionType = `create-${entityType}`;
         this.isAdmin = isAdmin;
         this.notify = notify;
@@ -39,8 +41,8 @@ class CreateEntityPipeline extends Pipeline {
     }
 }
 
-module.exports({
+module.exports = {
     CreateEntityPipeline,
     // ...
     // add other pipeline types here as they are defined
-});
+};

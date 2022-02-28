@@ -209,6 +209,7 @@ components:
     listing-close:
       type: object
       required:
+        - listingID
         - outcome
         - reason
       properties:
@@ -222,6 +223,7 @@ components:
     listing-modify:
       type: object
       required:
+      - listingID
       - password
       - modifiedDetails
       properties:
@@ -229,6 +231,8 @@ components:
           $ref: '#/components/schemas/password'
         variable-modification:
           $ref: '#/components/schemas/listing-modifiedDetails'
+        listingId:
+          $ref: '#/components/schemas/id'
     
     listing-modifiedDetails:
       type: object
@@ -318,6 +322,7 @@ components:
     account-modify:
       type: object
       required:
+      # accountID not neccessary since we should be able to retrieve the accountId from a valid and verified JWT token
       - password
       - modifiedDetails
       properties:
@@ -370,16 +375,15 @@ components:
     conversation-message:
       type: object
       required:
-      - senderId
-      - receiverId
+      # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
+      - receiverID
+      - listingID
       - datetime
       - mediaContent
       - textContent
       properties:
-        senderId:
-          $ref: '#/components/schemas/id'
-        receiverId:
-          $ref: '#/components/schemas/id'
+        listingID:
+          $ref: '#/components/schemas/listingID'
         datetime:
           $ref: '#/components/schemas/datetime'
         mediaContent:

@@ -1,8 +1,12 @@
-const Database = require('../../database-funcs');
+const Database = require('../../classes/database');
 const {Pool} = require('pg');
 
-const mockConstructor = jest.fn();
-const mockEnd = jest.fn();
+const {DatabaseConnectionError} = require('../../classes/errors');
+
+const mockConstructor = jest.fn().mockImplementation(() => {
+    return {query: mockQuery};
+});
+const mockQuery = jest.fn();
 
 jest.mock('pg', () => {
     return {
@@ -14,7 +18,7 @@ jest.mock('pg', () => {
 beforeEach(() => {
     Pool.mockClear();
     mockConstructor.mockClear();
-    mockEnd.mockClear();
+    mockQuery.mockClear();
 });
 
 describe('Unit Test 18 - Database.constructor', () => {
@@ -28,14 +32,16 @@ describe('Unit Test 18 - Database.constructor', () => {
         };
 
         // seed mocks
-        mockConstructor.mockImplementation(() => {
-            return {end: mockEnd};
+        mockQuery.mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                resolve();
+            });
         });
 
         // execute
         let db = new Database(creds);
         expect(mockConstructor).toBeCalledWith(creds);
-        expect(db).toHaveProperty('end');
+        return expect(db.testConnection()).resolves.toBe(undefined);
     });
 
     test('Class 2: false credentials', () => {
@@ -45,15 +51,14 @@ describe('Unit Test 18 - Database.constructor', () => {
             database: 'invaliddb',
             password: 'heeheehoohoo',
         };
-        mockConstructor.mockImplementation(() => {
-            throw new Error('test');
+        mockQuery.mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                reject();
+            });
         });
-        expect.assertions(2);
-        try {
-            let db = new Database(creds);
-        } catch (err) {
-            expect(mockConstructor).toBeCalledWith(creds);
-            expect(err).toHaveProperty('name', 'DatabaseConnectionError');
-        }
+
+        let db = new Database(creds);
+        expect(mockConstructor).toBeCalledWith(creds);
+        return expect(db.testConnection()).rejects.toBeInstanceOf(DatabaseConnectionError);
     });
 });
