@@ -202,3 +202,59 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 // Therefore the testcases 10,11,12 have been deleted from here, and they should be transfered over to the 
 // datavalidation component
 
+describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
+    test('Class 21: Valid Token (NoAuth Resource)', () => {
+        let payload = {userID: 'ssepi0l'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
+        let params = {auth: 'NA', resourceName: '/', db};
+        let query = null;
+        let securitySchema = new SecurityValidate(params);
+
+        return pipe.SecurityValidate(securitySchema, inputToken, query).then(async res => {
+            expect(res).toBe('ssepi0l');
+        });
+    });
+
+    test('Class 21: Expired Token (NoAuth Resource)', () => {
+        let payload = {userID: 'ssepi0l'};
+        let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
+        let params = {auth: 'NA', resourceName: '/', db};
+        let query = null;
+        let securitySchema = new SecurityValidate(params);
+
+        return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
+            expect(err).toEqual(new ExpiredTokenError());
+        });
+    });
+
+    test('Class 22: Absent Token (NoAuth Resource)', () => {
+        let inputToken =  null;
+        let params = {auth: 'NA', resourceName: '/', db};
+        let query = null;
+        let securitySchema = new SecurityValidate(params);
+
+        return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
+            expect(err).toEqual(null);
+        });
+    });
+
+    test('Class 23: Tampered Token (NoAuth Resource)', () => {
+        let payload = {userID: 'BasicUser12345'};
+        let modifiedPayload = {userID: 'ssepi0l'};
+
+        let signedToken = jwt.sign(payload, key, {algorithm: 'HS256'});
+        let tokenSections = signedToken.split('.');
+        tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
+
+        let inputToken = tokenSections.join('.');
+        let params = {auth: 'NA', resourceName: '/', db};
+        let query = null;
+        let securitySchema = new SecurityValidate(params);
+
+        return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
+            expect(err).toEqual(new TamperedTokenError());
+        });
+    });
+
+});
+
