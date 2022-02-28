@@ -27,7 +27,7 @@ previous `resourceName` provided to the constructor. This is done by calling the
 
 | arg | type | description |
 |-----|------|-------------|
-| `token` | string, optional | The JWT token that has been provided with the request. It is optional depending on the type of authentication type required by the resource (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
+| `token` | string, optional | The JWT tokenF that has been provided with the request. It is optional depending on the type of authentication type required by the resource (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
 | `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.head e.g. `query.password`, `query.email`|
 
 If the user provided the neccessary and valid credentials to be authenticated (`AA_TO`, `AA_TAP`), then the promise resolves with the `${userID}`. If no authentication (`NA`) was required (and optionally if a valid token was provided), the promise resolves with `null`. If the promise rejects, it will do so with one of the following errors:
@@ -138,3 +138,48 @@ These functions will usually resolve with an array of arrays corresponding to th
 | DBClientNotAvailableError | No database clients were available to service the request |
 | QueryExecutionError | The query threw an error at the database |
 | BackreferenceError | A callable value threw an error or did not return a value |
+
+## Miscellaneous Functions
+
+### AuthenticationHandler
+The authenticationHandler class provides a set of asynchronous static methods to perform token creation `TR`, and token regeneration `TR` auth type requests. There are two main functions `AuthenticationHandler.accountLogin()` for accountLogin requests, and `AuthenticationHandler.regenerateToken()` to regenerate a new token from a current one that is about to expire.
+
+The `AuthenticationHandler.accountLogin()` has the following arguments:
+
+| key | type | description |
+|-----|------|-------------|
+| `db` | Database, required | The Database object that allows the securitySchema object to make database queries |
+| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.head e.g. `query.password`, `query.email`|
+| `inputToken` | string, optional | This is an optional argument to the function, but if it is not null, then an `InvalidTokenError` should be raised |
+
+After awaiting for the function, if unsuccessful, one of the following errors should be thrown:
+
+| error | description |
+|-------|-------------|
+| InvalidTokenError | A token was provided in the request eventhough this is a Token Creation `TR` type request |
+| AbsentArgumentError | This is thrown if the query object is absent, or the attributes `query.password` or `query.email` are absent |
+| DirtyArgumentError | This is thrown if the query attributes were found to have validation errors |
+| InvalidCredentialsError | The credentials provided with the token for the `TC` type request was not valid |
+| QueryExecutionError | The database query for a single user returned multiple results |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
+Otherwise, it returns a `${JWT_Token}`
+
+The `AuthenticationHandler.regenerateToken()` has the following arguments:
+
+| key | type | description |
+|-----|------|-------------|
+| `token` | string, required | This is required in order to regenerate a new token |
+
+After awaiting for the function, if unsuccessful, on of the following errors should be thrown:
+
+| error | description |
+|-------|-------------|
+| AbsentArgumentError | A token wasn't provided with the request | 
+| TamperedTokenError | The token provided with the request was tampered with |
+| ExpiredTokenError | The token provided with the request has expired |
+| NotBeforeError | The token provided with the request has not realized its NotBefore time yet |
+| InvalidTokenError | Encompasses all other `JsonWebTokenError` (from jsonwebtoken npm module) exceptions as the default |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
+Otherwise, it returns a `${JWT_Token}`
