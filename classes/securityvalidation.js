@@ -6,6 +6,7 @@ const {AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, Unau
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('./errors.js');
 const errors = require('./errors.js');
 const path = require('path');
+const { Console } = require('console');
 
 // There are two parts to the securityValidation
 
@@ -130,30 +131,32 @@ class AuthenticationHandler extends SecurityValMethods{
     }
 
     static async _regenerateToken(decodedToken){
-        return fs.readFile(SecurityValMethods.PrivatekeyLocation, (err, privateKey) => {
-            if (err) {
-                throw new PrivateKeyReadError();
-            }
-            return jwt.sign({'userID': `${decodedToken.userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
-        });
+        let privateKey;
+        try {
+            privateKey = await fs.readFile(SecurityValMethods.PrivatekeyLocation);
+        } catch (err) {
+            throw new PrivateKeyReadError();
+        }
+        return jwt.sign({'userID': `${decodedToken.userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
     }
-    
+        
     // Authentication Type: TokenCreation (TC)
     static async createNewToken(db, email, password){
         // TODO: Provide checking that the userID is valid
         const userID = await this.isUserCredentialsValid(db, email, password);
-        return await this._createNewToken(userID);
+        const out =  await this._createNewToken(userID);
+        console.log(out.toString());
+        return out;
     }
 
     static async _createNewToken(userID){
-        return fs.readFile(SecurityValMethods.PrivatekeyLocation, (err, privateKey) => {
-            if (err) {
-                throw new PrivateKeyReadError();
-            }
-            // TODO: There may be more information we want to add in the future
-            let token = jwt.sign({'userID': `${userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
-            return token;
-        });
+        let privateKey;
+        try {
+            privateKey = await fs.readFile(SecurityValMethods.PrivatekeyLocation);
+        } catch (err){
+            throw new PrivateKeyReadError();
+        }
+        return jwt.sign({'userID': `${userID}`}, privateKey, {algorithm: 'HS256', expiresIn: '20m'});
     }
 
     static async isUserCredentialsValid(db, email, password){
