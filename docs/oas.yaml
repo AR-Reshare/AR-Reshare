@@ -169,6 +169,27 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
+  ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
+  /account/saved-listings/search:
+    get:
+      description: Returns the user's saved listings
+      responses:
+        '200': # Success
+          description: Returns all saved listings
+          $ref: 'responses.yaml#/components/responses/listings-public'
+        '400':
+          description: The request did not include a valid query parameter
+          $ref: 'responses.yaml#/components/responses/listings-public'
+      parameters:
+        maxResults:
+          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        endResults:
+          $ref: 'parameters.yaml#/components/parameters/endResults'
+        startResults:
+          $ref: 'parameters.yaml#/components/parameters/startResults'
+        query:
+          $ref: 'parameters.yaml#/components/parameters/queryString'
+
   /account/reset-request:
     put: 
       description: Resets the account's password
