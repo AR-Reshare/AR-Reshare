@@ -183,7 +183,7 @@ class AuthenticationHandler extends SecurityValMethods{
 // 1. SecurityValidation constructor recieves parameters which define how it will validate a single resource
 // 2. SecurityValidation's process() method is then called using the input object that it is validating
 // (1 + 2), are both called using the pipeline
-class SecurityValidate extends SecurityValMethods{
+class SecuritySchema extends SecurityValMethods{
     // constructor(params){
     constructor(authMode) {
         super(); // SecurityValMethods provide static methods
@@ -296,6 +296,6 @@ class SecurityValidate extends SecurityValMethods{
 
 
 module.exports = {
-    SecurityValidate,
+    SecuritySchema,
     AuthenticationHandler
 }

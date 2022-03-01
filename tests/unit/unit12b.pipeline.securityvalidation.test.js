@@ -44,7 +44,6 @@ beforeEach(() => {
 
 describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     test('Class 13: Absent email', () => {
-        let resourceName = '/account/login';
         let query = {password: 'testtokencreationpassword'};
 
         return expect(() => {
@@ -53,7 +52,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     });
 
     test('Class 14: Absent password', () => {
-        let resourceName = '/account/login';
         let query = {email: "samsepi0l@protonmail.com"};
 
         return expect(() => {
@@ -62,7 +60,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     });
 
     test('Class 15: No query', () => {
-        let resourceName = '/account/login';
         let query = null;
 
         return expect(() => {
@@ -73,7 +70,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
     test('Class 16: Existing Token', () => {
         let payload = {userID: 'ssepi0l527'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
-        let resourceName = '/account/login';
         let query = null;
 
         return expect(() => {
@@ -86,7 +82,6 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
         let db_response = [[{'user': 'ssepi0l'}]];
         mockDBInner.mockReturnValueOnce(db_response);
 
-        let resourceName = '/account/login';
         let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
 
         return AuthenticationHandler.accountLogin(pipe.db, query).then(async res => {

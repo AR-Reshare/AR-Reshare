@@ -30,7 +30,7 @@
 // states. So far, the basic functionality of this component shouldn't have any dependencies (although, the recent
 // decision to merge verification and signing components together will most likley change this).
 
-// TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityvalidate
+// TODO: Ensure that the logic is encapsulated in the Pipeline as a function for the securityschema
 
 // TODO: Test AA_TAP type methods
 // TODO: Check whether all 5 authenticationTYpes are defined in the security-schemas.js
@@ -38,7 +38,7 @@
 const jwt = require('jsonwebtoken');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
-const { SecurityValidate } = require('../../classes/securityvalidation.js');
+const { SecuritySchema } = require('../../classes/securityvalidation.js');
 const { InvalidTokenError, TamperedTokenError, ExpiredTokenError } = require('../../classes/errors.js');
 const { expect } = require('@jest/globals');
 
@@ -81,7 +81,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
     test('Class 1: Token String Empty', () => {
         let inputToken = '';
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -91,7 +91,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
     test('Class 2: Token String is not valid base64', () => {
         let inputToken = '!(xfdsa]x';
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -102,7 +102,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         // inputToken = base64.encode('hello') + '.' + base64.encode('there')
         let inputToken = 'aGVsbG8K.dGhlcmUK';
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -113,7 +113,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         // inputToken = base64.encode('{'username','password','invalidformat'}')
         let inputToken = 'eyJ1c2VybmFtZSIsInBhc3N3b3JkIiwiaW52YWxpZGZvcm1hdCJ9';
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -150,7 +150,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
         let inputToken = tokenSections.join('.');
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -165,7 +165,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -179,7 +179,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let query = null;
-        let securitySchema = new SecurityValidate('NA');
+        let securitySchema = new SecuritySchema('NA');
 
         return securitySchema.process(pipe.db, inputToken, query).then(res => {
             expect(res).toBe('ssepi0l');
@@ -199,7 +199,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
         let params = 'NA';
         let query = null;
-        let securitySchema = new SecurityValidate(params);
+        let securitySchema = new SecuritySchema(params);
 
         return pipe.SecurityValidate(securitySchema, inputToken, query).then(async res => {
             expect(res).toBe('ssepi0l');
@@ -211,7 +211,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
         let params = 'NA';
         let query = null;
-        let securitySchema = new SecurityValidate(params);
+        let securitySchema = new SecuritySchema(params);
 
         return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
             expect(err).toEqual(new ExpiredTokenError());
@@ -222,7 +222,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         let inputToken =  null;
         let params = 'NA';
         let query = null;
-        let securitySchema = new SecurityValidate(params);
+        let securitySchema = new SecuritySchema(params);
 
         return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
             expect(err).toEqual(null);
@@ -240,7 +240,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         let inputToken = tokenSections.join('.');
         let params = 'NA';
         let query = null;
-        let securitySchema = new SecurityValidate(params);
+        let securitySchema = new SecuritySchema(params);
 
         return pipe.SecurityValidate(securitySchema, inputToken, query).catch(err => {
             expect(err).toEqual(new TamperedTokenError());
