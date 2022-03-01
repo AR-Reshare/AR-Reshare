@@ -12,8 +12,8 @@ class Pipeline {
 
     /**
      * Validates an input object against a security schema
-     * @param {SecurityValidate} The SecuritySchema is an instance of a validation object for a given resource
-     * @param {string} token is a string that should be a valid JWT token instance
+     * @param {SecurityValidate} SecuritySchema An instance of a validation object for a given resource
+     * @param {string} token A string that should be a valid JWT token instance
      * @param {object} query An object, most likely request.body or request.query, to validate
      * @returns {Promise<object>} Once resolved, this should return the userID
      */
@@ -21,7 +21,7 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             let userID;
             try {
-                userID = securitySchema.process(token, query);
+                userID = securitySchema.process(this.db, token, query);
                 // console.log(userID);
                 resolve(userID);
             } catch (err) {

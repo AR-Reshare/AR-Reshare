@@ -5,32 +5,27 @@
 ## Pipeline Base (classes/pipeline.js)
 
 ### Pipeline.SecurityValidate
-Takes two inputs, `securitySchema` and `inputObject`. `inputObject` is the object to validate, `securitySchema` must be an instance of `SecurityValidate`, as defined in classes/securityvalidation.js
+Takes three inputs, `securitySchema`, `token` and `query`. `token` is the token to validate, and `query` is the object, possibly containing a password, that goes with it. `securitySchema` must be an instance of `SecuritySchema`, as defined in classes/securityvalidation.js
 
-The `securitySchema` object must be initialised ahead of time. These arguments can be found by using a resource authentication lookup table that is found at `schemas/security-schemas.js`. The constructor should receive a single object called `params`, with the following attributes:
+The `securitySchema` object must be initialised ahead of time. The constructor should receive a single string called `authMode`, which must be one of the following:
 
-| key | type | description |
-|-----|------|-------------|
-| `auth` | enum string, required | The authentication type that the security schema will validate against `NA`(NoAuth), `AA_TO` (Authorize+Authenticate (Token Only)), `AA_TAP` (Authorize+Authenticate (Token And Password)) |
-| `resourceName` | string, required | The name of the resource that the security schema will validate against |
-| `db`| Database, required | The Database object that allows the securitySchema object to make database queries |
+| authMode | description |
+|----------|-------------|
+| `NA` | No authentication necessary |
+| `AA_TO` | Authorise and authenticate, using only the token |
+| `AA_TAP` | Authorise and authenticate, using both the token and a password retrieved from `query` |
 
-The following errors can be thrown from the `SecurityValidate` constructor:
+If construction fails, a `TemplateError` will be raised.
 
-| error | description |
-|-------|-------------|
-| AbsentArgumentError | A required parameter was not present in the input object |
-| DirtyArgumentError | One of the params arguments is either of an incorrect type or an unsupported value |
-
-The constructed instance of `SecurityValidate` (i.e. `securitySchema`) is then used to validate requests for the
-previous `resourceName` provided to the constructor. This is done by calling the async function `securitySchema.process`. This uses the arguments:
+The constructed instance of `SecuritySchema` can then be used to validate requests. This is done by calling the async function `securitySchema.process` with the arguments:
 
 | arg | type | description |
 |-----|------|-------------|
-| `token` | string, optional | The JWT tokenF that has been provided with the request. It is optional depending on the type of authentication type required by the resource (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
-| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.head e.g. `query.password`, `query.email`|
+| `db` | Database, optional | The Database object (see below) that should be used for queries. It is optional depending on the authMode. |
+| `token` | string, optional | The JWT token that has been provided with the request. It is optional depending on the authMode (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
+| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.query e.g. `password`, `email`|
 
-If the user provided the neccessary and valid credentials to be authenticated (`AA_TO`, `AA_TAP`), then the promise resolves with the `${userID}`. If no authentication (`NA`) was required (and optionally if a valid token was provided), the promise resolves with `null`. If the promise rejects, it will do so with one of the following errors:
+If the user provided the neccessary and valid credentials to be authenticated (`AA_TO`, `AA_TAP`), then the promise resolves with the user's ID. If no authentication (`NA`) was required (and optionally if a valid token was provided), the promise resolves with `null`. If the promise rejects, it will do so with one of the following errors:
 
 | error | description |
 |-------|-------------|
