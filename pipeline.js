@@ -1,5 +1,6 @@
 const { PipelineInitialisationError, MissingTemplateError } = require('./classes/errors');
 const Pipeline = require('./classes/pipeline');
+const SecuritySchemaDict = require('./schemas/security-schemas');
 const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
 const ResponseTemplateDict = require('./schemas/response-schemas');
@@ -21,7 +22,7 @@ class CreateEntityPipeline extends Pipeline {
     /**
      * Initialises the CreateEntityPipeline
      * @param {string} entityType String describing the type of entity e.g. 'listing'
-     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), auth_mode ('logged_in', 'optional' or 'logged_out'), method ('query' or 'body')
+     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
      * @param  {...any} args Arguments to pass to the default pipeline constructor, including Database
      */
     constructor(entityType, options, ...args) {
@@ -39,14 +40,14 @@ class CreateEntityPipeline extends Pipeline {
             }
         }
 
-        this.authMode = 'logged_in';
-        if ('auth_mode' in options) {
-            if (['logged_in', 'logged_out', 'optional'].includes(options['auth_mode'])) {
-                this.authMode = options['auth_mode'];
-            } else {
-                throw new PipelineInitialisationError('Invalid option for auth_mode');
-            }
-        }
+        // this.authMode = 'logged_in';
+        // if ('auth_mode' in options) {
+        //     if (['logged_in', 'logged_out', 'optional'].includes(options['auth_mode'])) {
+        //         this.authMode = options['auth_mode'];
+        //     } else {
+        //         throw new PipelineInitialisationError('Invalid option for auth_mode');
+        //     }
+        // }
 
         this.method = 'body';
         if ('method' in options) {
@@ -55,6 +56,11 @@ class CreateEntityPipeline extends Pipeline {
             } else {
                 throw new PipelineInitialisationError('Invalid option for method');
             }
+        }
+
+        this.securitySchema = SecuritySchemaDict[this.actionType];
+        if (this.securitySchema === undefined) {
+            throw new MissingTemplateError(`Unable to find security schema for ${this.actionType}`);
         }
 
         this.requestTemplate = RequestTemplateDict[this.actionType];
@@ -90,17 +96,20 @@ class CreateEntityPipeline extends Pipeline {
         let user_accountID = null;
         let result_final = null;
         let error_final = null;
+        let inputObject;
 
+        // build the object to validate
+        if (this.method === 'query') {
+            inputObject = {...req.query, ...req.params};
+        } else {
+            inputObject = {...req.body};
+        }
+        
         // check user's authorisation
-        this.SecurityValidate(this.authMode, req.headers.authorization).then(accountID => {
-            // build the object to validate
-            let inputObject;
+        this.SecurityValidate(this.securitySchema, req.headers.authorization, inputObject).then(accountID => {
             user_accountID = accountID;
-            if (this.method === 'query') {
-                inputObject = {...req.query, ...req.params};
-            } else {
-                inputObject = {...req.body};
-            }
+
+            // build the object to validate
             inputObject['accountID'] = accountID;
             return this.DataValidate(this.requestTemplate, inputObject);
         }).then(validated => {
