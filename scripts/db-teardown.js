@@ -1,7 +1,16 @@
 const {spawn} = require('child_process'); // execute command
 const {type} = require('os'); // check OS type
-const {randomString} = require('secure-random-password');
+const rl = require('readline-sync');
 const {writeFileSync, readFileSync} = require('fs');
+
+// confirm
+function confirmSetup() {
+    if (!rl.keyInYN('Are you absolutely sure you want to remove the database?')) {
+        console.log('Aborting...');
+        process.exit(0);
+    }
+    getOS();
+}
 
 // Detect OS
 function getOS() {
@@ -16,7 +25,7 @@ function getOS() {
     let uname = type();
 
     if (!(uname in os_dict)) {
-        console.log('Your OS was not recognised. Unable to remove the test database.');
+        console.log('Your OS was not recognised.');
         process.exit(1);
     } else {
         let os = os_dict[uname];
@@ -27,7 +36,7 @@ function getOS() {
             console.log('This script is not set up for Windows yet. Please remove the database by running the file `db/database-clear.pgsql`');
             process.exit(0);
         } else if (os === 'MacOS') {
-            console.log('WARNING: this script has not been tested on MacOS. If you experience problems, please go to scripts/db-test-teardown.js and uncomment line 30.');
+            console.log('WARNING: this script has not been tested on MacOS. If you experience problems, please go to scripts/db-teardown.js and uncomment line 30.');
             // process.exit(0);
         }
 
@@ -37,10 +46,10 @@ function getOS() {
 
 // Remove database
 function removeDB(os) {
-    console.log('Deleting test database...');
+    console.log('Deleting database...');
 
     let psqlInit = spawn('sudo',
-        ['-u', 'postgres', 'psql', '-f', 'db/database-clean.pgsql', '-v', 'account=arresharetest'],
+        ['-u', 'postgres', 'psql', '-f', 'db/database-clean.pgsql', '-v', 'account=arresharedb'],
         {stdio: [process.stdin, process.stdout, process.stderr]}
     );
 
@@ -70,7 +79,7 @@ function removeCreds(os) {
         conn_data = {};
     }
 
-    delete conn_data['test'];
+    delete conn_data['db'];
 
     try {
         writeFileSync('connection.json', JSON.stringify(conn_data));
@@ -82,4 +91,4 @@ function removeCreds(os) {
     process.exit(0);
 }
 
-getOS();
+confirmSetup();

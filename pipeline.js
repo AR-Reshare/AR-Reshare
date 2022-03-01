@@ -1,46 +1,165 @@
-/* This will define the pipelines themselves - EntityCreate, EntityModify, EntityDelete, EntitySearch, EntityView
-*/
-
+const { PipelineInitialisationError, MissingTemplateError } = require('./classes/errors');
 const Pipeline = require('./classes/pipeline');
+const SecuritySchemaDict = require('./schemas/security-schemas');
+const RequestTemplateDict = require('./schemas/request-schemas');
+const SQLTemplateDict = require('./schemas/sql-templates');
+const ResponseTemplateDict = require('./schemas/response-schemas');
+const PushTemplateDict = require('./schemas/push-schemas');
 
 class CreateEntityPipeline extends Pipeline {
     // this is an example of a general-purpose pipeline, this one for Entity Creation
     // can be used in app.js as:
     
-    // const CreateMessage = new CreateEntityPipeline('message', false, 'affected');
+    // const CreateMessage = new CreateEntityPipeline('message', {notify: 'affected', method: 'body'}, db, logger);
     // app.post('/conversation/message', CreateMessage.Execute);
     
-    // for 'misc' pipelines, the same syntax is used generally but there's no need for a constructor,
+    // for 'misc' pipelines, the same syntax is used generally but there's no need for a (complicated) constructor,
     // and there'll probably only be one instance of it i.e.
 
-    // const Login = new LoginPipeline();
+    // const Login = new LoginPipeline(db, logger);
     // app.post('/account/login', Login.Execute);
 
-    constructor(entityType, isAdmin, notify) {
-        // entityType: string describing the type of entity e.g. 'listing' or 'account'
-        // isAdmin: boolean indicating whether this action is being performed by an administrator
-        // notify: an optional string with one of the following values:
-        //      'affected' - push notifications will be sent to other users who are connected to the new entity,
-        //                   or to entities connected to the new entity
-        //      'self' - push notifications will be sent to any other device the user who made the request is logged in to
-
+    /**
+     * Initialises the CreateEntityPipeline
+     * @param {string} entityType String describing the type of entity e.g. 'listing'
+     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
+     * @param  {...any} args Arguments to pass to the default pipeline constructor, including Database
+     */
+    constructor(entityType, options, ...args) {
+        super(...args);
+        if (typeof entityType !== 'string' && !(entityType instanceof String) || entityType.length === 0) {
+            throw new PipelineInitialisationError('entityType must be a non-empty string');
+        }
         this.actionType = `create-${entityType}`;
-        this.isAdmin = isAdmin;
-        this.notify = notify;
+        this.notify = false;
+        if ('notify' in options) {
+            if (options['notify'] === 'affected' || options['notify'] === 'self' || options['notify'] === false) {
+                this.notify = options['notify'];
+            } else {
+                throw new PipelineInitialisationError('Invalid option for notify');
+            }
+        }
+
+        this.method = 'body';
+        if ('method' in options) {
+            if (options['method'] === 'query' || options['method'] === 'body') {
+                this.method = options['method'];
+            } else {
+                throw new PipelineInitialisationError('Invalid option for method');
+            }
+        }
+
+        this.securitySchema = SecuritySchemaDict[this.actionType];
+        if (this.securitySchema === undefined) {
+            throw new MissingTemplateError(`Unable to find security schema for ${this.actionType}`);
+        }
+
+        this.requestTemplate = RequestTemplateDict[this.actionType];
+        if (this.requestTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find request template for ${this.actionType}`);
+        }
+
+        this.sqlTemplate = SQLTemplateDict[this.actionType];
+        if (this.sqlTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find SQL template for ${this.actionType}`);
+        }
+
+        this.responseTemplate = ResponseTemplateDict[this.actionType];
+        if (this.responseTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find response template for ${this.actionType}`);
+        }
+        
+        this.pushTemplate = null;
+        if (this.notify) {
+            this.pushTemplate = PushTemplateDict[this.actionType];
+            if (this.pushTemplate === undefined) {
+                throw new MissingTemplateError(`Unable to find push notification template for ${this.actionType}`);
+            }
+        }
     }
 
+    /**
+     * Executes the pipeline on a particular request and response
+     * @param {Object} req The request object provided by Express
+     * @param {Object} res The response object provided by Express
+     */
     Execute(req, res) {
-        // req: the request object as per Express
-        // res: the response object as per Express
+        let user_accountID = null;
+        let result_final = null;
+        let error_final = null;
+        let inputObject;
 
-        // a chain of then/catch statements including the various pipeline functions
-        // req and res should be passed in as appropriate
-        // should also include tests of this.notify
+        // build the object to validate
+        if (this.method === 'query') {
+            inputObject = {...req.query, ...req.params};
+        } else {
+            inputObject = {...req.body};
+        }
+        
+        // check user's authorisation
+        return this.SecurityValidate(this.securitySchema, req.headers.authorization, inputObject).then(accountID => {
+            user_accountID = accountID;
+
+            // build the object to validate
+            if (accountID) inputObject['accountID'] = accountID;
+            return this.DataValidate(this.requestTemplate, inputObject);
+        }).then(validated => {
+            // database operations
+            return this.Store(this.sqlTemplate, validated);
+        }).then(results => {
+            // send notifications as needed
+            if (this.notify) {
+                let targetAccounts;
+                if (this.notify === 'self') {
+                    targetAccounts = [user_accountID];
+                } else { // this.notify === 'affected'
+                    targetAccounts = results[results.length - 1].map(row => row['userid']);
+                    // Create queries should always have the last row be of affected users' IDs
+                }
+                this.PushRespond(this.pushTemplate, results, targetAccounts);
+            }
+            result_final = results;
+            return;
+        }).catch(err => {
+            error_final = err;
+            return;
+        }).finally(() => {
+            // build response
+            this.APIRespond(this.responseTemplate, res, result_final, error_final);
+        });
     }
 }
 
-module.exports({
+class NotImplementedPipeline extends Pipeline {
+    constructor (...args) {
+        super(...args);
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    Execute(req, res) {
+        this.logger.log(`${req.method} ${req.originalUrl} 501`);
+        res.status(501).end();
+    }
+}
+
+class UnknownEndpointPipeline extends Pipeline {
+    constructor(...args) {
+        super(...args);
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    Execute(req, res) {
+        this.logger.log(`${req.method} ${req.originalUrl} 404`);
+        res.status(404).end();
+    }
+}
+
+module.exports = {
     CreateEntityPipeline,
     // ...
     // add other pipeline types here as they are defined
-});
+    NotImplementedPipeline,
+    UnknownEndpointPipeline,
+};

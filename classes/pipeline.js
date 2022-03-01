@@ -1,56 +1,95 @@
 class Pipeline {
-    constructor() {} // constructor is deliberately empty
+    constructor(db, logger=console) {
+        this.db = db; // expected to implement simpleQuery and complexQuery
+        this.logger = logger; // expected to implement .log, .error, and .warn
 
-    SecurityValidate(authenticationType, token, rejectIfBanned) {
-        // authType: a string from the following set:
-        //      'admin' - the user must be logged in as an administrator
-        //      an action (e.g. 'create-listing') - the user must be logged in, and must not have a sanction against the specified action
-        //      'optional' - the user does not need to be logged in, but retrieve their user info if they are
-        //      'logged-out' - the user should not be logged in
-        // token: a JWT token for the function to validate against
-        // rejectIfBanned: boolean value. If true, and authType is an action, reject when the user has a general OR specific sanction
+        this.SecurityValidate = this.SecurityValidate.bind(this);
+        this.DataValidate = this.DataValidate.bind(this);
+        this.Store = this.Store.bind(this);
+        this.APIRespond = this.APIRespond.bind(this);
+        this.PushRespond = this.PushRespond.bind(this);
+    }
 
+    /**
+     * Validates an input object against a security schema
+     * @param {SecurityValidate} SecuritySchema An instance of a validation object for a given resource
+     * @param {string} token A string that should be a valid JWT token instance
+     * @param {object} query An object, most likely request.body or request.query, to validate
+     * @returns {Promise<object>} Once resolved, this should return the userID
+     */
+    SecurityValidate(securitySchema, token, query) {
         return new Promise((resolve, reject) => {
-            // if the validation is satisfied then
-                resolve(accountID);
-                // accountID: primary key of the account in the database
-            // otherwise
+            let userID;
+            try {
+                userID = securitySchema.process(this.db, token, query);
+                // console.log(userID);
+                resolve(userID);
+            } catch (err) {
                 reject(err);
-                // err: an Error object representing the type of error, most likely 401 or 403
+            }
         });
     }
 
+    /**
+     * Validates an input object against a request schema
+     * @param {RequestTemplate} requestSchema An instance of RequestTemplate to validate against
+     * @param {object} inputObject An object, most likely request.body or request.query, to validate
+     * @returns {Promise<object>} Key/value pairs selected from inputObject by requestSchema and sanitised
+     */
     DataValidate(requestSchema, inputObject) {
-        // requestSchema: an object detailing which properties to validate, whether to include them in the output, and so on
-        //      (see schemas/request-schemas.js)
-        // inputObject: an object to validate. In most cases, this will be either request.body or request.query,
-        //      with an accountID property added (the result of SecurityValidate)
-
         return new Promise((resolve, reject) => {
-            // if the validation is successful
+            let outputObject;
+
+            try {
+                outputObject = requestSchema.process(inputObject);
                 resolve(outputObject);
-                // outputObject: an object containing the validated and possibly transformed parameters specified in the requestSchema
-            // otherwise
+            } catch (err) {
                 reject(err);
-                // err: an Error object representing the type of error, most likely 400 or 404
+            }
         });
     }
 
+    /**
+     * Creates and executes a transaction on the database
+     * @param {SQLTemplate} sqlTemplate Template of the SQL transaction, from the SQLTemplate class
+     * @param {object} formatObject Object whose values to insert into the transaction
+     * @returns 
+     */
     Store(sqlTemplate, formatObject) {
-        // sqlTemplate: the template SQL string, as in schemas/sql-templates.js
-        // formatObject: an object containing values which can be passed into the template string. Can be the output of DataValidate
-
         return new Promise((resolve, reject) => {
-            // if the operation is successful, and was a SELECT query (i.e. something that returns data)
-                resolve(dbResponse);
-                // dbResponse: an object containing the response from the database
-            // if the operation is successful, and was an INSERT, UPDATE, or other non-data-returning query
-                resolve(rowPK);
-                // rowPK: the primary key of the row that was inserted/changed.
-                //      If multiple rows were changed, rowPK will be an array of them
-            // otherwise
-                reject(err);
-                // err: an Error object representing the type of error, most likely 404
+            
+            let names, transaction;
+            // build transaction
+            try {
+                let built = sqlTemplate.build(formatObject);
+                names = built[0];
+                transaction = built[1];
+            } catch (err) {
+                reject(err); // 400
+            }
+            
+            let prepAndResolve = (result) => {
+                let out;
+                try {
+                    out = sqlTemplate.prepareResults(names, result);
+                    resolve(out);
+                } catch (err) {
+                    reject(err);
+                }
+            };
+
+            // execute transaction
+            if (transaction.length === 0) {
+                resolve([]); // no queries, so don't do anything
+            } else if (transaction.length === 1) {
+                if ('values' in transaction[0]) {
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, reject);
+                } else {
+                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, reject);
+                }
+            } else {
+                this.db.complexQuery(transaction).then(prepAndResolve, reject);
+            }
         });
     }
 

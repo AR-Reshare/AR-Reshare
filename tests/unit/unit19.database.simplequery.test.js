@@ -1,5 +1,6 @@
-const Database = require('../../database-funcs');
+const Database = require('../../classes/database');
 const {Pool} = require('pg');
+const { QueryExecutionError } = require('../../classes/errors');
 
 // mock of pg.Pool.query
 const mockQueryInner = jest.fn();
@@ -67,7 +68,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
             
             // assert
             expect(mockQuery).toBeCalledWith(q, []);
-            expect(res).toBe(testObject.rows);
+            expect(res[0]).toBe(testObject.rows);
         });
     });
 
@@ -77,7 +78,7 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         mockQueryInner.mockReturnValueOnce(testObject);
         return db.simpleQuery(q, v).then(res => {
             expect(mockQuery).toBeCalledWith(q, v);
-            expect(res).toBe(testObject.rows);
+            expect(res[0]).toBe(testObject.rows);
         });
     });
 
@@ -85,17 +86,17 @@ describe('Unit Test 19 - Database.simpleQuery', () => {
         let q = 'MOCK query ON Database';
         mockQueryInner.mockReturnValueOnce({rows: [], fields: [], command: 'INSERT', rowCount: 0});
         return db.simpleQuery(q).then(res => {
-            expect(res).toStrictEqual([]);
+            expect(res).toStrictEqual([[]]);
         });
     });
 
     test('Class 4: exceptional query', () => {
         let q = 'MOCK query ON Database';
         let msg = 'The database did a broked';
-        mockQueryInner.mockReturnValueOnce(new Error(msg));
+        mockQueryInner.mockReturnValueOnce(new QueryExecutionError(msg));
         expect.assertions(2); // required in case the promise resolves
         return db.simpleQuery(q).catch(err => {
-            expect(err).toHaveProperty('name', 'QueryExecutionError');
+            expect(err).toBeInstanceOf(QueryExecutionError);
             expect(err).toHaveProperty('message', msg);
         });
     });
