@@ -97,11 +97,11 @@ class CreateEntityPipeline extends Pipeline {
         }
         
         // check user's authorisation
-        this.SecurityValidate(this.securitySchema, req.headers.authorization, inputObject).then(accountID => {
+        return this.SecurityValidate(this.securitySchema, req.headers.authorization, inputObject).then(accountID => {
             user_accountID = accountID;
 
             // build the object to validate
-            inputObject['accountID'] = accountID;
+            if (accountID) inputObject['accountID'] = accountID;
             return this.DataValidate(this.requestTemplate, inputObject);
         }).then(validated => {
             // database operations
@@ -113,7 +113,7 @@ class CreateEntityPipeline extends Pipeline {
                 if (this.notify === 'self') {
                     targetAccounts = [user_accountID];
                 } else { // this.notify === 'affected'
-                    targetAccounts = results[results.length - 1];
+                    targetAccounts = results[results.length - 1].map(row => row['userid']);
                     // Create queries should always have the last row be of affected users' IDs
                 }
                 this.PushRespond(this.pushTemplate, results, targetAccounts);
