@@ -10,13 +10,13 @@ class CreateEntityPipeline extends Pipeline {
     // this is an example of a general-purpose pipeline, this one for Entity Creation
     // can be used in app.js as:
     
-    // const CreateMessage = new CreateEntityPipeline('message', false, 'affected');
+    // const CreateMessage = new CreateEntityPipeline('message', {notify: 'affected', method: 'body'}, db, logger);
     // app.post('/conversation/message', CreateMessage.Execute);
     
-    // for 'misc' pipelines, the same syntax is used generally but there's no need for a constructor,
+    // for 'misc' pipelines, the same syntax is used generally but there's no need for a (complicated) constructor,
     // and there'll probably only be one instance of it i.e.
 
-    // const Login = new LoginPipeline();
+    // const Login = new LoginPipeline(db, logger);
     // app.post('/account/login', Login.Execute);
 
     /**
@@ -39,15 +39,6 @@ class CreateEntityPipeline extends Pipeline {
                 throw new PipelineInitialisationError('Invalid option for notify');
             }
         }
-
-        // this.authMode = 'logged_in';
-        // if ('auth_mode' in options) {
-        //     if (['logged_in', 'logged_out', 'optional'].includes(options['auth_mode'])) {
-        //         this.authMode = options['auth_mode'];
-        //     } else {
-        //         throw new PipelineInitialisationError('Invalid option for auth_mode');
-        //     }
-        // }
 
         this.method = 'body';
         if ('method' in options) {
@@ -167,8 +158,8 @@ class UnknownEndpointPipeline extends Pipeline {
 
 module.exports = {
     CreateEntityPipeline,
-    NotImplementedPipeline,
-    UnknownEndpointPipeline,
     // ...
     // add other pipeline types here as they are defined
+    NotImplementedPipeline,
+    UnknownEndpointPipeline,
 };
