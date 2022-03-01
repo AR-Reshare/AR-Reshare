@@ -9,42 +9,37 @@
 
 const { SecuritySchema } = require('../classes/securityvalidation');
 
-// TODO: Specify a Token Regeneration path, for the front-end to be able to request from
 const securitySchemaDefinitions = {
-    '/': 'NA', // NOTE: Might be redundant
-    '/index': 'NA',
+    'get-index': new SecuritySchema('NA'),
     
-    '/token/regeneration': 'TR',
+    'regenerate-token': new SecuritySchema('AA_TO'), // should regenerating a token require re-entering a password?
     
-    '/account/create': 'NA',    // requires email password etc (But not checked by a user)
-    '/account/login': 'TC',
-    '/account/modify': 'AA_TAP',
-    '/account/listing/view': 'AA_TO',
-    '/account/listings/search': 'AA_TO',
-    '/account/reset-request' : 'NA', // NOTE: Should a token be generated to validate reset-execute?
-    '/account/reset-execute' : 'NA',
-    '/account/sanction/view': 'AA_TO',
-    '/account/sanctions/list': 'AA_TO',
-    '/account/sanctions/search': 'AA_TO',
-    '/account/request/create': 'AA_TO',
-    '/account/request/view': 'AA_TO',
-    '/account/request/close': 'AA_TO',
+    // NOTE: this path is in question. See issue #25
+    'create-account': new SecuritySchema('NA'),
 
-    '/listing/view': 'NA',
-    '/listings/search': 'NA',
-    '/listing/create': 'AA_TO',
-    '/listing/modify': 'AA_TO',
-    '/listing/close': 'AA_TO',
+    'close-account': new SecuritySchema('AA_TAP'),
+    'login': new SecuritySchema('NA'), // attempting a login does not require being logged in
+    'modify-account': new SecuritySchema('AA_TAP'),
+    'view-accountListing': new SecuritySchema('AA_TO'),
+    'search-accountListing': new SecuritySchema('AA_TO'),
+    'search-savedListing': new SecuritySchema('AA_TO'),
 
-    // NOTE: Should someone be able to report without being logged in? (Seems easy to exploit)
-    '/report': 'AA_TO',
-    '/request': 'AA_TO',
+    // NOTE: these paths are in question. See issue #24
+    // 'request-reset' : new SecuritySchema('NA'), // NOTE: Should a token be generated to validate reset-execute?
+    // 'execute-reset' : new SecuritySchema('NA'),
 
-    '/conversation/create': 'AA_TO',
-    '/conversation/close': 'AA_TO',
-    '/conversations': 'AA_TO',
-    '/conversation/view': 'AA_TO',
+    'view-listing': new SecuritySchema('NA'),
+    'search-listing': new SecuritySchema('NA'),
+    'create-listing': new SecuritySchema('AA_TO'),
+    'modify-listing': new SecuritySchema('AA_TO'),
+    'close-listing': new SecuritySchema('AA_TO'),
+
+    'create-conversation': new SecuritySchema('AA_TO'),
+    'close-conversation': new SecuritySchema('AA_TO'),
+    'create-message': new SecuritySchema('AA_TO'),
+    'search-conversation': new SecuritySchema('AA_TO'),
+    'view-conversation': new SecuritySchema('AA_TO'),
 
 };
 
-module.exports= {securitySchemaDefinitions};
+module.exports = securitySchemaDefinitions;
