@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
-const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
-const {AbsentArgumentError, DirtyArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
-    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('../../classes/errors.js');
+const { AuthenticationHandler } = require('../../classes/securityvalidation.js');
+const { AbsentArgumentError, InvalidTokenError, ExpiredTokenError } = require('../../classes/errors.js');
 const { expect } = require('@jest/globals');
 
 // Based on unit14.pipeline.store.test.js

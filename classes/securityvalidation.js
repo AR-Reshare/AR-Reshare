@@ -1,7 +1,7 @@
 const fs = require('fs/promises');
 const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
-const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
+const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, UnauthenticatedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
 const path = require('path');
 
@@ -184,23 +184,36 @@ class AuthenticationHandler extends SecurityValMethods{
 // 2. SecurityValidation's process() method is then called using the input object that it is validating
 // (1 + 2), are both called using the pipeline
 class SecurityValidate extends SecurityValMethods{
-    constructor(params){
+    // constructor(params){
+    constructor(authMode) {
         super(); // SecurityValMethods provide static methods
         const supportedAuthTypes = ['NA', 'AA_TAP', 'AA_TO'];
         // Authentication Requirement: [AA_TAP, AA_TO, NA] and [TC, TR]
-        if (!params){
-            throw new TemplateError();
-        } 
-        
-        if (!params.auth){
-            throw new AbsentArgumentError('auth not provided');
-        } else if (!(typeof params['auth'] === 'string' || params['auth'] instanceof String)){
-            throw new DirtyArgumentError('auth not a string');
-        } else if (!(supportedAuthTypes.includes(params['auth'].toUpperCase()))){
-            throw new DirtyArgumentError('auth not a supported type');
+
+        if (!authMode) {
+            // these should all be TemplateErrors, the others represent execution-time errors
+            throw new TemplateError('authMode not provided');
+        } else if (!(typeof authMode === 'string' || authMode instanceof String)) {
+            throw new TemplateError('authMode not a string');
+        } else if (!(supportedAuthTypes.includes(authMode.toUpperCase()))){
+            throw new TemplateError('auth not a supported type');
         } else {
-            this.authenticationType = params['auth'];
+            this.authenticationType = authMode;
         }
+
+        // if (!params){
+        //     throw new TemplateError();
+        // }
+        
+        // if (!params.auth){
+        //     throw new AbsentArgumentError('auth not provided');
+        // } else if (!(typeof params['auth'] === 'string' || params['auth'] instanceof String)){
+        //     throw new DirtyArgumentError('auth not a string');
+        // } else if (!(supportedAuthTypes.includes(params['auth'].toUpperCase()))){
+        //     throw new DirtyArgumentError('auth not a supported type');
+        // } else {
+        //     this.authenticationType = params['auth'];
+        // }
 
         // This doesn't seem to be used
         // if (!params.resourceName){

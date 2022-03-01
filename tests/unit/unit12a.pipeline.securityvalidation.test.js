@@ -38,9 +38,8 @@
 const jwt = require('jsonwebtoken');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
-const {SecurityValidate, AuthenticationHandler} = require('../../classes/securityvalidation.js');
-const {AbsentArgumentError, DirtyArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
-    InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError} = require('../../classes/errors.js');
+const { SecurityValidate } = require('../../classes/securityvalidation.js');
+const { InvalidTokenError, TamperedTokenError, ExpiredTokenError } = require('../../classes/errors.js');
 const { expect } = require('@jest/globals');
 
 // Based on unit14.pipeline.store.test.js
@@ -64,12 +63,11 @@ jest.mock('../../classes/database', () => {
     });
 });
 
-let db, pipe, key, query;
+let db, pipe, key;
 beforeAll(() => {
     db = new Database();
     pipe = new Pipeline(db);
     key = 'testsecretkeybase';
-    query = {};
 });
 
 beforeEach(() => {
@@ -82,9 +80,8 @@ beforeEach(() => {
 describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', () => {
     test('Class 1: Token String Empty', () => {
         let inputToken = '';
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -93,9 +90,8 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
 
     test('Class 2: Token String is not valid base64', () => {
         let inputToken = '!(xfdsa]x';
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -105,9 +101,8 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
     test('Class 3: Token String is not in valid JWT format', () => {
         // inputToken = base64.encode('hello') + '.' + base64.encode('there')
         let inputToken = 'aGVsbG8K.dGhlcmUK';
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -117,29 +112,28 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
     test('Class 4: Token String isn\'t parsed into valid JSON object', () => {
         // inputToken = base64.encode('{'username','password','invalidformat'}')
         let inputToken = 'eyJ1c2VybmFtZSIsInBhc3N3b3JkIiwiaW52YWxpZGZvcm1hdCJ9';
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new InvalidTokenError());
     });
 
-    test('Class 5: Token String is in a valid format', () => {
-        // inputToken = default encoded token example from https://jwt.io/
-        let inputToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-        // NOTE: This isn't tested as the below test set are subsets of class 5
+    // test('Class 5: Token String is in a valid format', () => {
+    //     // inputToken = default encoded token example from https://jwt.io/
+    //     let inputToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    //     // NOTE: This isn't tested as the below test set are subsets of class 5
         
-    });
+    // });
 });
 
 
 describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
-    test('Class 6: Unknown Class', () => {
+    // test('Class 6: Unknown Class', () => {
         //pass
-    });
+    // });
     // NOTE: We cannot absolutely say if a token has been tampered with, only that the token information doesn't add up
     test('Class 7: The token has been tampered with', () => {
         let payload = {
@@ -155,9 +149,8 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
 
         let inputToken = tokenSections.join('.');
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -171,9 +164,8 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return expect(() => {
             return securitySchema.process(pipe.db, inputToken, query);
@@ -186,9 +178,8 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         };
 
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
-        let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
+        let securitySchema = new SecurityValidate('NA');
 
         return securitySchema.process(pipe.db, inputToken, query).then(res => {
             expect(res).toBe('ssepi0l');
@@ -206,7 +197,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
     test('Class 21: Valid Token (NoAuth Resource)', () => {
         let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
-        let params = {auth: 'NA', resourceName: '/'};
+        let params = 'NA';
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -218,7 +209,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
     test('Class 21: Expired Token (NoAuth Resource)', () => {
         let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
-        let params = {auth: 'NA', resourceName: '/'};
+        let params = 'NA';
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -229,7 +220,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
 
     test('Class 22: Absent Token (NoAuth Resource)', () => {
         let inputToken =  null;
-        let params = {auth: 'NA', resourceName: '/'};
+        let params = 'NA';
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -247,7 +238,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
 
         let inputToken = tokenSections.join('.');
-        let params = {auth: 'NA', resourceName: '/'};
+        let params = 'NA';
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
