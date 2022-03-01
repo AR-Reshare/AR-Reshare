@@ -93,7 +93,7 @@ CREATE TABLE PasswordResetToken (
     ResetTokenHash varchar NOT NULL,
     IssuedTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ExpirationTimestamp TIMESTAMP NOT NULL,
-    ValidationTimestamp TIMESTAMP NOT NULL, -- probably isn't neccessary if we remove the record when a user sends a request with a valid token
+    ValidationTimestamp TIMESTAMP, -- probably isn't neccessary if we remove the record when a user sends a request with a valid token
 );
 
 CREATE TABLE Media (
