@@ -84,10 +84,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         let inputToken = '';
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new InvalidTokenError());
     });
 
@@ -95,10 +95,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         let inputToken = '!(xfdsa]x';
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new InvalidTokenError());
     });
 
@@ -107,10 +107,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         let inputToken = 'aGVsbG8K.dGhlcmUK';
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new InvalidTokenError());
     });
 
@@ -119,10 +119,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Assessing Token Format)', 
         let inputToken = 'eyJ1c2VybmFtZSIsInBhc3N3b3JkIiwiaW52YWxpZGZvcm1hdCJ9';
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new InvalidTokenError());
     });
 
@@ -157,10 +157,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         let inputToken = tokenSections.join('.');
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new TamperedTokenError());
 
     });
@@ -173,10 +173,10 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0})
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
         return expect(() => {
-            return securitySchema.process(inputToken, query);
+            return securitySchema.process(pipe.db, inputToken, query);
         }).rejects.toEqual(new ExpiredTokenError());
     });
 
@@ -188,9 +188,9 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Verifying Token)', () => {
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256'});
         let resourceName = '/';
         let query = null;
-        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`, db:  pipe.db});
+        let securitySchema = new SecurityValidate({auth: 'NA', resourceName:`${resourceName}`});
 
-        return securitySchema.process(inputToken, query).then(res => {
+        return securitySchema.process(pipe.db, inputToken, query).then(res => {
             expect(res).toBe('ssepi0l');
         });
         // return expect(securitySchema.process(inputToken, query)).resolves.toEqual(true);
@@ -206,7 +206,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
     test('Class 21: Valid Token (NoAuth Resource)', () => {
         let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 5*1000});
-        let params = {auth: 'NA', resourceName: '/', db};
+        let params = {auth: 'NA', resourceName: '/'};
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -218,7 +218,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
     test('Class 21: Expired Token (NoAuth Resource)', () => {
         let payload = {userID: 'ssepi0l'};
         let inputToken = jwt.sign(payload, key, {algorithm: 'HS256', expiresIn: 0});
-        let params = {auth: 'NA', resourceName: '/', db};
+        let params = {auth: 'NA', resourceName: '/'};
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -229,7 +229,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
 
     test('Class 22: Absent Token (NoAuth Resource)', () => {
         let inputToken =  null;
-        let params = {auth: 'NA', resourceName: '/', db};
+        let params = {auth: 'NA', resourceName: '/'};
         let query = null;
         let securitySchema = new SecurityValidate(params);
 
@@ -247,7 +247,7 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Direct Access)', () => {
         tokenSections[1] = btoa(JSON.stringify(modifiedPayload));
 
         let inputToken = tokenSections.join('.');
-        let params = {auth: 'NA', resourceName: '/', db};
+        let params = {auth: 'NA', resourceName: '/'};
         let query = null;
         let securitySchema = new SecurityValidate(params);
 

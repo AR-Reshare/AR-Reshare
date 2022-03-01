@@ -1,13 +1,9 @@
 const fs = require('fs/promises');
 const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
-const securitySchemaDefinitions = require('../schemas/security-schemas.js');
 const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, AlreadyAuthenticatedError, UnauthenticatedUserError, UnauthorizedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
-const errors = require('./errors.js');
 const path = require('path');
-const { Console } = require('console');
-const Database = require('./database.js');
 
 // There are two parts to the securityValidation
 
@@ -160,7 +156,6 @@ class AuthenticationHandler extends SecurityValMethods{
     static async isUserCredentialsValid(db, email, password){
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
-        // TODO you'll need to pass the Database object from the pipeline into this function somehow
         return db.simpleQuery(getHash, [email]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();
@@ -207,36 +202,38 @@ class SecurityValidate extends SecurityValMethods{
             this.authenticationType = params['auth'];
         }
 
-        if (!params.resourceName){
-            throw new AbsentArgumentError('resourceName not provided');
-        } else if (!(typeof params['resourceName'] === 'string' || params['resourceName'] instanceof String)){
-            throw new DirtyArgumentError('resourceName not a string');
-        //TODO:  Updated the path validation
-        } else if (!(params['resourceName'].length > 0)){
-            throw new DirtyArgumentError('resourceName not a valid path');
-        } else {
-            this.resource = params['resourceName'];
-        }
+        // This doesn't seem to be used
+        // if (!params.resourceName){
+        //     throw new AbsentArgumentError('resourceName not provided');
+        // } else if (!(typeof params['resourceName'] === 'string' || params['resourceName'] instanceof String)){
+        //     throw new DirtyArgumentError('resourceName not a string');
+        // //TODO:  Updated the path validation
+        // } else if (!(params['resourceName'].length > 0)){
+        //     throw new DirtyArgumentError('resourceName not a valid path');
+        // } else {
+        //     this.resource = params['resourceName'];
+        // }
 
-        if (!params.db){
-            throw new AbsentArgumentError('db not provided');
+        // This should be passed in at execution time, rather than construction time
+        // if (!params.db){
+        //     throw new AbsentArgumentError('db not provided');
         // NOTE: The below code doesn't work, possibly because of the mock objects?? Fix later
         // } else if (!(params['db'] instanceof Database)){
         //     throw new DirtyArgumentError('db argument is not an instance of the class Database');
-        }
-        this.db = params.db;
+        // }
+        // this.db = params.db;
     }
 
     // NOTE: This is the main function that will be called
-    async process(token, query){
+    async process(db, token, query){
         // First we check whether the token is correct
         const decodedToken = await SecurityValMethods.verifyToken(token);
         // We may need to add verification that there exists the correct arguments
-        return await this.verifyAuthentication(decodedToken, query); 
+        return await this.verifyAuthentication(db, decodedToken, query); 
     }
 
     // TODO: Rename this function to something more correctly descriptive
-    verifyAuthentication(decodedToken, query){
+    verifyAuthentication(db, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
         // console.log(decodedToken);
@@ -253,7 +250,7 @@ class SecurityValidate extends SecurityValMethods{
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
                 throw new BadArgumentError(); // TODO: Check whether this is the correct error
-            } else if (!this.isUserPasswordValid(decodedToken.userID, query.password)){
+            } else if (!this.isUserPasswordValid(db, decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
                 return decodedToken.userID;
@@ -263,10 +260,10 @@ class SecurityValidate extends SecurityValMethods{
         }
     }
 
-    isUserPasswordValid(userID, password){
+    isUserPasswordValid(db, userID, password){
         // TODO: Check whether this sql query string is correct
         const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
-        return this.db.simpleQuery(getHash, [userID]).then(res => {
+        return db.simpleQuery(getHash, [userID]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();
             } else if (res.length > 1){
