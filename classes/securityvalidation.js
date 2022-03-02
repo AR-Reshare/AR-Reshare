@@ -4,6 +4,7 @@ const {check, validationResult} = require('express-validator');
 const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, UnauthenticatedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 // There are two parts to the securityValidation
 
@@ -156,20 +157,26 @@ class AuthenticationHandler extends SecurityValMethods{
     static async isUserCredentialsValid(db, email, password){
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
+        let userID;
         return db.simpleQuery(getHash, [email]).then(res => {
-            if (res.length === 0){
+            if (res[0].length === 0){
                 throw new InvalidCredentialsError();
-            } else if (res.length > 1){
+            } else if (res[0].length > 1){
                 throw new QueryExecutionError();
             } else {
-                let userID = 'ssepi0l';
-                // salt = get_salt(res[0].passhash)
-                // hash = hash(password, salt)
-                // if (hash === res[0].passhash)
-                // return userID
-                // else throw error
-                return userID;
+                userID = res[0][0].userid;
+                return bcrypt.compare(password, res[0][0].passhash);
+                // let userID = 'ssepi0l';
+                // // salt = get_salt(res[0].passhash)
+                // // hash = hash(password, salt)
+                // // if (hash === res[0].passhash)
+                // // return userID
+                // // else throw error
+                // return userID;
             }
+        }).then(result => {
+            if (result) return userID;
+            else throw new InvalidCredentialsError();
         });
     }
 
@@ -282,13 +289,18 @@ class SecuritySchema extends SecurityValMethods{
             } else if (res.length > 1){
                 throw new QueryExecutionError();
             } else {
-                // salt = get_salt(res[0].passhash)
-                // hash = hash(password, salt)
-                // if (hash === res[0].passhash)
-                // return userID
-                // else throw error
-                return true;
+                return bcrypt.compare(password, res[0][0].passhash);
+                // let userID = 'ssepi0l';
+                // // salt = get_salt(res[0].passhash)
+                // // hash = hash(password, salt)
+                // // if (hash === res[0].passhash)
+                // // return userID
+                // // else throw error
+                // return userID;
             }
+        }).then(result => {
+            if (result) return userID;
+            else throw new InvalidCredentialsError();
         });
     }
 

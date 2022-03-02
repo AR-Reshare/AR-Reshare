@@ -79,14 +79,14 @@ describe('Unit Test 12 - Pipeline.SecurityValidation (Account Login)', () => {
 
     // NOTE: THis is empty in the test plan report (is this an ommission error, or did we just skip it?)
     test('Class 17: Correct Username + Password', () => {
-        let db_response = [[{'user': 'ssepi0l'}]];
+        let db_response = [[{'userid': '12345', 'passhash': '$2a$12$05QAL4HPew6x69wt2E90HuCSs7pitbgD8.b.GGK3JcK1OQVjrlQEG'}]];
         mockDBInner.mockReturnValueOnce(db_response);
 
         let query = {email: "samsepi0l@protonmail.com", password: 'testtokencreationpassword'};
 
         return AuthenticationHandler.accountLogin(pipe.db, query).then(async res => {
             const out = await AuthenticationHandler.verifyToken(res);
-            expect(out.userID).toBe("ssepi0l");
+            expect(out.userID).toBe('12345');
         });
     });
 

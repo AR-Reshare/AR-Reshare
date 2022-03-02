@@ -7,6 +7,9 @@ CREATE EXTENSION citext;
 
 SET ROLE :account;
 
+CREATE DOMAIN passtype AS VARCHAR
+    CHECK ( value ~ '^\$2(a|b)\$\d+\$[A-Za-z0-9./$]{53}$' ); -- enforce bcrypt
+
 CREATE DOMAIN mimetype AS citext
     CHECK ( value ~ '^[^/\s]+/[^/\s]+$' );
 
@@ -23,7 +26,7 @@ CREATE TABLE Account (
     UserID serial4 PRIMARY KEY,
     FullName varchar NOT NULL,
     Email varchar UNIQUE NOT NULL,
-    PassHash varchar NOT NULL,
+    PassHash passtype NOT NULL,
     DoB date NOT NULL,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     DeletionDate timestamp
