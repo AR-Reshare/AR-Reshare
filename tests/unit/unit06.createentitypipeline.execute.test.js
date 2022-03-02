@@ -103,6 +103,14 @@ beforeEach(() => {
     mockPushRespond.mockClear();
 });
 
+afterEach(() => {
+    mockSecInner();
+    mockDatInner();
+    mockStoInner();
+    mockAPIInner();
+    mockPusInner();
+})
+
 describe('Unit Test 6 - Create Entity Pipeline executor', () => {
     test('Class 1: Successful request, default options', () => {
         let req = {
@@ -498,7 +506,6 @@ describe('Unit Test 6 - Create Entity Pipeline executor', () => {
             outputObject: null,
         };
 
-        // NOTE: The full fix would most likely remove and add code to the below mock creations
         mockSecInner.mockReturnValueOnce(authError);
         mockDatInner.mockReturnValueOnce(validated);
         mockStoInner.mockReturnValueOnce(dbResponse);
@@ -549,9 +556,6 @@ describe('Unit Test 6 - Create Entity Pipeline executor', () => {
         let pipe = new CreateEntityPipeline('test', {}, mockDB, mockLogger);
         mockifyPipe(pipe);
 
-        // This line below is part of the temp fix
-        pipe.DataValidate.mockImplementation(() => {throw valError;});
-
         return pipe.Execute(req, res).then(() => {
             expect(mockSecurityValidate).toBeCalledWith(SecuritySchemaDict['create-test'], 'AToken', expect.objectContaining({
                 username: 'Testy McTestface',
@@ -596,10 +600,6 @@ describe('Unit Test 6 - Create Entity Pipeline executor', () => {
 
         let pipe = new CreateEntityPipeline('test', {}, mockDB, mockLogger);
         mockifyPipe(pipe);
-
-        // Here I have to do DataValidate.mockImplementation due to the previous not being cleared (now overwriting here vv)
-        pipe.DataValidate.mockImplementation(() => {return validated;});
-        pipe.Store.mockImplementation(() => {throw dbError;});
 
         return pipe.Execute(req, res).then(() => {
             expect(mockSecurityValidate).toBeCalledWith(SecuritySchemaDict['create-test'], 'AToken', expect.objectContaining({
