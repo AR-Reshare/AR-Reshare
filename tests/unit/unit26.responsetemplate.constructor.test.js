@@ -1,5 +1,7 @@
-const { TemplateError } = require('../../classes/errors');
-const ResponseTemplate = require('../../classes/responsetemplate');
+// const { TemplateError } = require('../../classes/errors');
+// const ResponseTemplate = require('../../classes/responsetemplate');
+const { TemplateError } = require('error.js');
+const ResponseTemplate = require('responsetemplate.js');
 
 describe('Unit Test 26 - ResponseTemplate constructor', () => {
     
@@ -7,8 +9,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: 'test',
             field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
         let template;
 
@@ -21,14 +21,10 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: 'test',
             field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
         let param2 = {
             out_name: 'test1',
             field: 'fieldname1',
-            rows_with_fields: ['fieldNames', 'fieldNames1'],
-            one_row_with_fields: ['fieldNames2', 'fieldNames3'],
         };
         let template;
 
@@ -41,10 +37,8 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 3: out_name not provided', () => {
         let param1 = {
             field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
-        let template;
+        let template; 
 
         expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
         expect(template.params).toHaveLength(1);
@@ -56,8 +50,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: 5,
             field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -67,8 +59,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: '',
             field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -77,8 +67,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 6: field not provided', () => {
         let param1 = {
             out_name:'test',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
         let template;
 
@@ -92,8 +80,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: 'test',
             field: 5 ,
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -103,8 +89,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name: 'test',
             field: '',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -113,8 +97,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 9 : rows_with_fields not provided', () => {
         let param1 = {
             out_name:'test',
-            field:'fieldname',
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
         let template;
 
@@ -127,9 +109,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 10: rows_with_fields is a string but is empty', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
             rows_with_fields: '',
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -138,9 +118,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 11: rows_with_fields is an array but is empty', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
             rows_with_fields: [],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -149,9 +127,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 12: rows_with_fields is an array but contains non-string field name', () => {
         let param1 = {
             out_name:'test',
-            field:'fieldname',
             rows_with_fields: [fieldnames, fieldnames1],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
         let template;
 
@@ -161,9 +137,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 13: rows_with_fields is an array but contains empty field name', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
             rows_with_fields: ['',''],
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -172,9 +146,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 14: rows_with_fields is not string or array', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
             rows_with_fields: 5,
-            one_row_with_fields: ['fieldnames2', 'fieldnames3'],
         };
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
@@ -184,7 +156,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name:'test',
             field:'fieldname',
-            rows_with_fields: ['fieldnames','fieldnames1'],
         };
         let template;
 
@@ -197,8 +168,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 16: one_row_with_fields is a string but is empty', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
-            rows_with_fields: ['fieldnames','fieldnames1'],
             one_row_with_fields: '',
         };
 
@@ -208,8 +177,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 17: one_row_with_fields is an array but is empty', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
-            rows_with_fields: ['fieldnames','fieldnames1'],
             one_row_with_fields: [],
         };
 
@@ -220,7 +187,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         let param1 = {
             out_name:'test',
             field:'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
             one_row_with_fields: [fieldnames2, fieldnames3],
         };
         let template;
@@ -231,8 +197,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 19: one_row_with_fields is an array but contains empty field name', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
             one_row_with_fields: ['', ''],
         };
 
@@ -242,8 +206,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
     test('Class 20: one_row_with_fields is not string or array', () => {
         let param1 = {
             out_name: 'test',
-            field: 'fieldname',
-            rows_with_fields: ['fieldnames', 'fieldnames1'],
             one_row_with_fields: 5,
         };
 
