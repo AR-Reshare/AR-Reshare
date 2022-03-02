@@ -5,6 +5,7 @@ const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
 const ResponseTemplateDict = require('./schemas/response-schemas');
 const PushTemplateDict = require('./schemas/push-schemas');
+const { AuthenticationHandler } = require('./classes/securityvalidation');
 
 class CreateEntityPipeline extends Pipeline {
     // this is an example of a general-purpose pipeline, this one for Entity Creation
@@ -76,6 +77,8 @@ class CreateEntityPipeline extends Pipeline {
                 throw new MissingTemplateError(`Unable to find push notification template for ${this.actionType}`);
             }
         }
+
+        this.Execute = this.Execute.bind(this);
     }
 
     /**
@@ -130,6 +133,56 @@ class CreateEntityPipeline extends Pipeline {
     }
 }
 
+class LoginPipeline extends Pipeline {
+    constructor(...args) {
+        super(...args);
+
+        // no Security Schema, as only AuthenticationHandler is used
+
+        this.requestTemplate = RequestTemplateDict['login'];
+        if (this.requestTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find request template for login`);
+        }
+
+        this.sqlTemplate = SQLTemplateDict['login'];
+        if (this.sqlTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find SQL template for login`);
+        }
+
+        this.responseTemplate = ResponseTemplateDict['login'];
+        if (this.responseTemplate === undefined) {
+            throw new MissingTemplateError(`Unable to find response template for login`);
+        }
+        
+        // no Push Notifications for now, might want to consider implementing them
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    Execute(req, res) {
+        let validated_final = null;
+        let result_final = null;
+        let error_final = null;
+
+        // validate request
+        return this.DataValidate(this.requestTemplate, req.body).then(validated => {
+            validated_final = validated;
+            // check credentials and create jwt
+            return AuthenticationHandler.accountLogin(this.db, validated);
+        }).then(jwt => {
+            result_final = jwt;
+            // store device token
+            return this.Store(this.sqlTemplate, validated);
+        }).catch(err => {
+            error_final = err;
+            return;
+        }).finally(() => {
+            // build response
+            return this.APIRespond(this.responseTemplate, res, result_final, error_final);
+        });
+    }
+}
+
 class NotImplementedPipeline extends Pipeline {
     constructor (...args) {
         super(...args);
@@ -158,6 +211,7 @@ class UnknownEndpointPipeline extends Pipeline {
 
 module.exports = {
     CreateEntityPipeline,
+    LoginPipeline,
     // ...
     // add other pipeline types here as they are defined
     NotImplementedPipeline,
