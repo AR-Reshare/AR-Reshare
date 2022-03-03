@@ -79,17 +79,15 @@ components:
 
     
     ################ ACCOUNT-RESET REQUESTBODIES ####################
-    reset-request:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/reset-request'
-    
-    reset-execute:
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/reset-execute'  
+
+
+
+    ## NOTE: The account-reset endpoints have been deleted
+    ## --> For account modification including password changes when logged in
+    ## use the /account/modify endpoint
+
+
+
 
     ################# PASSWORD-RESET REQUESTBODIES ##################
     password-reset-request:

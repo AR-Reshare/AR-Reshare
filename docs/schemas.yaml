@@ -350,25 +350,14 @@ components:
 
     
     ####################### ACCOUNT RESET SCHEMAS ####################
-    ##TODO: Account-Reset is in desperate need of fixing (raised as an issue on GitHub)
-    reset-request:
-      type: object
-      required:
-      - email
-      properties:
-        email:
-          $ref: '#/components/schemas/email'
 
-    reset-execute:
-      type: object
-      required:
-      - password
-      properties:
-        password:
-          $ref: '#/components/schemas/password'
+
+    ## NOTE: Account reset schemas no longer exist --> Please use the /account/modify endpoint
+
 
     ###################### PASSWORD RESET SCHEMAS ####################
-    ## These correspond to /passwordResetRequest and /passwordResetExecute
+    ## These correspond to /passwordResetRequest and /passwordResetExecute which are used when the user cannot
+    ## login to their account
     password-reset-request:
       type: object
       required:
