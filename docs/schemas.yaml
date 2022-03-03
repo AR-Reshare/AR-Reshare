@@ -367,6 +367,30 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
+    ###################### PASSWORD RESET SCHEMAS ####################
+    ## These correspond to /passwordResetRequest and /passwordResetExecute
+    password-reset-request:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          $ref: '#/components/schemas/email'
+    
+    password-reset-execute:
+      type: object
+      required:
+      - email
+      - resetToken
+      - password
+      properties:
+        email:
+          $ref: '#/components/schemas/email'
+        resetToken:
+          $ref: '#/components/schemas/resetToken'
+        password:
+          $ref: '#/components/schemas/password'
+          
 
     #################### CONVERSATION SCHEMAS ########################
     # TODO: There may be media links such as user profile picture to be included here
@@ -517,6 +541,10 @@ components:
     password:
       type: string
       format: password
+
+    resetToken:
+      type: string
+      ## TODO: Update the type/format when completeing the design of passwordReset
 
     email:
       type: string

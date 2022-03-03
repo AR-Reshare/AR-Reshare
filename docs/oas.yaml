@@ -48,6 +48,34 @@ paths:
         '400':
           description: A valid old token wasn't provided in the header of the HTTP request
           $ref: 'responses.yaml#/components/responses/post'
+
+  /passwordResetRequest:
+    post:
+      description: Sends a password reset email to the corresponding email if it exists
+      responses:
+        '200':
+          description: The request was processed without any exceptions (The email may or may not exist in the db)
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: The email provided was of an invalid format
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBodies:
+        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
+  
+  ## I was considering splitting this up into two but want to reduce the number of endpoints
+  /passwordResetExecute:
+    post:
+      description: Executes the password reset if the tokens are valid
+      responses:
+        '200':
+          description: The request was executed successfully and the account's password has now been changed
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: The arguments were of invalid formats
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBodies:
+        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
+
         
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
