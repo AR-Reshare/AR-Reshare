@@ -4,6 +4,7 @@ const {check, validationResult} = require('express-validator');
 const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, UnauthenticatedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 // There are two parts to the securityValidation
 
@@ -156,20 +157,19 @@ class AuthenticationHandler extends SecurityValMethods{
     static async isUserCredentialsValid(db, email, password){
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
         const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
+        let userID;
         return db.simpleQuery(getHash, [email]).then(res => {
-            if (res.length === 0){
+            if (res[0].length === 0){
                 throw new InvalidCredentialsError();
-            } else if (res.length > 1){
+            } else if (res[0].length > 1){
                 throw new QueryExecutionError();
             } else {
-                let userID = 'ssepi0l';
-                // salt = get_salt(res[0].passhash)
-                // hash = hash(password, salt)
-                // if (hash === res[0].passhash)
-                // return userID
-                // else throw error
-                return userID;
+                userID = res[0][0].userid;
+                return bcrypt.compare(password, res[0][0].passhash);
             }
+        }).then(result => {
+            if (result) return userID;
+            else throw new InvalidCredentialsError();
         });
     }
 
@@ -200,41 +200,6 @@ class SecuritySchema extends SecurityValMethods{
         } else {
             this.authenticationType = authMode;
         }
-
-        // if (!params){
-        //     throw new TemplateError();
-        // }
-        
-        // if (!params.auth){
-        //     throw new AbsentArgumentError('auth not provided');
-        // } else if (!(typeof params['auth'] === 'string' || params['auth'] instanceof String)){
-        //     throw new DirtyArgumentError('auth not a string');
-        // } else if (!(supportedAuthTypes.includes(params['auth'].toUpperCase()))){
-        //     throw new DirtyArgumentError('auth not a supported type');
-        // } else {
-        //     this.authenticationType = params['auth'];
-        // }
-
-        // This doesn't seem to be used
-        // if (!params.resourceName){
-        //     throw new AbsentArgumentError('resourceName not provided');
-        // } else if (!(typeof params['resourceName'] === 'string' || params['resourceName'] instanceof String)){
-        //     throw new DirtyArgumentError('resourceName not a string');
-        // //TODO:  Updated the path validation
-        // } else if (!(params['resourceName'].length > 0)){
-        //     throw new DirtyArgumentError('resourceName not a valid path');
-        // } else {
-        //     this.resource = params['resourceName'];
-        // }
-
-        // This should be passed in at execution time, rather than construction time
-        // if (!params.db){
-        //     throw new AbsentArgumentError('db not provided');
-        // NOTE: The below code doesn't work, possibly because of the mock objects?? Fix later
-        // } else if (!(params['db'] instanceof Database)){
-        //     throw new DirtyArgumentError('db argument is not an instance of the class Database');
-        // }
-        // this.db = params.db;
     }
 
     // NOTE: This is the main function that will be called
@@ -249,7 +214,6 @@ class SecuritySchema extends SecurityValMethods{
     verifyAuthentication(db, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
-        // console.log(decodedToken);
         if (this.authenticationType === 'NA'){
             return (decodedToken ? decodedToken.userID : null); // In case the user is authenticated but accesses a resource that doesn't require auth
         } else if (this.authenticationType === 'AA_TO'){
@@ -262,7 +226,7 @@ class SecuritySchema extends SecurityValMethods{
             if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
-                throw new BadArgumentError(); // TODO: Check whether this is the correct error
+                throw new AbsentArgumentError();
             } else if (!this.isUserPasswordValid(db, decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
@@ -282,16 +246,13 @@ class SecuritySchema extends SecurityValMethods{
             } else if (res.length > 1){
                 throw new QueryExecutionError();
             } else {
-                // salt = get_salt(res[0].passhash)
-                // hash = hash(password, salt)
-                // if (hash === res[0].passhash)
-                // return userID
-                // else throw error
-                return true;
+                return bcrypt.compare(password, res[0][0].passhash);
             }
+        }).then(result => {
+            if (result) return userID;
+            else throw new InvalidCredentialsError();
         });
     }
-
 }
 
 
