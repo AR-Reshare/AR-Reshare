@@ -93,7 +93,7 @@ The `responseSchema` object should be initialised ahead of time. Its constructor
 
 The method will look up the appropriate status code based on the `err` argument and the `responseSchema`'s `errorMap` (coupled with a default error mapping for unspecified errors). If the code represents a success (i.e. 2XX) then it will compose an output object based on the `inputArray` and the `responseSchema`'s `params`. Both the status code and the output object will then be transmitted using the `res`.
 
-The method returns a promise object which should always resolve. When it does so, it will resolve with an object containing properties `statusCode` and `outputObject`, which contain the status and object, respectively, which were transmitted. If `outputObject` is null, then no object was transmitted.
+The method returns a promise object which should always resolve. When it does so, it will resolve with an object containing properties `statusCode` and `result`, which contain the status and object, respectively, which were transmitted. If `result` is null, then no object was transmitted.
 
 ### PushRespond
 
