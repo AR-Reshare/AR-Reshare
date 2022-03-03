@@ -248,4 +248,6 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
+    // consider testing errorMap too.
+    // to check which lines are tested: jest unit --coverage
 });
