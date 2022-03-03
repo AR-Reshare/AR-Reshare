@@ -1,7 +1,5 @@
 const { TemplateError } = require('../../classes/errors');
 const ResponseTemplate = require('../../classes/responsetemplate');
-// const { TemplateError } = require('error.js');
-// const ResponseTemplate = require('responsetemplate.js');
 
 describe('Unit Test 26 - ResponseTemplate constructor', () => {
     
