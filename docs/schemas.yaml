@@ -14,7 +14,6 @@
 ##    --> account-login
 ##    --> account-close
 ##    --> account-modify
-##    --> account-reset TODO
 ## 2. Report
 ##    --> 
 ## 3. Request
@@ -350,23 +349,36 @@ components:
 
     
     ####################### ACCOUNT RESET SCHEMAS ####################
-    ##TODO: Account-Reset is in desperate need of fixing (raised as an issue on GitHub)
-    reset-request:
+
+
+    ## NOTE: Account reset schemas no longer exist --> Please use the /account/modify endpoint
+
+
+    ###################### PASSWORD RESET SCHEMAS ####################
+    ## These correspond to /passwordResetRequest and /passwordResetExecute which are used when the user cannot
+    ## login to their account
+    password-reset-request:
       type: object
       required:
       - email
       properties:
         email:
           $ref: '#/components/schemas/email'
-
-    reset-execute:
+    
+    password-reset-execute:
       type: object
       required:
+      - email
+      - resetToken
       - password
       properties:
+        email:
+          $ref: '#/components/schemas/email'
+        resetToken:
+          $ref: '#/components/schemas/resetToken'
         password:
           $ref: '#/components/schemas/password'
-
+          
 
     #################### CONVERSATION SCHEMAS ########################
     # TODO: There may be media links such as user profile picture to be included here
@@ -517,6 +529,10 @@ components:
     password:
       type: string
       format: password
+
+    resetToken:
+      type: string
+      ## TODO: Update the type/format when completeing the design of passwordReset
 
     email:
       type: string
