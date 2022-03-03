@@ -113,6 +113,22 @@ If the promise rejects, it will do so with one of the following errors:
 | EmptyResponseError | The result of the transactions was empty and `error_on_empty_response` is true |
 
 ### APIResond
+Takes four inputs, `responseSchema`, `res`, `inputArray`, and `err`. The `responseSchema` must be an instance of `ResponseTemplate`, as per classes/responsetemplate.js. `res` should be the response handler object created by the express router. `inputArray` should be null, or a 2-d array of objects as per the return value of Store. `err` should be null or an error object representing the reason the pipeline could not complete the request.
+
+The `responseSchema` object should be initialised ahead of time. Its constructor takes two parameters: `params`, a list of parameter objects with properties as described in the table below, and an optional `errorMap`, an object containing keys which are the names of specific error classes and values which are the integer status codes to return in the event of that error. The `errorMap` may contain the key `null`, which should map to a success code (usually 200 or 201).
+
+| key | type | description |
+|-----|------|-------------|
+| out_name | string | The key of the output object in which to store this value |
+| field† | string, optional | The name of a field in one of the objects in the input array. That field's value will be placed in the output object. If the field occurs multiple times, then the first occurance is used. If the field appears zero times then this key is omitted in the output object |
+| rows_with_fields† | string or string[], optional | The name, or array of names, of fields to search for in the input array. Every object that contains all of those names as keys will be selected, packaged into a 1-dimensional array, and inserted into the output object. If no matching object is found then this key is omitted in the output object |
+| one_row_with_fields† | string or string[], optional | As with rows_with_fields, except only the first matching object is used |
+
+†properties are mutually exclusive, exactly one of them must be present
+
+The method will look up the appropriate status code based on the `err` argument and the `responseSchema`'s `errorMap` (coupled with a default error mapping for unspecified errors). If the code represents a success (i.e. 2XX) then it will compose an output object based on the `inputArray` and the `responseSchema`'s `params`. Both the status code and the output object will then be transmitted using the `res`.
+
+The method returns a promise object which should always resolve. When it does so, it will resolve with an object containing properties `statusCode` and `result`, which contain the status and object, respectively, which were transmitted. If `result` is null, then no object was transmitted.
 
 ### PushRespond
 
