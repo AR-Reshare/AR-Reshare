@@ -14,7 +14,7 @@ info:
     description: The url will be filled out as we push through development
   security:
     bearerAuth:
-    - \/account\/[\w\/]+ # except /account/reset-request and /account/reset-execute
+    - \/account\/[\w\/]+
     - \/conversation\/[\w\/]+
     - \/conversations
     - \/listing\/create
