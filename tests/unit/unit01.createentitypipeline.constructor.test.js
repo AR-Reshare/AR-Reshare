@@ -8,8 +8,8 @@ const ResponseTemplateDict = require('../../schemas/response-schemas');
 const PushTemplateDict = require('../../schemas/push-schemas');
 
 jest.mock('../../classes/pipeline', () => {
-    return jest.fn().mockImplementation(() => {
-        return {}
+    return jest.fn().mockImplementation(function () {
+        return this;
     });
 });
 
