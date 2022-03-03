@@ -1,7 +1,7 @@
-// const { TemplateError } = require('../../classes/errors');
-// const ResponseTemplate = require('../../classes/responsetemplate');
-const { TemplateError } = require('error.js');
-const ResponseTemplate = require('responsetemplate.js');
+const { TemplateError } = require('../../classes/errors');
+const ResponseTemplate = require('../../classes/responsetemplate');
+// const { TemplateError } = require('error.js');
+// const ResponseTemplate = require('responsetemplate.js');
 
 describe('Unit Test 26 - ResponseTemplate constructor', () => {
     
@@ -14,7 +14,10 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
 
         expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
         expect(template.params).toHaveLength(1);
-        expect(template.params[0]).toMatchObject(param1);
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            field: 'fieldname',
+        });
     });
 
     test('Class 2: multiple parameters', () => {
@@ -30,20 +33,22 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
 
         expect(() => {template = new ResponseTemplate([param1, param2])}).not.toThrow();
         expect(template.params).toHaveLength(2);
-        expect(template.params[0]).toMatchObject(param1);
-        expect(template.params[1]).toMatchObject(param2);
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            field: 'fieldname',
+        });
+        expect(template.params[1]).toMatchObject({
+            outName: 'test1',
+            field: 'fieldname1',
+        });
     });
 
     test('Class 3: out_name not provided', () => {
         let param1 = {
             field: 'fieldname',
         };
-        let template; 
 
-        expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
-        expect(template.params).toHaveLength(1);
-        expect(template.params[0]).toMatchObject(param1);
-        expect(template.params[0]).toHaveProperty('out_name');
+        expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
     test('Class 4: out_name not a string', () => {
@@ -64,16 +69,13 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 6: field not provided', () => {
+    test('Class 6: no field selector not provided', () => {
         let param1 = {
             out_name:'test',
         };
         let template;
 
-        expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
-        expect(template.params).toHaveLength(1);
-        expect(template.params[0]).toMatchObject(param1);
-        expect(template.params[0]).toHaveProperty('field');
+        expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
     
     test('Class 7: field not a string', () => {
@@ -94,19 +96,37 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
     
-    test('Class 9 : rows_with_fields not provided', () => {
+    test('Class 9 : valid string rows_with_fields', () => {
         let param1 = {
             out_name:'test',
+            rows_with_fields: 'fieldname',
         };
         let template;
 
         expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
         expect(template.params).toHaveLength(1);
-        expect(template.params[0]).toMatchObject(param1);
-        expect(template.params[0]).toHaveProperty('rows_with_fields');
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            rowsWithFields: ['fieldname'],
+        });
     });
     
-    test('Class 10: rows_with_fields is a string but is empty', () => {
+    test('Class 10: valid array rows_with_fields', () => {
+        let param1 = {
+            out_name:'test',
+            rows_with_fields: ['fieldname1', 'fieldname2'],
+        };
+        let template;
+
+        expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
+        expect(template.params).toHaveLength(1);
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            rowsWithFields: ['fieldname1', 'fieldname2'],
+        });
+    });
+    
+    test('Class 11: rows_with_fields is a string but is empty', () => {
         let param1 = {
             out_name: 'test',
             rows_with_fields: '',
@@ -115,7 +135,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 11: rows_with_fields is an array but is empty', () => {
+    test('Class 12: rows_with_fields is an array but is empty', () => {
         let param1 = {
             out_name: 'test',
             rows_with_fields: [],
@@ -124,17 +144,16 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
     
-    test('Class 12: rows_with_fields is an array but contains non-string field name', () => {
+    test('Class 13: rows_with_fields is an array but contains non-string field name', () => {
         let param1 = {
             out_name:'test',
-            rows_with_fields: [fieldnames, fieldnames1],
+            rows_with_fields: [15, null],
         };
-        let template;
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 13: rows_with_fields is an array but contains empty field name', () => {
+    test('Class 14: rows_with_fields is an array but contains empty string field name', () => {
         let param1 = {
             out_name: 'test',
             rows_with_fields: ['',''],
@@ -143,7 +162,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 14: rows_with_fields is not string or array', () => {
+    test('Class 15: rows_with_fields is not string or array', () => {
         let param1 = {
             out_name: 'test',
             rows_with_fields: 5,
@@ -152,20 +171,37 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 15: one_row_with_fields not provided', () => {
+    test('Class 16: valid string one_row_with_fields', () => {
         let param1 = {
             out_name:'test',
-            field:'fieldname',
+            one_row_with_fields:'fieldname',
         };
         let template;
 
         expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
         expect(template.params).toHaveLength(1);
-        expect(template.params[0]).toMatchObject(param1);
-        expect(template.params[0]).toHaveProperty('one_row_with_fields');
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            oneRowWithFields: ['fieldname'],
+        });
     });
 
-    test('Class 16: one_row_with_fields is a string but is empty', () => {
+    test('Class 17: valid array one_row_with_fields', () => {
+        let param1 = {
+            out_name:'test',
+            one_row_with_fields: ['fieldname1', 'fieldname2'],
+        };
+        let template;
+
+        expect(() => {template = new ResponseTemplate([param1])}).not.toThrow();
+        expect(template.params).toHaveLength(1);
+        expect(template.params[0]).toMatchObject({
+            outName: 'test',
+            oneRowWithFields: ['fieldname1', 'fieldname2'],
+        });
+    });
+
+    test('Class 18: one_row_with_fields is a string but is empty', () => {
         let param1 = {
             out_name: 'test',
             one_row_with_fields: '',
@@ -174,7 +210,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 17: one_row_with_fields is an array but is empty', () => {
+    test('Class 19: one_row_with_fields is an array but is empty', () => {
         let param1 = {
             out_name: 'test',
             one_row_with_fields: [],
@@ -183,18 +219,18 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
     
-    test('Class 18: one_row_with_fields is an array but contains non-string field name', () => {
+    test('Class 20: one_row_with_fields is an array but contains non-string field name', () => {
         let param1 = {
             out_name:'test',
             field:'fieldname',
-            one_row_with_fields: [fieldnames2, fieldnames3],
+            one_row_with_fields: [15, null],
         };
         let template;
 
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 19: one_row_with_fields is an array but contains empty field name', () => {
+    test('Class 21: one_row_with_fields is an array but contains empty field name', () => {
         let param1 = {
             out_name: 'test',
             one_row_with_fields: ['', ''],
@@ -203,7 +239,7 @@ describe('Unit Test 26 - ResponseTemplate constructor', () => {
         expect(() => new ResponseTemplate([param1])).toThrow(TemplateError);
     });
 
-    test('Class 20: one_row_with_fields is not string or array', () => {
+    test('Class 22: one_row_with_fields is not string or array', () => {
         let param1 = {
             out_name: 'test',
             one_row_with_fields: 5,
