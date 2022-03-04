@@ -1,7 +1,12 @@
 /* This will define the custom error classes to use throughout the project
 */
 
-
+class EmailCredentialsReadError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'EmailCredentialsReadError';
+    }
+}
 
 class PrivateKeyReadError extends Error {
     constructor(message) {
@@ -189,6 +194,7 @@ class QueryExecutionError extends QueryError {
 }
 
 module.exports = {
+    EmailCredentialsReadError,
     PrivateKeyReadError,
     AlreadyAuthenticatedError,
     UnauthenticatedUserError,
