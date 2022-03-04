@@ -1,4 +1,4 @@
-const {EmailRespond, EmailTemplateDefinitions} = require('../../classes/email.js');
+const {EmailRespond, EmailTemplateDefinitions, EmailTransporter} = require('../../classes/email.js');
 const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailCredentialsReadError} = require('../../classes/errors.js');
 
 // There are three integrations we want to test
@@ -68,37 +68,156 @@ describe('Unit Test XX - emailResond Class Construction', () => {
 
 });
 
+// beforeEach(async () => {
+//     let templateType = 'Account-Create';
+//     let emailTemplate = new EmailRespond(templateType);
+//     let emailTransport = await EmailTransporter.setup();
+// });
+
 describe('Unit Test XX - emailResond Class (template replacement validate)', () => {
-    test('Missing replacementObject', () => {
-        //pass
+    test('Missing replacementObject', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+        let inputObject = null;
+
+        let expectedError = new AbsentArgumentError();
+
+        expect(async () => {
+          let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+          expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Overexceeded replacement argument length', () => {
-        //pass
+    test('Overexceeded replacement argument length', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+        let inputObject = {
+            email: 'foo@example.com',
+            userID: '12345',
+            additionalAttribute: 'random-stuff'
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Insufficient replacement argument length', () => {
-        //pass
+    test('Insufficient replacement argument length', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+        let inputObject = {
+            email: 'foo@example.com',
+            //Account-Create requires a userID attribute
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Correct replacement argument length + included invalid attribute', () => {
-        //pass
+    test('Correct replacement argument length + included invalid attribute', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+
+        let inputObject = {
+            email: 'foo@example.com',
+            randomAttribute: 'randomElement'
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Correct replacement argument length + all invalid attribute', () => {
-        //pass
+    test('Correct replacement argument length + all invalid attribute', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+
+        let inputObject = {
+            randomAttribute1: 'foo@example.com',
+            randomAttribute2: 'randomElement'
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Correct replacement argument length + Correct attributes + Incorrect value type', () => {
-        //pass
+    test('Correct replacement argument length + Correct attributes + Incorrect value type', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+
+        let inputObject = {
+            randomAttribute1: 'foo@example.com',
+            randomAttribute2: 'randomElement'
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Correct replacement argument length + Correct attributes + Incorrect values\' types', () => {
-        //pass
+    test('Correct replacement argument length + Correct attributes + Incorrect values\' types', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+
+        let inputObject = {
+            randomAttribute1: 'foo@example.com',
+            randomAttribute2: 'randomElement'
+        };
+
+        let expectedError = new InvalidArgumentError();
+
+        expect(async () => {
+            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(expectedError);
+        });
     });
 
-    test('Valid replacementObject', () => {
-        //pass
+    test('Valid replacementObject', async () => {
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let emailTransport = await EmailTransporter.setup();
+        let emailaddress = 'test@example.com';
+
+        let inputObject = {
+            randomAttribute1: 'foo@example.com',
+            randomAttribute2: 'randomElement'
+        };
+
+        expect(async () => {
+            let out = await emailTemplate.replacementObjectValidate(emailTransport, emailaddress, inputObject);
+            expect(out).toEqual(true);
+        });
     });
 
 });
