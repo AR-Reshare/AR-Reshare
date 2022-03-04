@@ -15,7 +15,7 @@ class App {
         const RegenerateToken = NA;
         const CreateAccount = NA; // CreateEntity (in question - see issue #25)
         const CloseAccount = NA; // CloseEntity
-        const Login = new pipes.LoginPipeline(db, logger); // TODO system testing
+        const Login = new pipes.LoginPipeline(db, logger);
         const ModifyAccount = NA; // ModifyEntity
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
@@ -24,7 +24,7 @@ class App {
         const ExecuteReset = NA;
         const ViewListing = NA; // ViewEntity
         const SearchListing = NA; // SearchEntity
-        const CreateListing = NA; // CreateEntity
+        const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // CreateEntity
         const ModifyListing = NA; // ModifyEntity
         const CloseListing = NA; // CloseEntity
         const CreateConversation = NA; // CreateEntity

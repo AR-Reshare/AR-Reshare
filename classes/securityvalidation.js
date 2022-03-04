@@ -226,7 +226,7 @@ class SecuritySchema extends SecurityValMethods{
             if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
-                throw new AbsentArgumentError();
+                throw new InvalidCredentialsError();
             } else if (!this.isUserPasswordValid(db, decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {

@@ -36,11 +36,45 @@ const LoginTemplate = new SQLTemplate({
         }, {
             from_query: ['get_id', 'userid'],
         }],
-    }
+    },
 }, ['get_id', 'store_token']);
+
+const CreateListingTemplate = new SQLTemplate({
+    create_address: {
+        text: 'INSERT INTO Address (Country, Postcode, UserID) VALUES ($1, $2, $3) RETURNING AddressID',
+        condition: (inputObject) => (!Number.isInteger(inputObject['location'])),
+        values: [
+            (inputObject) => inputObject['location']['country'],
+            (inputObject) => inputObject['location']['postcode'],
+            {from_input: 'accountID'},
+        ],
+    },
+    create_listing: {
+        text: 'INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ListingID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'title'},
+            {from_input: 'description'},
+            {from_input: 'condition'},
+            (inputObject, queryList) => {
+                if ('create_address' in queryList) {
+                    return res => res[0][0]['addressid'];
+                } else {
+                    return inputObject['location'];
+                }
+            },
+            {from_input: 'category'},
+        ],
+    },
+    // TODO add media support
+}, ['create_address', 'create_listing'], {
+    drop_from_results: ['create_address'],
+    error_on_empty_response: true,
+});
 
 const sqlTemplatesDict = {
     'create-account': CreateAccountTemplate,
+    'create-listing': CreateListingTemplate,
     'login': LoginTemplate,
 };
 

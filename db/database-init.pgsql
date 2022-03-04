@@ -15,8 +15,6 @@ CREATE DOMAIN mimetype AS citext
 
 -- Enums should be listed here in the order they are used in the CREATE TABLEs
 CREATE TYPE itemCondition AS ENUM ('poor', 'average', 'good', 'like new', 'new');
-CREATE TYPE reportReason AS ENUM ('request', 'scam', 'illegal content', 'malicious language', 'other');
-CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 
 -- Table creations are in dependency order, since foreign keys must always reference existing tables
 -- All text fields should be NOT NULL, since if NULL was allowed there would be two different values for nothing - NULL or an empty string
