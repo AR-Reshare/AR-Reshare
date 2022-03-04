@@ -40,8 +40,8 @@ describe('Unit Test XX - emailResond Class Construction', () => {
         let templateType = 'Account-Create';
         let emailTemplate = new EmailRespond(templateType);
         expect(emailTemplate.templateType).toEqual(templateType);
-        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.templates[templateType]);
-        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.templates[templateType]);
 
     });
 
@@ -49,8 +49,8 @@ describe('Unit Test XX - emailResond Class Construction', () => {
         let templateType = 'Account-Modify';
         let emailTemplate = new EmailRespond(templateType);
         expect(emailTemplate.templateType).toEqual(templateType);
-        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.templates[templateType]);
-        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.templates[templateType]);
 
     });
 
@@ -58,18 +58,20 @@ describe('Unit Test XX - emailResond Class Construction', () => {
         let templateType = 'Password-Reset';
         let emailTemplate = new EmailRespond(templateType);
         expect(emailTemplate.templateType).toEqual(templateType);
-        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.templates[templateType]);
-        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templateArguments).toEqual(EmailTemplateDefinitions.arguments[templateType]);
+        expect(emailTemplate.templatePlaceholder).toEqual(EmailTemplateDefinitions.templates[templateType]);
 
     });
 
 });
 
+let templateType, emailTemplate, emailTransport, emailaddress;
+
 beforeEach(async () => {
-    let templateType = 'Account-Create';
-    let emailTemplate = new EmailRespond(templateType);
-    let emailTransport = await EmailTransporter.setup();
-    let emailaddress = 'test@example.com';
+    templateType = 'Account-Create';
+    emailTemplate = new EmailRespond(templateType);
+    emailTransport = await EmailTransporter.setup();
+    emailaddress = 'test@example.com';
 });
 
 describe('Unit Test XX - emailResond Class (template replacement validate)', () => {
@@ -186,16 +188,45 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
 
 // TODO: We need to create temporary templates for the the provided scenarios
 describe('Unit Test XX - emailResond Class (template replacement execute)', () => {
-    test('Template Replacement Success (Account Creation)', () => {
-        //pass
+    test('Template Replacement Success (Account Creation)', async () => {
+        let replacementObject = {
+            Email: 'foo@example.com',
+            UserID: '12345'
+        };
+
+        let templateType = 'Account-Create';
+        let emailTemplate = new EmailRespond(templateType);
+        let out = await emailTemplate.templateReplace(replacementObject);
+        expect(out).toContain(`Email:${replacementObject.Email}`);
+        expect(out).toContain(`UserID:${replacementObject.UserID}`);
     });
 
-    test('Template Replacement Success (Account Modification)', () => {
-        //pass
+    test('Template Replacement Success (Account Modification)', async () => {
+        let replacementObject = {
+            Email: 'foo@example.com',
+            UserID: '12345'
+        };
+
+        let templateType = 'Account-Modify';
+        let emailTemplate = new EmailRespond(templateType);
+        let out = await emailTemplate.templateReplace(replacementObject);
+        expect(out).toContain(`Email:${replacementObject.Email}`);
+        expect(out).toContain(`UserID:${replacementObject.UserID}`);
     });
 
-    test('Template Replacement Success (Password Reset)', () => {
-        //pass
+    test('Template Replacement Success (Password Reset)', async () => {
+        let replacementObject = {
+            Email: 'foo@example.com',
+            UserID: '12345',
+            Token: 'FDAS4534FDS'
+        };
+
+        let templateType = 'Password-Reset';
+        let emailTemplate = new EmailRespond(templateType);
+        let out = await emailTemplate.templateReplace(replacementObject);
+        expect(out).toContain(`Email:${replacementObject.Email}`);
+        expect(out).toContain(`UserID:${replacementObject.UserID}`);
+        expect(out).toContain(`Token:${replacementObject.Token}`);
     });
 });
 

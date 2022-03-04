@@ -21,15 +21,15 @@ const nodemailer = require('nodemailer');
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class EmailTemplateDefinitions {
     static templates = {
-        'Account-Modify': '',
-        'Account-Create': '',
-        'Password-Reset': '',
+        'Account-Modify': 'Email:${Email}\tUserID:${UserID}',
+        'Account-Create': 'Email:${Email}\tUserID:${UserID}',
+        'Password-Reset': 'Email:${Email}\tUserID:${UserID}\tToken:${Token}',
     };
 
     static arguments = {
-        'Account-Modify': ['email', 'userID'],
-        'Account-Create': ['email', 'userID'],
-        'Password-Reset': ['email', 'userID', 'token'],
+        'Account-Modify': ['Email', 'UserID'],
+        'Account-Create': ['Email', 'UserID'],
+        'Password-Reset': ['Email', 'UserID', 'Token'],
     };
 }
 
@@ -119,16 +119,17 @@ class EmailRespond {
             throw new TemplateError('An accepted TemplateType was not provided');
         } else {
             this.templateType = templateType;
-            this.templateArguments = EmailTemplateDefinitions.templates[this.templateType];
-            this.templatePlaceholder = EmailTemplateDefinitions.arguments[this.templateType];
+            this.templateArguments = EmailTemplateDefinitions.arguments[this.templateType];
+            this.templatePlaceholder = EmailTemplateDefinitions.templates[this.templateType];
         }
 
     }
 
     async templateReplace(replacementObject){
         // TODO: Quite inefficient -- If you have time modify later
-        for (arg in this.templateArguments){
-            template.replace(arg, replaceObject.arg);
+        let template = this.templatePlaceholder;
+        for (const arg of this.templateArguments){
+            template = template.replace(`\${${arg}}`, replacementObject[arg]);
         }
         return template;
     }
@@ -137,15 +138,21 @@ class EmailRespond {
         // existance check and type check
         if (!replacementObject){
             throw new AbsentArgumentError();
+        } else if (replacementObject.length != this.templateArguments.length){
+            throw new InvalidArgumentError();
         }
 
         for (arg in replacementObject){
-            if (replacementObject[arg] === undefined){
+            if (!this.templateArguments.includes(arg)) {
+                throw new InvalidArgumentError();
+            } else if(replacementObject[arg] === undefined){
                 throw new AbsentArgumentError();
             } else if (!replacementObject[arg] instanceof String){
                 throw new InvalidArgumentError();
             }
         }
+
+
         return true;
     }
 
