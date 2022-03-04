@@ -1,6 +1,7 @@
 class Pipeline {
-    constructor(db, logger=console) {
-        this.db = db; // expected to implement simpleQuery and complexQuery
+    constructor(db, emailTransporter, logger=console) {
+        this.db = db; // expected to implement simpleQuery and complexQuery7
+        this.emailTransporter = emailTransporter;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
         this.SecurityValidate = this.SecurityValidate.bind(this);
@@ -93,6 +94,24 @@ class Pipeline {
         });
     }
 
+    /**
+     * Creates and executes a transaction on the database
+     * @param {emailTemplate} emailTemplate Template of the email transaction, from the emailTemplate class
+     * @param {object} inputObject Object whose values to insert into the email transaction
+     * @returns 
+     */
+    EmailRespond(emailTemplate, email, argsReplaceObject) {
+        return new Promise((resolve, reject) => {
+            let out;
+            try {
+                out = emailTemplate.process(this.emailTransporter, email, argsReplaceObject);
+                resolve(out);
+            } catch (err){
+                reject(err);
+            }
+        });
+    }
+
     APIRespond(responseSchema, res, inputObject, err) {
         // responseSchema: an object detailing which values to include in the response, as per schemas/response-schemas.js
         // res: the response object provided by Express, for the response to be sent to
@@ -109,6 +128,7 @@ class Pipeline {
                 // this is returned here as well mainly so that wrappers around the pipeline can check the success status
         });
     }
+
 
     PushRespond(pushSchema, inputObject, targetAccounts) {
         // pushSchema: an object detailing which values to include in the notification, as per schemas/push-schemas.js
