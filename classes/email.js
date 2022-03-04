@@ -1,6 +1,7 @@
 const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailCredentialsReadError} = require('./errors.js');
 const fs = require('fs/promises');
 const path = require('path');
+const nodemailer = require('nodemailer');
 // There are certain events which require the application to send an email, which can include:
 // 1. Account Creation
 // 2. Password Reset
@@ -86,7 +87,7 @@ class EmailTransporter {
         return emailConfig;
 
     }
-    static async setup(username=null, password=null, host=null){
+    static async setup(username=null, password=null, hostname=null){
         // TODO: Setup an email address and replace default account
         // TODO: Add secure transport to the transporter
         if (!username || !password || !host){
@@ -175,5 +176,6 @@ class EmailRespond {
 
 module.exports = {
     EmailRespond,
+    EmailTransporter,
     EmailTemplateDefinitions
 }
