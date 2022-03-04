@@ -1,5 +1,3 @@
-/* This file will contain template strings for PostgreSQL
-*/
 const SQLTemplate = require('../classes/sqltemplate');
 
 /**
@@ -7,7 +5,6 @@ const SQLTemplate = require('../classes/sqltemplate');
  *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
  */
 
-// define a bunch of SQLTemplates, including maybe some custom ones that overwrite .build
 const CreateAccountTemplate = new SQLTemplate({
     create: {
         text: 'INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ($1, $2, $3, $4) RETURNING UserID',
@@ -23,30 +20,26 @@ const CreateAccountTemplate = new SQLTemplate({
     },
 }, ['create']);
 
-const CreateAdminAccountTemplate = new SQLTemplate({
-    create: {
-        text: 'INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ($1, $2, $3, $4) RETURNING UserID',
+const LoginTemplate = new SQLTemplate({
+    get_id: {
+        text: 'SELECT UserID FROM Account WHERE Email = $1',
         values: [{
-            from_input: 'name'
-        }, {
-            from_input: 'email'
-        }, {
-            from_input: 'hash_password'
-        }, {
-            from_input: 'date_of_birth'
+            from_input: 'email',
         }],
     },
-    make_admin: {
-        text: 'INSERT INTO Administrator (UserID) VALUES ($1)',
+    store_token: {
+        text: 'INSERT INTO PushToken (DeviceToken, UserID) VALUES ($1, $2) ON CONFLICT (DeviceToken) DO UPDATE SET UserID = EXCLUDED.UserID, Time = CURRENT_TIMESTAMP',
         values: [{
-            from_query: ['create', 'UserID'],
+            from_input: 'device_token',
+        }, {
+            from_query: ['get_id', 'userid'],
         }],
-    },
-}, ['create', 'make_admin']);
+    }
+}, ['get_id', 'store_token']);
 
 const sqlTemplatesDict = {
     'create-account': CreateAccountTemplate,
-    'create-admin': CreateAdminAccountTemplate,
+    'login': LoginTemplate,
 };
 
-module.exports = {SQLTemplate, sqlTemplatesDict};
+module.exports = sqlTemplatesDict;

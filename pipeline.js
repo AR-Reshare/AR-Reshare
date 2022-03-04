@@ -167,16 +167,20 @@ class LoginPipeline extends Pipeline {
         // validate request
         return this.DataValidate(this.requestTemplate, req.body).then(validated => {
             validated_final = validated;
+            this.logger.log(validated);
             // check credentials and create jwt
             return AuthenticationHandler.accountLogin(this.db, validated);
         }).then(jwt => {
             result_final = jwt;
+            this.logger.log('authed');
             // store device token
-            return this.Store(this.sqlTemplate, validated);
+            return this.Store(this.sqlTemplate, validated_final);
         }).catch(err => {
+            this.logger.error(err);
             error_final = err;
             return;
         }).finally(() => {
+            this.logger.log('finally');
             // build response
             return this.APIRespond(this.responseTemplate, res, result_final, error_final);
         });

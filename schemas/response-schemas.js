@@ -1,2 +1,9 @@
-/* This file will define response schemas to be sent through the API
-*/
+const ResponseTemplate = require("../classes/responsetemplate");
+
+const ResponseTemplateDict = {
+    'login': new ResponseTemplate([], {
+        null: 200,
+    }),
+};
+
+module.exports = ResponseTemplateDict;

@@ -1,20 +1,24 @@
-/* This file will contain Request Parameter Validation Schemas, in this format:
+const RequestTemplate = require("../classes/requesttemplate")
 
-requestValidationSchema['create-listing'] = [
-    {
-        name: "some_parameter", // the name of the parameter in the request object
+const RequestTemplateDefinitions = {
+    'login': new RequestTemplate([{
+        in_name: 'email',
+        required: true,
+        conditions: [
+            (email) => (typeof email === 'string' || email instanceof String),
+            (email) => (email.length >= 3 && email.includes('@')),
+        ],
+    }, {
+        in_name: 'password',
+        required: true,
+        conditions: [
+            (pass) => (typeof pass === 'string' || pass instanceof String),
+            (pass) => (pass.length >= 1),
+        ],
+    }, {
+        in_name: 'device_token',
+        required: true,
+    }])
+}
 
-        required: true, // whether to reject automatically if this parameter isn't present
-
-        validationFunctions: [
-            (val)=>{return val <= 20;},
-            (val)=>{return DoesExist(...conditions)},
-        ], // list of functions to run on the parameter, valid if all functions return true
-
-        includeInResult: true, // whether to include this parameter in the formatted output
-
-        transform: SomeParameterToResultFunction // the result of this function will be included in the formatted output, if it is specified and includeInResult is set to true. If undefined, the parameter is passed through directly
-    }
-]
-
-*/
+module.exports = RequestTemplateDefinitions;

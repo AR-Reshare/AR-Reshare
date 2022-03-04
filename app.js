@@ -1,9 +1,11 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const pipes = require('./pipeline');
 
 class App {
     constructor(db, logger) {
         let app = express();
+        app.use(bodyParser.json());
         // NOTE: NA here refers to notImplementedPipelines, which differentiates from NA (noAuth) in SecurityValidate
         const NA = new pipes.NotImplementedPipeline(db, logger); // for unimplemented endpoints
         const NF = new pipes.UnknownEndpointPipeline(db, logger);
@@ -13,7 +15,7 @@ class App {
         const RegenerateToken = NA;
         const CreateAccount = NA; // CreateEntity (in question - see issue #25)
         const CloseAccount = NA; // CloseEntity
-        const Login = NA;
+        const Login = new pipes.LoginPipeline(db, logger);
         const ModifyAccount = NA; // ModifyEntity
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
