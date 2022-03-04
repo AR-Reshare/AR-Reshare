@@ -18,7 +18,7 @@ const path = require('path');
 
 
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
-class emailTemplate {
+class EmailTemplateDefinitions {
     static templates = {
         'Account-Modify': '',
         'Account-Create': '',
@@ -32,7 +32,7 @@ class emailTemplate {
     };
 }
 
-class emailTransporter {
+class EmailTransporter {
     static emailConfigLocation = `classes${path.sep}emailConfig.conf`;
 
     static async getEmailCredentials(){
@@ -109,15 +109,17 @@ class emailTransporter {
 }
 
 
-class emailRespond {
+class EmailRespond {
     constructor(templateType){
         let supportedTemplateTypes = ['Account-Modify', 'Account-Create', 'Password-Reset'];
-        if (!supportedTemplateTypes.includes(templateType)){
+        if (!templateType){
+            throw new TemplateError('No TemplateType was provided');
+        } else if (!supportedTemplateTypes.includes(templateType)){
             throw new TemplateError('An accepted TemplateType was not provided');
         } else {
             this.templateType = templateType;
-            this.templateArguments = emailTemplate.templates[this.templateType];
-            this.templatePlaceholder = emailTemplate.arguments[this.templateType];
+            this.templateArguments = EmailTemplateDefinitions.templates[this.templateType];
+            this.templatePlaceholder = EmailTemplateDefinitions.arguments[this.templateType];
         }
 
     }
@@ -169,4 +171,9 @@ class emailRespond {
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
         this.sendEmail(emailTransporter, email, content);
     }
+}
+
+module.exports = {
+    EmailRespond,
+    EmailTemplateDefinitions
 }
