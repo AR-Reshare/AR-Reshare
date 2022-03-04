@@ -178,7 +178,13 @@ class LoginPipeline extends Pipeline {
             return;
         }).finally(() => {
             // build response
-            return this.APIRespond(this.responseTemplate, res, result_final, error_final);
+            let status = this.responseTemplate.getStatus(error_final);
+            res.status(status);
+            if (status === 200) {
+                res.set('Authorization', result_final);
+            }
+            res.end();
+            return;
         });
     }
 }
