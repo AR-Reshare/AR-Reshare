@@ -70,11 +70,10 @@ beforeEach(async () => {
     let emailTemplate = new EmailRespond(templateType);
     let emailTransport = await EmailTransporter.setup();
     let emailaddress = 'test@example.com';
-
 });
 
 describe('Unit Test XX - emailResond Class (template replacement validate)', () => {
-    test('Missing replacementObject', async () => {
+    test('Missing replacementObject', () => {
         let inputObject = null;
 
         let expectedError = new AbsentArgumentError();
@@ -85,7 +84,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Overexceeded replacement argument length', async () => {
+    test('Overexceeded replacement argument length', () => {
         let inputObject = {
             email: 'foo@example.com',
             userID: '12345',
@@ -100,7 +99,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Insufficient replacement argument length', async () => {
+    test('Insufficient replacement argument length', () => {
         let inputObject = {
             email: 'foo@example.com',
             //Account-Create requires a userID attribute
@@ -114,7 +113,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Correct replacement argument length + included invalid attribute', async () => {
+    test('Correct replacement argument length + included invalid attribute', () => {
         let inputObject = {
             email: 'foo@example.com',
             randomAttribute: 'randomElement'
@@ -128,7 +127,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Correct replacement argument length + all invalid attribute', async () => {
+    test('Correct replacement argument length + all invalid attribute', () => {
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -142,7 +141,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Correct replacement argument length + Correct attributes + Incorrect value type', async () => {
+    test('Correct replacement argument length + Correct attributes + Incorrect value type', () => {
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -156,7 +155,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Correct replacement argument length + Correct attributes + Incorrect values\' types', async () => {
+    test('Correct replacement argument length + Correct attributes + Incorrect values\' types', () => {
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -170,7 +169,7 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
         });
     });
 
-    test('Valid replacementObject', async () => {
+    test('Valid replacementObject', () => {
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -184,6 +183,8 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
 
 });
 
+
+// TODO: We need to create temporary templates for the the provided scenarios
 describe('Unit Test XX - emailResond Class (template replacement execute)', () => {
     test('Template Replacement Success (Account Creation)', () => {
         //pass
@@ -194,6 +195,16 @@ describe('Unit Test XX - emailResond Class (template replacement execute)', () =
     });
 
     test('Template Replacement Success (Password Reset)', () => {
+        //pass
+    });
+});
+
+
+// TODO: We need to design tests for this SMTP email message sending operations
+// TODO: We need to setup an email address to perform these operations
+// TODO: We need to create a mock object to mock the emailTransporter
+describe('Unit Test XX - emailRespond Class (email-sending', () => {
+    test('Succesful Email sending', () => {
         //pass
     });
 });
