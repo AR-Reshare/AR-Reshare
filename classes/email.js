@@ -56,7 +56,7 @@ class emailRespond {
 
     async replacementObjectValidate(replacementObject){
         // existance check and type check
-        if (replacementObject === null){
+        if (!replacementObject){
             throw new AbsentArgumentError();
         }
 
@@ -71,8 +71,8 @@ class emailRespond {
     }
 
     // TODO: We may need to add more arguments if required by the username
-    async sendEmail(emailTransport, userEmail, content){
-        transporter.sendMail({
+    async sendEmail(emailTransporter, userEmail, content){
+        emailTransporter.sendMail({
             from: '"AR-Reshare" <donotreply@example.com>', // sender address
             to: userEmail, // list of receivers
             subject: this.templateType, // Subject line
@@ -81,7 +81,7 @@ class emailRespond {
     }
 
 
-    async process(emailTransport, email, inputObject){
+    async process(emailTransporter, email, inputObject){
         // First we check the input object to see if the inputObject contains the correct attributes
         // --> This can check the emailTemplate's accepted arguments to check
         await this.replacementObjectValidate(inputObject);
@@ -91,6 +91,6 @@ class emailRespond {
         
         // Finally, we use the emailTransport to execute the request
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
-        this.sendEmail(emailTransport, email, content);
+        this.sendEmail(emailTransporter, email, content);
     }
 }
