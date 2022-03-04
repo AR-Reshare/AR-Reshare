@@ -19,10 +19,8 @@ describe('Unit Test XX - emailResond Class Construction', () => {
     test('Invalid Value/Type TemplateType', () => {
         let templateType = 'invalidType';
         let expectedError = new TemplateError('An accepted TemplateType was not provided');
-        let emailTemplate;
-
         try {
-            emailTemplate = new EmailRespond(templateType);
+            let emailTemplate = new EmailRespond(templateType);
         } catch(err) {
             expect(err).toEqual(expectedError);
         }
@@ -31,9 +29,8 @@ describe('Unit Test XX - emailResond Class Construction', () => {
     test('Absent TemplateType', () => {
         let templateType = null;
         let expectedError = new TemplateError('No TemplateType was provided');
-        let emailTemplate;
         try {
-            emailTemplate = new EmailRespond(templateType);
+            let emailTemplate = new EmailRespond(templateType);
         } catch(err) {
             expect(err).toEqual(expectedError);
         }
@@ -68,18 +65,16 @@ describe('Unit Test XX - emailResond Class Construction', () => {
 
 });
 
-// beforeEach(async () => {
-//     let templateType = 'Account-Create';
-//     let emailTemplate = new EmailRespond(templateType);
-//     let emailTransport = await EmailTransporter.setup();
-// });
+beforeEach(async () => {
+    let templateType = 'Account-Create';
+    let emailTemplate = new EmailRespond(templateType);
+    let emailTransport = await EmailTransporter.setup();
+    let emailaddress = 'test@example.com';
+
+});
 
 describe('Unit Test XX - emailResond Class (template replacement validate)', () => {
     test('Missing replacementObject', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
         let inputObject = null;
 
         let expectedError = new AbsentArgumentError();
@@ -91,10 +86,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Overexceeded replacement argument length', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
         let inputObject = {
             email: 'foo@example.com',
             userID: '12345',
@@ -110,10 +101,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Insufficient replacement argument length', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
         let inputObject = {
             email: 'foo@example.com',
             //Account-Create requires a userID attribute
@@ -128,11 +115,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Correct replacement argument length + included invalid attribute', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
-
         let inputObject = {
             email: 'foo@example.com',
             randomAttribute: 'randomElement'
@@ -147,11 +129,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Correct replacement argument length + all invalid attribute', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
-
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -166,11 +143,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Correct replacement argument length + Correct attributes + Incorrect value type', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
-
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -185,11 +157,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Correct replacement argument length + Correct attributes + Incorrect values\' types', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
-
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
@@ -204,11 +171,6 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     });
 
     test('Valid replacementObject', async () => {
-        let templateType = 'Account-Create';
-        let emailTemplate = new EmailRespond(templateType);
-        let emailTransport = await EmailTransporter.setup();
-        let emailaddress = 'test@example.com';
-
         let inputObject = {
             randomAttribute1: 'foo@example.com',
             randomAttribute2: 'randomElement'
