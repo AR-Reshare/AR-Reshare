@@ -2,7 +2,9 @@ const { TemplateError } = require('./errors');
 
 const DefaultErrorMap = {
     null: 200,
+    InvalidCredentialsError: 401,
     AbsentArgumentError: 400,
+    InvalidArgumentError: 400,
 };
 
 const isString = (aString) => {

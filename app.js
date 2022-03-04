@@ -15,7 +15,7 @@ class App {
         const RegenerateToken = NA;
         const CreateAccount = NA; // CreateEntity (in question - see issue #25)
         const CloseAccount = NA; // CloseEntity
-        const Login = new pipes.LoginPipeline(db, logger);
+        const Login = new pipes.LoginPipeline(db, logger); // TODO system testing
         const ModifyAccount = NA; // ModifyEntity
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity

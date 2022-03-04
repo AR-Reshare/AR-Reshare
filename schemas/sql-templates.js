@@ -23,12 +23,14 @@ const CreateAccountTemplate = new SQLTemplate({
 const LoginTemplate = new SQLTemplate({
     get_id: {
         text: 'SELECT UserID FROM Account WHERE Email = $1',
+        condition: (inputObject) => ('device_token' in inputObject),
         values: [{
             from_input: 'email',
         }],
     },
     store_token: {
         text: 'INSERT INTO PushToken (DeviceToken, UserID) VALUES ($1, $2) ON CONFLICT (DeviceToken) DO UPDATE SET UserID = EXCLUDED.UserID, Time = CURRENT_TIMESTAMP',
+        condition: (inputObject) => ('device_token' in inputObject),
         values: [{
             from_input: 'device_token',
         }, {

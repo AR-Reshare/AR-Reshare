@@ -17,7 +17,7 @@ const RequestTemplateDefinitions = {
         ],
     }, {
         in_name: 'device_token',
-        required: true,
+        required: false,
     }])
 }
 
