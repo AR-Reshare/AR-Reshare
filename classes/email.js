@@ -18,9 +18,9 @@ const {TemplateError, InvalidArgumentError, AbsentArgumentError} = require('./er
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class emailTemplate {
     static templates = {
-        'Account-Modify': null,
-        'Account-Create': null,
-        'Password-Reset': null,
+        'Account-Modify': '',
+        'Account-Create': '',
+        'Password-Reset': '',
     };
 
     static arguments = {
@@ -49,7 +49,7 @@ class emailRespond {
     async templateReplace(replacementObject){
         // TODO: Quite inefficient -- If you have time modify later
         for (arg in this.templateArguments){
-            template.replace(`{${arg}}`, replaceObject.arg);
+            template.replace(arg, replaceObject.arg);
         }
         return template;
     }
