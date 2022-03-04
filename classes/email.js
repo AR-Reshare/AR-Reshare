@@ -1,4 +1,4 @@
-const {TemplateError} = require('errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError} = require('./errors.js');
 // There are certain events which require the application to send an email, which can include:
 // 1. Account Creation
 // 2. Password Reset
@@ -40,21 +40,44 @@ class emailRespond {
             throw new TemplateError('An accepted TemplateType was not provided');
         } else {
             this.templateType = templateType;
+            this.templateArguments = emailTemplate.templates[this.templateType];
+            this.templatePlaceholder = emailTemplate.arguments[this.templateType];
         }
 
     }
 
     async templateReplace(replacementObject){
-        // pass
+        // TODO: Quite inefficient -- If you have time modify later
+        for (arg in this.templateArguments){
+            template.replace(`{${arg}}`, replaceObject.arg);
+        }
+        return template;
     }
 
     async replacementObjectValidate(replacementObject){
-        // pass
+        // existance check and type check
+        if (replacementObject === null){
+            throw new AbsentArgumentError();
+        }
+
+        for (arg in replacementObject){
+            if (replacementObject[arg] === undefined){
+                throw new AbsentArgumentError();
+            } else if (!replacementObject[arg] instanceof String){
+                throw new InvalidArgumentError();
+            }
+        }
+        return true;
     }
 
     // TODO: We may need to add more arguments if required by the username
-    async sendEmail(emailTransport, email, content){
-        // pass
+    async sendEmail(emailTransport, userEmail, content){
+        transporter.sendMail({
+            from: '"AR-Reshare" <donotreply@example.com>', // sender address
+            to: userEmail, // list of receivers
+            subject: this.templateType, // Subject line
+            html: content, // html body
+          });
     }
 
 
