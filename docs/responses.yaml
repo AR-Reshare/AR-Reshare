@@ -48,12 +48,25 @@ components:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
 
+    account-address-list:
+      description: Returns a set of addresses
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/account-address-list'
+
     token-regeneration:
       description: A token is trying to be regenerated from one that is going to expire soon
       headers:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
 
+    categories-list:
+      description: A list of the currently available categories
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/categories-list'
 
     ####################### COMMS RESPONSES #######################
     conversation-descriptors:

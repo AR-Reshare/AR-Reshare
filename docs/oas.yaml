@@ -76,7 +76,13 @@ paths:
       requestBodies:
         $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
 
-        
+  /categories/list:
+    get:
+      description: Retrieves the currently available categories
+      responses:
+        '200':
+          description: The categories list was successfully retrieved
+          $ref: 'responses.yaml#/components/responses/categories-list'
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
@@ -216,7 +222,13 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
-
+  /account/addresses/list:
+    get:
+      description: Returns the user's previously used/saved addresses
+      responses:
+        '200':
+          description: Returns a list of the user's previously used addresses
+          $ref: 'responses.yaml#/components/responses/account-address-list'
 
 
 
