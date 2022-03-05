@@ -4,6 +4,11 @@ const IsNonEmptyString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String) && aString.length > 0;
 }
 
+const CanBeID = (anInt) => {
+    let num = Number.parseFloat(anInt);
+    return Number.isInteger(num) && num >= 1;
+}
+
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
             && 'country' in anObject
@@ -13,7 +18,7 @@ const IsLocation = (anObject) => {
             );
 }
 
-const IsCondition = ['poor', 'average', 'good', 'like new', 'new'].includes;
+const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
 
 const RequestTemplateDefinitions = {
     'login': new RequestTemplate([{
@@ -33,6 +38,10 @@ const RequestTemplateDefinitions = {
     }]),
 
     'create-listing': new RequestTemplate([{
+        in_name: 'accountID',
+        required: true,
+        conditions: [CanBeID],
+    }, {
         in_name: 'title',
         required: true,
         conditions: [IsNonEmptyString],
@@ -44,12 +53,12 @@ const RequestTemplateDefinitions = {
         in_name: 'location',
         required: true,
         conditions: [
-            (loc) => { return Number.isInteger(loc) || IsLocation(loc); },
+            (loc) => { return CanBeID(loc) || IsLocation(loc); },
         ],
     }, {
         in_name: 'category',
         required: true,
-        conditions: [Number.isInteger],
+        conditions: [CanBeID],
     }, {
         in_name: 'condition',
         required: true,
@@ -57,9 +66,7 @@ const RequestTemplateDefinitions = {
     }, {
         in_name: 'media',
         required: false,
-        conditions: [
-            () => false, // TODO: add support for media. Issue #32
-        ],
+        // TODO: add support for media. Issue #32
     }]),
 };
 

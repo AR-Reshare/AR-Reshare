@@ -115,6 +115,6 @@ describe('System Test 5b - /listing/create', () => {
             .post('/listing/create')
             .set('Authorization', token)
             .send(data)
-            .expect(404); // giving 422 for some reason?
+            .expect(404);
     });
 });

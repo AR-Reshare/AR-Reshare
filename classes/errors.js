@@ -207,6 +207,13 @@ class QueryExecutionError extends QueryError {
     }
 }
 
+class ForeignKeyError extends QueryExecutionError {
+    constructor(message) {
+        super(message);
+        this.name = 'ForeignKeyError';
+    }
+}
+
 module.exports = {
     PipelineInitialisationError,
     MissingTemplateError,
@@ -236,5 +243,6 @@ module.exports = {
     QueryConstructionError,
     BackreferenceError,
     QueryExecutionError,
+    ForeignKeyError,
     // ...
 };

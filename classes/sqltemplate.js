@@ -177,7 +177,7 @@ class SQLTemplate {
                             }
 
                         } else {
-                            throw new QueryConstructionError('Key does not exist in input object');
+                            throw new QueryConstructionError(`Key ${valueCons['from_input']} does not exist in input object`);
                         }
 
                     // handle from_query

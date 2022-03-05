@@ -30,6 +30,7 @@ const DefaultErrorMap = {
     'QueryConstructionError': 500,
     'BackreferenceError': 500,
     'QueryExecutionError': 500,
+    'ForeignKeyError': 404,
 };
 
 const isString = (aString) => {

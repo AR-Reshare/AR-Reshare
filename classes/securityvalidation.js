@@ -220,7 +220,7 @@ class SecuritySchema extends SecurityValMethods{
             if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else {
-                return true;
+                return decodedToken.userID;
             }
         } else if (this.authenticationType === 'AA_TAP'){
             if (!decodedToken){
