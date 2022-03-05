@@ -7,3 +7,8 @@ INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Testy McTestface',
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Kevin McTestface', 'k.testface@gmail.com', '$2a$12$7kxl/K6Phzc3974bI1pR6.psHmGGtjlkvUTh7QSmNpT2gBC.X7NHy', '1986-03-12');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Ronnie Omelettes', 'ronnieo@yahoo.com', '$2a$12$DYJ0yc1OWkCVAT97hmq/nOr0v1NId/8pwyeXpK.QcLExIE8E1ouEu', '2001-01-01');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Gary Cheeseman', 'gary.cheeseman@aol.com', '$2a$12$DseGQXw6F9IBzcKJeZp7/uhZdBdTg1zDc4/BL1K8Ib8f/ydkJz/YW', '2000-06-13');
+
+INSERT INTO Address (Country, Postcode, UserID) VALUES ('UK', 'AB1 2CD', 1);
+INSERT INTO Address (Country, PostCode, UserID) VALUES ('US', 'asdfgh', 2);
+
+INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Misc', 'FFFFFFFF', 'Remember to do the things');

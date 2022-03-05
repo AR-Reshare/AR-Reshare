@@ -92,11 +92,7 @@ class Database {
                 resolve([res.rows]); // put into unit list for consistency with complexQuery
             }).catch(err => {
                 // query failed
-                if (err.code === '23503') {
-                    reject(new ForeignKeyError(err.message));
-                } else {
-                    reject(new QueryExecutionError(err.message));
-                }
+                reject(new QueryExecutionError(err.message, err.code));
             });
         });
     }
@@ -127,7 +123,7 @@ class Database {
                     // a query failed
                     if (!(err instanceof QueryError)) {
                         // cast non-QueryErrors to QueryExecutionError
-                        err = new QueryExecutionError(err.message);
+                        err = new QueryExecutionError(err.message, err.code);
                     }
                     finish = () => reject(err);
                     return client.query('ROLLBACK');

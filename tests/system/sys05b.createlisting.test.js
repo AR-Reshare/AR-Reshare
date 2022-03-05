@@ -117,4 +117,21 @@ describe('System Test 5b - /listing/create', () => {
             .send(data)
             .expect(404);
     });
+
+    test('Class 12: The ID of an address associated with another user', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 2,
+            category: 1,
+            condition: 'good',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(404);
+    });
 });

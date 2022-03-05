@@ -40,9 +40,9 @@ CREATE TABLE Address (
 CREATE TABLE Category (
     CategoryID serial4 PRIMARY KEY,
     CategoryName varchar NOT NULL,
-    Icon bytea NOT NULL,
+    Icon bytea,
     Colour char(8) NOT NULL, -- HEX code RGBA
-    Prompt varchar NOT NULL,
+    Prompt varchar,
     ParentCategory int4 REFERENCES Category ON DELETE SET NULL
 );
 
@@ -110,3 +110,12 @@ CREATE TABLE MessageMedia (
     MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
     MessageID int4 NOT NULL REFERENCES Message ON DELETE CASCADE
 );
+
+-- Some functions for more complex constraints
+CREATE OR REPLACE FUNCTION is_address_owned_by (int4, int4) RETURNS boolean AS $$
+    SELECT EXISTS (
+        SELECT 1 FROM Address WHERE AddressID = $1 AND UserID = $2
+    );
+$$ LANGUAGE SQL;
+
+ALTER TABLE Listing ADD CONSTRAINT addr_owner_agrees CHECK (is_address_owned_by(AddressID, ContributorID));

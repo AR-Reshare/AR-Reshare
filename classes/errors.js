@@ -201,9 +201,10 @@ class BackreferenceError extends QueryError {
 class QueryExecutionError extends QueryError {
     // Represents an error in executing a query
     // i.e. PostgreSQL-side
-    constructor(message) {
+    constructor(message, code) {
         super(message);
         this.name = 'QueryExecutionError';
+        this.code = code;
     }
 }
 
