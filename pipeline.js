@@ -7,31 +7,13 @@ const ResponseTemplateDict = require('./schemas/response-schemas');
 const PushTemplateDict = require('./schemas/push-schemas');
 const { AuthenticationHandler } = require('./classes/securityvalidation');
 
-class CreateEntityPipeline extends Pipeline {
-    // this is an example of a general-purpose pipeline, this one for Entity Creation
-    // can be used in app.js as:
-    
-    // const CreateMessage = new CreateEntityPipeline('message', {notify: 'affected', method: 'body'}, db, logger);
-    // app.post('/conversation/message', CreateMessage.Execute);
-    
-    // for 'misc' pipelines, the same syntax is used generally but there's no need for a (complicated) constructor,
-    // and there'll probably only be one instance of it i.e.
-
-    // const Login = new LoginPipeline(db, logger);
-    // app.post('/account/login', Login.Execute);
-
-    /**
-     * Initialises the CreateEntityPipeline
-     * @param {string} entityType String describing the type of entity e.g. 'listing'
-     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
-     * @param  {...any} args Arguments to pass to the default pipeline constructor, including Database
-     */
-    constructor(entityType, options, ...args) {
+class GeneralPipe extends Pipeline {
+    constructor(operation, defaultMethod, entityType, options, ...args) {
         super(...args);
         if (typeof entityType !== 'string' && !(entityType instanceof String) || entityType.length === 0) {
             throw new PipelineInitialisationError('entityType must be a non-empty string');
         }
-        this.actionType = `create-${entityType}`;
+        this.actionType = `${operation}-${entityType}`;
         this.notify = false;
         if ('notify' in options) {
             if (options['notify'] === 'affected' || options['notify'] === 'self' || options['notify'] === false) {
@@ -41,7 +23,7 @@ class CreateEntityPipeline extends Pipeline {
             }
         }
 
-        this.method = 'body';
+        this.method = defaultMethod;
         if ('method' in options) {
             if (options['method'] === 'query' || options['method'] === 'body') {
                 this.method = options['method'];
@@ -81,11 +63,6 @@ class CreateEntityPipeline extends Pipeline {
         this.Execute = this.Execute.bind(this);
     }
 
-    /**
-     * Executes the pipeline on a particular request and response
-     * @param {Object} req The request object provided by Express
-     * @param {Object} res The response object provided by Express
-     */
     Execute(req, res) {
         let user_accountID = null;
         let result_final = null;
@@ -117,7 +94,7 @@ class CreateEntityPipeline extends Pipeline {
                     targetAccounts = [user_accountID];
                 } else { // this.notify === 'affected'
                     targetAccounts = results[results.length - 1].map(row => row['userid']);
-                    // Create queries should always have the last row be of affected users' IDs
+                    // Queries should always have the last row be of affected users' IDs
                 }
                 this.PushRespond(this.pushTemplate, results, targetAccounts);
             }
@@ -130,6 +107,42 @@ class CreateEntityPipeline extends Pipeline {
             // build response
             this.APIRespond(this.responseTemplate, res, result_final, error_final);
         });
+    }
+}
+
+class CreateEntityPipeline extends GeneralPipe {
+    /**
+     * Initialises the CreateEntityPipeline
+     * @param {string} entityType String describing the type of entity e.g. 'listing'
+     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
+     * @param  {...any} args Arguments to pass to the default pipeline constructor, including Database
+     */
+    constructor(entityType, options, ...args) {
+        super('create', 'body', entityType, options, ...args);
+    }
+}
+
+class ModifyEntityPipeline extends Pipeline {
+    constructor(entityType, options, ...args) {
+        super('modify', 'body', entityType, options, ...args);
+    }
+}
+
+class CloseEntityPipeline extends Pipeline {
+    constructor(entityType, options, ...args) {
+        super('close', 'body', entityType, options, ...args);
+    }
+}
+
+class ViewEntityPipeline extends GeneralPipe {
+    constructor(entityType, options, ...args) {
+        super('view', 'query', entityType, options, ...args);
+    }
+}
+
+class SearchEntityPipeline extends Pipeline {
+    constructor(entityType, options, ...args) {
+        super('search', 'query', entityType, options, ...args);
     }
 }
 
@@ -217,6 +230,10 @@ class UnknownEndpointPipeline extends Pipeline {
 
 module.exports = {
     CreateEntityPipeline,
+    ModifyEntityPipeline,
+    CloseEntityPipeline,
+    ViewEntityPipeline,
+    SearchEntityPipeline,
     LoginPipeline,
     // ...
     // add other pipeline types here as they are defined
