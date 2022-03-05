@@ -352,6 +352,11 @@ components:
       items:
         $ref: '#/components/schemas/address'
 
+    categories-list:
+      type: array
+      items:
+        $ref: '#/components/schemas/category'
+
     
     ####################### ACCOUNT RESET SCHEMAS ####################
 
