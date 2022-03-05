@@ -20,7 +20,13 @@ const nodemailer = require('nodemailer');
 
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class EmailTemplateDefinitions {
-    static templates = {
+    static htmltemplates = {
+        'Account-Modify': 'Email:${Email}\tUserID:${UserID}',
+        'Account-Create': 'Email:${Email}\tUserID:${UserID}',
+        'Password-Reset': 'Email:${Email}\tUserID:${UserID}\tToken:${Token}',
+    };
+
+    static texttemplates = {
         'Account-Modify': 'Email:${Email}\tUserID:${UserID}',
         'Account-Create': 'Email:${Email}\tUserID:${UserID}',
         'Password-Reset': 'Email:${Email}\tUserID:${UserID}\tToken:${Token}',
@@ -80,18 +86,21 @@ class EmailRespond {
         } else {
             this.templateType = templateType;
             this.templateArguments = EmailTemplateDefinitions.arguments[this.templateType];
-            this.templatePlaceholder = EmailTemplateDefinitions.templates[this.templateType];
+            this.htmltemplate = EmailTemplateDefinitions.htmltemplates[this.templateType];
+            this.texttemplate = EmailTemplateDefinitions.texttemplates[this.templateType];
         }
 
     }
 
     async templateReplace(replacementObject){
         // TODO: Quite inefficient -- If you have time modify later
-        let template = this.templatePlaceholder;
+        let htmlcontent = this.htmltemplate;
+        let textcontent = this.texttemplate;
         for (const arg of this.templateArguments){
-            template = template.replace(`\${${arg}}`, replacementObject[arg]);
+            htmlcontent = htmlcontent.replace(`\${${arg}}`, replacementObject[arg]);
+            textcontent = textcontent.replace(`\${${arg}}`, replacementObject[arg]);
         }
-        return template;
+        return [textcontent, htmlcontent];
     }
 
     async replacementObjectValidate(replacementObject){
@@ -117,12 +126,13 @@ class EmailRespond {
     }
 
     // TODO: We may need to add more arguments if required by the username
-    async sendEmail(emailTransporter, userEmail, content){
+    async sendEmail(emailTransporter, userEmail, textcontent, htmlcontent){
         emailTransporter.sendMail({
             from: '"AR-Reshare" <donotreply@example.com>', // sender address
             to: userEmail, // list of receivers
             subject: this.templateType, // Subject line
-            html: content, // html body
+            text: textcontent,
+            html: htmlcontent, // html body
           });
     }
 
@@ -133,11 +143,11 @@ class EmailRespond {
         await this.replacementObjectValidate(inputObject);
 
         // We then get the emailTemplate string and replace certain strings using the valid inputObject
-        let content = await this.templateReplace(inputObject);
+        let [textcontent, htmlcontent] = await this.templateReplace(inputObject);
         
         // Finally, we use the emailTransport to execute the request
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
-        this.sendEmail(emailTransporter, email, content);
+        this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
     }
 }
 
