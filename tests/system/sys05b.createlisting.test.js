@@ -171,4 +171,59 @@ describe('System Test 5b - /listing/create', () => {
             .send(data)
             .expect(201);
     });
+
+    test('Class 15: No valid category ID', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            category: 'no',
+            condition: 'good',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(400);
+    });
+    
+    test('Class 16: An ID that does not correspond to an existing category', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            category: 5000,
+            condition: 'good',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(404);
+    });
+
+    // Class 17 is a superclass
+
+    test('Class 18: No valid condition', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            category: 1,
+            condition: 'absolutely abyssmal',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(400);
+    });
+
+    // Class 19 is a superclass
 });
