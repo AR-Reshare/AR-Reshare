@@ -48,6 +48,10 @@ components:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
 
+    account-address-list:
+      description: Returns a set of addresses
+      $ref: '#/components/responses/address-list'
+
     token-regeneration:
       description: A token is trying to be regenerated from one that is going to expire soon
       headers:

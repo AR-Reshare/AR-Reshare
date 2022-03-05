@@ -216,6 +216,13 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
+  /account/addresses/list:
+    get:
+      description: Returns the user's previously used/saved addresses
+      responses:
+        '200':
+          description: Returns a list of the user's previously used addresses
+          $ref: 'responses.yaml#/components/responses/account-address-list'
 
 
 

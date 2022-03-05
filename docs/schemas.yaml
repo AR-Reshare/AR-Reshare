@@ -347,6 +347,11 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
+    account-address-list:
+      type: array
+      items:
+        $ref: '#/components/schemas/address'
+
     
     ####################### ACCOUNT RESET SCHEMAS ####################
 
