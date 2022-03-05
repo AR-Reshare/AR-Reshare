@@ -30,6 +30,15 @@ const LoginTemplate = new SQLTemplate({
     },
 }, ['get_id', 'store_token']);
 
+const AddressTemplate = new SQLTemplate({
+    get_addresses: {
+        text: 'SELECT * FROM Address WHERE UserID = $1',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+}, ['get_addresses']);
+
 const ViewListingTemplate = new SQLTemplate({
     get_listing_auth: {
         text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND (ClosedDate IS NULL OR ContributorID = $2 OR ReceiverID = $2)',
@@ -91,6 +100,7 @@ const CreateListingTemplate = new SQLTemplate({
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'login': LoginTemplate,
+    'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'create-listing': CreateListingTemplate,
 };

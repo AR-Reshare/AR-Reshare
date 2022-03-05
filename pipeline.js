@@ -101,7 +101,6 @@ class GeneralPipe extends Pipeline {
             result_final = results;
             return;
         }).catch(err => {
-            console.error(err);
             error_final = err;
             return;
         }).finally(() => {

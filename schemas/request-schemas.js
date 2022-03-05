@@ -22,6 +22,12 @@ const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].
 
 const emptyReq = new RequestTemplate([]);
 
+const accountIDOnly = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [CanBeID],
+}]);
+
 const loginTemplate = new RequestTemplate([{
     in_name: 'email',
     required: true,
@@ -97,7 +103,7 @@ const RequestTemplateDefinitions = {
     'view-accountListing': null,
     'search-accountListing': null,
     'search-savedListing': null,
-    'search-address': null,
+    'search-address': accountIDOnly,
 
     'view-listing': viewListingTemplate,
     'search-listing': null,

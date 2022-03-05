@@ -8,6 +8,10 @@ const ResponseTemplateDict = {
     'login': new ResponseTemplate([], {
         null: 200,
     }),
+    'search-address': new ResponseTemplate([{
+        out_name: 'addresses',
+        rows_with_fields: ['addressid'],
+    }]),
     'view-listing': new ResponseTemplate([{
         out_name: 'title',
         field: 'title',

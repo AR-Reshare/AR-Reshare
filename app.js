@@ -23,7 +23,7 @@ class App {
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
         const SearchSavedListing = NA; //SearchEntity
-        const ListAddresses = NA; //SearchEntity
+        const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger); //SearchEntity
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // ViewEntity
         const SearchListing = NA; // SearchEntity
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // CreateEntity
