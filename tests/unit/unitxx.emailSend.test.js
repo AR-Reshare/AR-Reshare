@@ -234,7 +234,7 @@ describe('Unit Test XX - emailResond Class (template replacement execute)', () =
 // TODO: We need to design tests for this SMTP email message sending operations
 // TODO: We need to setup an email address to perform these operations
 // TODO: We need to create a mock object to mock the emailTransporter
-describe('Unit Test XX - emailRespond Class (email-sending', () => {
+describe('Unit Test XX - emailRespond Class (email-sending)', () => {
     test('Succesful Email sending', () => {
         //pass
     });

@@ -1,4 +1,4 @@
-const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailCredentialsReadError} = require('./errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailConfigurationReadError} = require('./errors.js');
 const fs = require('fs/promises');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -36,76 +36,36 @@ class EmailTemplateDefinitions {
 class EmailTransporter {
     static emailConfigLocation = `classes${path.sep}emailConfig.conf`;
 
-    static async getEmailCredentials(){
-        // Here we access the credentials from the file
-        let file, emailConfig;
+    static async getConfig(){
+        let out, config;
         try {
-            file = await fs.readFile(emailTransporter.emailConfigLocation);
-            emailConfig = JSON.parse(file);
-        } catch (err) {
-            throw new emailConfigReadError();
+            out = await fs.readFile(EmailTransporter.emailConfigLocation);
+            config = JSON.parse(out);
+        } catch(err) {
+            throw new EmailConfigurationReadError();
         }
-
-        if (!emailConfig){
-            throw new AbsentArgumentError();
-        }
-
-        if (!emailConfig.credentials){
-            throw new AbsentArgumentError('No "credentials" object was provided in the file');
-        } else if (!emailConfig.credentials instanceof Object){
-            throw new InvalidArgumentError('The "credentials" object is meant to be an object type');
-        } else if (!emailConfig.credentials.username){
-            throw new AbsentArgumentError('The "credentials.username" attribute is missing');
-        } else if (!emailConfig.credentials.username instanceof String){
-            throw new InvalidArgumentError('The "credentials.username" attribute should be of type String');
-        } else if (!emailConfig.credentials.password) {
-            throw new AbsentArgumentError('The "credentials.password" attribute is missing');
-        } else if (!emailConfig.credentials.password instanceof String){
-            throw new InvalidArgumentError('The "credentials.password" attribute should be of type String');
-        }
-
-
-        if (!emailConfig.connection){
-            throw new AbsentArgumentError('No "connection" object was provided in the file');
-        } else if (!emailConfig.connection instanceof Object){
-            throw new InvalidArgumentError('The "connection" object is meant to be an object type');
-        } else if (!emailConfig.connection.host){
-            throw new InvalidArgumentError('The "connection.host" attribute is missing');
-        }  else if (!emailConfig.connection.host instanceof String){
-            throw new InvalidArgumentError('The "connection.host" attribute should be of type String');
-        } else if (!emailConfig.connection.port){
-            throw new InvalidArgumentError('The "connection.port" attribute is missing');
-        } else if (!emailConfig.connection.port instanceof Number){
-            throw new InvalidArgumentError('The "connection.port" attribute should be of type Number');
-        } else if (!emailConfig.connection.secure){
-            throw new InvalidArgumentError('The "connection.secure" attribute is missing');
-        } else if (!emailConfig.connection.port instanceof Boolean){
-            throw new InvalidArgumentError('The "connection.secure" attribute should be of type Boolean');
-        }
-
-
-        return emailConfig;
-
+        return config;
     }
-    static async setup(username=null, password=null, hostname=null){
+
+    static async setup(defaultconf=false){
         // TODO: Setup an email address and replace default account
         // TODO: Add secure transport to the transporter
-        if (!username || !password || !host){
+        let smtpServiceConf;
+        if (defaultconf){
             let testAccount = await nodemailer.createTestAccount();
-            username = testAccount.user;
-            password = testAccount.password;
-            hostname = 'smtp.ethereal.email';
+            smtpServiceConf = {
+                host: 'smtp.ethereal.email', // fake email address
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: testAccount.user, // generated ethereal user
+                    pass: testAccount.password, // generated ethereal password
+                },
+            };
+        } else {
+            smtpServiceConf = await EmailTransporter.getConfig();
         }
-
-        return nodemailer.createTransport({
-            host: hostname,
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-              user: username, // generated ethereal user
-              pass: password, // generated ethereal password
-            },
-          });
+        return nodemailer.createTransport(smtpServiceConf);
     }
 }
 
