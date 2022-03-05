@@ -86,9 +86,11 @@ class Pipeline {
                 } else {
                     if (err.code === '23503' || err.message.includes('owner_agrees')) {
                         reject(new ForeignKeyError(err.message));
+                    } else {
+                        reject(err);
                     }
                 }
-            }
+            };
 
             // execute transaction
             if (transaction.length === 0) {

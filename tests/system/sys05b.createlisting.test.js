@@ -134,4 +134,41 @@ describe('System Test 5b - /listing/create', () => {
             .send(data)
             .expect(404);
     });
+    
+    test('Class 13: The ID of a listing associated with the current user', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            category: 1,
+            condition: 'good',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(201);
+    });
+
+    test('Class 14: A valid location description', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: {
+                country: 'Testenstein',
+                postcode: 'TE5 7Y',
+            },
+            category: 1,
+            condition: 'good',
+        };
+
+        return request(app.app)
+            .post('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(201);
+    });
 });

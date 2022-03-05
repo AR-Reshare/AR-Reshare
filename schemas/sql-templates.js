@@ -42,7 +42,7 @@ const LoginTemplate = new SQLTemplate({
 const CreateListingTemplate = new SQLTemplate({
     create_address: {
         text: 'INSERT INTO Address (Country, Postcode, UserID) VALUES ($1, $2, $3) RETURNING AddressID',
-        condition: (inputObject) => (!Number.isInteger(inputObject['location'])),
+        condition: (inputObject) => (typeof inputObject['location'] === 'object'),
         values: [
             (inputObject) => inputObject['location']['country'],
             (inputObject) => inputObject['location']['postcode'],
@@ -57,7 +57,7 @@ const CreateListingTemplate = new SQLTemplate({
             {from_input: 'description'},
             {from_input: 'condition'},
             (inputObject, queryList) => {
-                if ('create_address' in queryList) {
+                if (queryList.includes('create_address')) {
                     return res => res[0][0]['addressid'];
                 } else {
                     return inputObject['location'];
