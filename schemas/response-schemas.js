@@ -1,6 +1,10 @@
 const ResponseTemplate = require("../classes/responsetemplate");
 
 const ResponseTemplateDict = {
+    'search-category': new ResponseTemplate([{
+        out_name: 'categories',
+        rows_with_fields: ['categoryid'],
+    }]),
     'login': new ResponseTemplate([], {
         null: 200,
     }),

@@ -20,6 +20,8 @@ const IsLocation = (anObject) => {
 
 const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
 
+const emptyReq = new RequestTemplate([]);
+
 const loginTemplate = new RequestTemplate([{
     in_name: 'email',
     required: true,
@@ -81,6 +83,11 @@ const createListingTemplate = new RequestTemplate([{
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
+
+    'request-reset': null,
+    'execute-reset': null,
+
+    'search-category': emptyReq,
     
     'create-account': null,
 
@@ -90,6 +97,7 @@ const RequestTemplateDefinitions = {
     'view-accountListing': null,
     'search-accountListing': null,
     'search-savedListing': null,
+    'search-address': null,
 
     'view-listing': viewListingTemplate,
     'search-listing': null,

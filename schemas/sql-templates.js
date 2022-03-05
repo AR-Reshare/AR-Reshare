@@ -5,6 +5,12 @@ const SQLTemplate = require('../classes/sqltemplate');
  *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
  */
 
+const ListCategoryTemplate = new SQLTemplate({
+    get_categories: {
+        text: 'SELECT * FROM Category',
+    }
+}, ['get_categories']);
+
 const LoginTemplate = new SQLTemplate({
     get_id: {
         text: 'SELECT UserID FROM Account WHERE Email = $1',
@@ -83,7 +89,7 @@ const CreateListingTemplate = new SQLTemplate({
 });
 
 const sqlTemplatesDict = {
-    'create-account': null,
+    'search-category': ListCategoryTemplate,
     'login': LoginTemplate,
     'view-listing': ViewListingTemplate,
     'create-listing': CreateListingTemplate,

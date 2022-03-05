@@ -13,6 +13,9 @@ class App {
         // one pipeline instance per endpoint
         const Index = NA;
         const RegenerateToken = NA;
+        const RequestReset = NA;
+        const ExecuteReset = NA;
+        const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger); // SearchEntity
         const CreateAccount = NA; // CreateEntity (in question - see issue #25)
         const CloseAccount = NA; // CloseEntity
         const Login = new pipes.LoginPipeline(db, logger);
@@ -20,8 +23,7 @@ class App {
         const ViewAccountListing = NA; // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
         const SearchSavedListing = NA; //SearchEntity
-        const RequestReset = NA;
-        const ExecuteReset = NA;
+        const ListAddresses = NA; //SearchEntity
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // ViewEntity
         const SearchListing = NA; // SearchEntity
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // CreateEntity
@@ -36,7 +38,11 @@ class App {
         // connect endpoints to their relevant pipeline instances
         app.get('/', Index.Execute);
         app.post('/token/regeneration', RegenerateToken.Execute);
-        
+        app.post('/passwordResetRequest', RequestReset.Execute);
+        app.post('/passwordResetExecute', ExecuteReset.Execute);
+
+        app.get('/categories/list', ListCategories.Execute);
+
         app.post('/account/create', CreateAccount.Execute);
         app.post('/account/close', CloseAccount.Execute);
         app.post('/account/login', Login.Execute);
@@ -44,10 +50,7 @@ class App {
         app.get('/account/listing/view', ViewAccountListing.Execute);
         app.get('/account/listings/search', SearchAccountListing.Execute);
         app.get('/account/saved-listings/search', SearchSavedListing.Execute);
-
-        // The below paths are in question. See issue #24
-        // app.put('/account/reset-request', RequestReset.Execute);
-        // app.put('/account/reset-execute', ExecuteReset.Execute);
+        app.get('/account/addresses/list', ListAddresses.Execute);
         
         app.get('/listing/view', ViewListing.Execute);
         app.get('/listings/search', SearchListing.Execute);

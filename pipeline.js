@@ -123,13 +123,13 @@ class CreateEntityPipeline extends GeneralPipe {
     }
 }
 
-class ModifyEntityPipeline extends Pipeline {
+class ModifyEntityPipeline extends GeneralPipe {
     constructor(entityType, options, ...args) {
         super('modify', 'body', entityType, options, ...args);
     }
 }
 
-class CloseEntityPipeline extends Pipeline {
+class CloseEntityPipeline extends GeneralPipe {
     constructor(entityType, options, ...args) {
         super('close', 'body', entityType, options, ...args);
     }
@@ -141,7 +141,7 @@ class ViewEntityPipeline extends GeneralPipe {
     }
 }
 
-class SearchEntityPipeline extends Pipeline {
+class SearchEntityPipeline extends GeneralPipe {
     constructor(entityType, options, ...args) {
         super('search', 'query', entityType, options, ...args);
     }
