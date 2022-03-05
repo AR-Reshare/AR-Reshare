@@ -12,3 +12,8 @@ INSERT INTO Address (Country, Postcode, UserID) VALUES ('UK', 'AB1 2CD', 1);
 INSERT INTO Address (Country, PostCode, UserID) VALUES ('US', 'asdfgh', 2);
 
 INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Misc', 'FFFFFFFF', 'Remember to do the things');
+
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (1, 'Things', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP, 3);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'Some things', 'poor', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (2, 'Egg box three hundred and sixty', 'For playing of the viddy games', 'like new', 2, 1, CURRENT_TIMESTAMP, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (2, 'PS Five', 'Part of my collection of numbered postscripts', 'new', 2, 1, CURRENT_TIMESTAMP, 3);

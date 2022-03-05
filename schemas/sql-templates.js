@@ -5,21 +5,6 @@ const SQLTemplate = require('../classes/sqltemplate');
  *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
  */
 
-const CreateAccountTemplate = new SQLTemplate({
-    create: {
-        text: 'INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ($1, $2, $3, $4) RETURNING UserID',
-        values: [{
-            from_input: 'name'
-        }, {
-            from_input: 'email'
-        }, {
-            from_input: 'hash_password'
-        }, {
-            from_input: 'date_of_birth'
-        }],
-    },
-}, ['create']);
-
 const LoginTemplate = new SQLTemplate({
     get_id: {
         text: 'SELECT UserID FROM Account WHERE Email = $1',
@@ -38,6 +23,31 @@ const LoginTemplate = new SQLTemplate({
         }],
     },
 }, ['get_id', 'store_token']);
+
+const ViewListingTemplate = new SQLTemplate({
+    get_listing_auth: {
+        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND (ClosedDate IS NULL OR ContributorID = $2 OR ReceiverID = $2)',
+        condition: (inputObject) => ('accountID' in inputObject),
+        values: [{
+            from_input: 'listingID',
+        }, {
+            from_input: 'accountID',
+        }]
+    },
+    get_listing_noauth: {
+        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND ClosedDate IS NULL',
+        condition: (inputObject) => (!('accountID' in inputObject)),
+        values: [{
+            from_input: 'listingID',
+        }]
+    },
+    get_media: {
+        text: 'SELECT MimeType, URL FROM Media WHERE ListingID = $1 ORDER BY Index',
+        values: [{
+            from_input: 'listingID',
+        }]
+    }
+}, ['get_listing_auth', 'get_listing_noauth', 'get_media'], {error_on_empty_response: true});
 
 const CreateListingTemplate = new SQLTemplate({
     create_address: {
@@ -73,9 +83,10 @@ const CreateListingTemplate = new SQLTemplate({
 });
 
 const sqlTemplatesDict = {
-    'create-account': CreateAccountTemplate,
-    'create-listing': CreateListingTemplate,
+    'create-account': null,
     'login': LoginTemplate,
+    'view-listing': ViewListingTemplate,
+    'create-listing': CreateListingTemplate,
 };
 
 module.exports = sqlTemplatesDict;

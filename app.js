@@ -22,7 +22,7 @@ class App {
         const SearchSavedListing = NA; //SearchEntity
         const RequestReset = NA;
         const ExecuteReset = NA;
-        const ViewListing = NA; // ViewEntity
+        const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // ViewEntity
         const SearchListing = NA; // SearchEntity
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // CreateEntity
         const ModifyListing = NA; // ModifyEntity

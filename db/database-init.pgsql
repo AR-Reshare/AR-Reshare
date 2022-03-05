@@ -93,22 +93,13 @@ CREATE TABLE Media (
     MediaID serial4 PRIMARY KEY,
     MimeType mimetype NOT NULL,
     URL varchar NOT NULL,
-    Index int2 NOT NULL DEFAULT 0
-);
-
-CREATE TABLE ProfilePicture (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
-);
-
-CREATE TABLE ListingMedia (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE
-);
-
-CREATE TABLE MessageMedia (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    MessageID int4 NOT NULL REFERENCES Message ON DELETE CASCADE
+    Index int2 NOT NULL DEFAULT 0,
+    UserID int4 REFERENCES Account ON DELETE CASCADE,
+    ListingID int4 REFERENCES Listing ON DELETE CASCADE,
+    MessageID int4 REFERENCES Message ON DELETE CASCADE,
+    CHECK ((UserID IS NOT NULL AND ListingID IS NULL AND MessageID IS NULL) OR
+           (UserID IS NULL AND ListingID IS NOT NULL AND MessageID IS NULL) OR
+           (UserID IS NULL AND ListingID IS NULL AND MessageID IS NOT NULL))
 );
 
 -- Some functions for more complex constraints

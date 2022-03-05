@@ -23,7 +23,8 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             let userID;
             try {
-                userID = securitySchema.process(this.db, token, query);
+                if (token) userID = securitySchema.process(this.db, token, query);
+                else userID = securitySchema.noToken();
                 // console.log(userID);
                 resolve(userID);
             } catch (err) {

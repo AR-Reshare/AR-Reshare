@@ -210,6 +210,14 @@ class SecuritySchema extends SecurityValMethods{
         return await this.verifyAuthentication(db, decodedToken, query); 
     }
 
+    noToken(){
+        if (this.authenticationType === 'NA') {
+            return null;
+        } else {
+            throw new UnauthenticatedUserError();
+        }
+    }
+
     // TODO: Rename this function to something more correctly descriptive
     verifyAuthentication(db, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
