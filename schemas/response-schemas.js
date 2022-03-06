@@ -31,6 +31,29 @@ const listingDetails = new ResponseTemplate([{
     'EmptyResponseError': 404,
 });
 
+const ListingDesc = new ResponseTemplate([{
+    out_name: 'title',
+    field: 'title',
+}, {
+    out_name: 'description',
+    field: 'description',
+}, {
+    out_name: 'condition',
+    field: 'condition',
+}, {
+    out_name: 'country',
+    field: 'country',
+}, {
+    out_name: 'postcode',
+    field: 'postcode',
+}, {
+    out_name: 'media_mime',
+    field: 'mimetype',
+}, {
+    out_name: 'media_url',
+    field: 'url',
+}]);
+
 const ResponseTemplateDict = {
     'search-category': new ResponseTemplate([{
         out_name: 'categories',
@@ -45,6 +68,7 @@ const ResponseTemplateDict = {
         rows_with_fields: ['addressid'],
     }]),
     'view-listing': listingDetails,
+    'search-listing': ListingDesc,
     'create-listing': new ResponseTemplate([{
         out_name: 'listingID',
         field: 'listingid',

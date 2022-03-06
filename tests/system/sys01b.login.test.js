@@ -122,4 +122,16 @@ describe('System Test 1b - /account/login', () => {
             .send(data)
             .expect(200);
     });
+
+    test('Class 11: Deactivated account', () => {
+        let data = {
+            email: 'gary.cheeseman@aol.com',
+            password: '12345QWERTY',
+        };
+
+        return request(app.app)
+            .post('/account/login')
+            .send(data)
+            .expect(401);
+    });
 });

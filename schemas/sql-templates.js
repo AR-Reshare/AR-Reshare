@@ -81,6 +81,24 @@ const ViewListingTemplate = new SQLTemplate({
     }
 }, ['get_listing_auth', 'get_listing_noauth', 'get_media'], {error_on_empty_response: true});
 
+const SearchListingTemplate = new SQLTemplate({
+    get_listing_desc: {
+        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, Country, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID JOIN Media ON Media.MediaID = (SELECT TOP 1 Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index) WHERE CategoryID = $1 AND ClosedDate IS NULL',
+        condition: (inputObject) => (!('accountID' in inputObject)),
+        values: [
+            {from_input: 'categoryID'},
+        ],
+    },
+    get_listing_desc_auth: {
+        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, Country, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID JOIN Media ON Media.MediaID = (SELECT TOP 1 Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index) WHERE CategoryID = $1 AND ClosedDate IS NULL AND ContributorID != $2',
+        condition: (inputObject) => ('accountID' in inputObject),
+        values: [
+            {from_input: 'categoryID'},
+            {from_input: 'accountID'},
+        ],
+    },
+}, ['get_listing_desc', 'get_listing_desc_auth']);
+
 const CreateListingTemplate = new SQLTemplate({
     create_address: {
         text: 'INSERT INTO Address (Country, Postcode, UserID) VALUES ($1, $2, $3) RETURNING AddressID',
@@ -120,6 +138,7 @@ const sqlTemplatesDict = {
     'view-accountListing': ViewAccountListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
+    'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,
 };
 

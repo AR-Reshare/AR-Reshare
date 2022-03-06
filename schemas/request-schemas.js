@@ -4,7 +4,7 @@ const IsNonEmptyString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String) && aString.length > 0;
 }
 
-const CanBeID = (anInt) => {
+const IsPosInt = (anInt) => {
     let num = Number.parseFloat(anInt);
     return Number.isInteger(num) && num >= 1;
 }
@@ -25,7 +25,7 @@ const emptyReq = new RequestTemplate([]);
 const accountIDOnly = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }]);
 
 const loginTemplate = new RequestTemplate([{
@@ -47,27 +47,49 @@ const loginTemplate = new RequestTemplate([{
 const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }, {
     in_name: 'listingID',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }])
 
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: false,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }, {
     in_name: 'listingID',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
+}]);
+
+const searchListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'endResults',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'categoryID',
+    required: true,
+    conditions: [IsPosInt],
 }]);
 
 const createListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }, {
     in_name: 'title',
     required: true,
@@ -80,12 +102,12 @@ const createListingTemplate = new RequestTemplate([{
     in_name: 'location',
     required: true,
     conditions: [
-        (loc) => { return CanBeID(loc) || IsLocation(loc); },
+        (loc) => { return IsPosInt(loc) || IsLocation(loc); },
     ],
 }, {
     in_name: 'category',
     required: true,
-    conditions: [CanBeID],
+    conditions: [IsPosInt],
 }, {
     in_name: 'condition',
     required: true,
@@ -116,7 +138,7 @@ const RequestTemplateDefinitions = {
     'search-address': accountIDOnly,
 
     'view-listing': viewListingTemplate,
-    'search-listing': null,
+    'search-listing': searchListingTemplate,
     'create-listing': createListingTemplate,
     'modify-listing': null,
     'close-listing': null,

@@ -156,7 +156,7 @@ class AuthenticationHandler extends SecurityValMethods{
 
     static async isUserCredentialsValid(db, email, password){
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
-        const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
+        const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1 AND DeletionDate IS NULL';
         let userID;
         return db.simpleQuery(getHash, [email]).then(res => {
             if (res[0].length === 0){
@@ -247,7 +247,7 @@ class SecuritySchema extends SecurityValMethods{
 
     isUserPasswordValid(db, userID, password){
         // TODO: Check whether this sql query string is correct
-        const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
+        const getHash = 'SELECT passhash FROM Account WHERE userid = $1 AND DeletionDate IS NULL';
         return db.simpleQuery(getHash, [userID]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();
