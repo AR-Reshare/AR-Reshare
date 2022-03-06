@@ -331,6 +331,8 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
+        category:
+          $ref: 'parameters.yaml#/components/parameters/category'
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
    
