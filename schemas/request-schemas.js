@@ -129,7 +129,7 @@ const RequestTemplateDefinitions = {
     
     'create-account': null,
 
-    'close-account': null,
+    'close-account': accountIDOnly,
     'login': loginTemplate,
     'modify-account': null,
     'view-accountListing': viewAccountListingTemplate,

@@ -59,9 +59,8 @@ const ResponseTemplateDict = {
         out_name: 'categories',
         rows_with_fields: ['categoryid'],
     }]),
-    'login': new ResponseTemplate([], {
-        null: 200,
-    }),
+    'close-account': new ResponseTemplate([], {}),
+    'login': new ResponseTemplate([], {}),
     'view-accountListing': listingDetails,
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',

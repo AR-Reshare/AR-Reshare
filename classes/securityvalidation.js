@@ -219,7 +219,7 @@ class SecuritySchema extends SecurityValMethods{
     }
 
     // TODO: Rename this function to something more correctly descriptive
-    verifyAuthentication(db, decodedToken, query){
+    async verifyAuthentication(db, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
         if (this.authenticationType === 'NA'){
@@ -235,7 +235,7 @@ class SecuritySchema extends SecurityValMethods{
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
                 throw new InvalidCredentialsError();
-            } else if (!this.isUserPasswordValid(db, decodedToken.userID, query.password)){
+            } else if (!await this.isUserPasswordValid(db, decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
                 return decodedToken.userID;

@@ -11,6 +11,15 @@ const ListCategoryTemplate = new SQLTemplate({
     }
 }, ['get_categories']);
 
+const CloseAccountTemplate = new SQLTemplate({
+    close_account: {
+        text: 'UPDATE Account SET DeletionDate = CURRENT_TIMESTAMP WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+}, ['close_account'], {error_on_empty_response: true});
+
 const LoginTemplate = new SQLTemplate({
     get_id: {
         text: 'SELECT UserID FROM Account WHERE Email = $1',
@@ -134,6 +143,7 @@ const CreateListingTemplate = new SQLTemplate({
 
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
+    'close-account': CloseAccountTemplate,
     'login': LoginTemplate,
     'view-accountListing': ViewAccountListingTemplate,
     'search-address': AddressTemplate,
