@@ -44,6 +44,16 @@ const loginTemplate = new RequestTemplate([{
     required: false,
 }]);
 
+const viewAccountListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [CanBeID],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [CanBeID],
+}])
+
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: false,
@@ -100,7 +110,7 @@ const RequestTemplateDefinitions = {
     'close-account': null,
     'login': loginTemplate,
     'modify-account': null,
-    'view-accountListing': null,
+    'view-accountListing': viewAccountListingTemplate,
     'search-accountListing': null,
     'search-savedListing': null,
     'search-address': accountIDOnly,

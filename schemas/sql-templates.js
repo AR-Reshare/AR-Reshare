@@ -30,6 +30,23 @@ const LoginTemplate = new SQLTemplate({
     },
 }, ['get_id', 'store_token']);
 
+const ViewAccountListingTemplate = new SQLTemplate({
+    get_listing: {
+        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND (ClosedDate IS NULL OR ContributorID = $2 OR ReceiverID = $2)',
+        values: [{
+            from_input: 'listingID',
+        }, {
+            from_input: 'accountID',
+        }]
+    },
+    get_media: {
+        text: 'SELECT MimeType, URL FROM Media WHERE ListingID = $1 ORDER BY Index',
+        values: [{
+            from_input: 'listingID',
+        }]
+    }
+}, ['get_listing', 'get_media'], {error_on_empty_response: true})
+
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
         text: 'SELECT * FROM Address WHERE UserID = $1',
@@ -100,6 +117,7 @@ const CreateListingTemplate = new SQLTemplate({
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'login': LoginTemplate,
+    'view-accountListing': ViewAccountListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'create-listing': CreateListingTemplate,

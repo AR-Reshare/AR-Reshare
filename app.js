@@ -20,7 +20,7 @@ class App {
         const CloseAccount = NA; // CloseEntity
         const Login = new pipes.LoginPipeline(db, logger);
         const ModifyAccount = NA; // ModifyEntity
-        const ViewAccountListing = NA; // ViewEntity
+        const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger); // ViewEntity
         const SearchAccountListing = NA; // SearchEntity
         const SearchSavedListing = NA; //SearchEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger); //SearchEntity
