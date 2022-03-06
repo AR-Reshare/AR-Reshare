@@ -222,6 +222,56 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
+  ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
+  ## that is saved is public) -- otherwise adversary has access to archived listings
+  ## NOTE: This isn't a create endpoint, but it's just to keep with the format
+  /account/saved-listings/create:
+    post:
+      description: Saves a listing
+      responses:
+        '201': # Succesfully created
+          description: The listing has been saved for the user
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': # Conflict
+          description: The listing has already been saved for the user
+          $ref: 'responses.yaml#/components/responses/post'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid.
+          $ref: 'responses.yaml#/components/responses/post'
+    parameters:
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
+
+  /account/saved-listings/delete:
+    post:
+      description: deletes a listing from the saved-listing
+      responses:
+        '200': # Success
+          description: The listing has been succesfully removed from saved-listings
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a listingID
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': # Conflict
+          description: The listing is already closed
+          $ref: 'responses.yaml#/components/responses/post'
+    parameters:
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
+
+
   /account/addresses/list:
     get:
       description: Returns the user's previously used/saved addresses
@@ -281,6 +331,8 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
+        category:
+          $ref: 'parameters.yaml#/components/parameters/category'
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
    
