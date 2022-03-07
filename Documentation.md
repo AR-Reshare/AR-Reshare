@@ -4,7 +4,42 @@
 
 ## Pipeline Base (classes/pipeline.js)
 
-### SecurityValidate
+### Pipeline.SecurityValidate
+Takes three inputs, `securitySchema`, `token` and `query`. `token` is the token to validate, and `query` is the object, possibly containing a password, that goes with it. `securitySchema` must be an instance of `SecuritySchema`, as defined in classes/securityvalidation.js
+
+The `securitySchema` object must be initialised ahead of time. The constructor should receive a single string called `authMode`, which must be one of the following:
+
+| authMode | description |
+|----------|-------------|
+| `NA` | No authentication necessary |
+| `AA_TO` | Authorise and authenticate, using only the token |
+| `AA_TAP` | Authorise and authenticate, using both the token and a password retrieved from `query` |
+
+If construction fails, a `TemplateError` will be raised.
+
+The constructed instance of `SecuritySchema` can then be used to validate requests. This is done by calling the async function `securitySchema.process` with the arguments:
+
+| arg | type | description |
+|-----|------|-------------|
+| `db` | Database, optional | The Database object (see below) that should be used for queries. It is optional depending on the authMode. |
+| `token` | string, optional | The JWT token that has been provided with the request. It is optional depending on the authMode (e.g. `NA` doesn't require this, but `AA_TAP` and `AA_TO` do) |
+| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.query e.g. `password`, `email`|
+
+If the user provided the neccessary and valid credentials to be authenticated (`AA_TO`, `AA_TAP`), then the promise resolves with the user's ID. If no authentication (`NA`) was required (and optionally if a valid token was provided), the promise resolves with `null`. If the promise rejects, it will do so with one of the following errors:
+
+| error | description |
+|-------|-------------|
+| UnauthenticatedUserError | The token provided with the request is not valid |
+| InvalidCredentialsError | The password provided with the token for a `AA_TAP` auth type request was not valid |
+| QueryExecutionError | The database query for a single user returned multiple results |
+| BadArgumentError | The query object is not of the expected type/format |
+| ServerException | For some unexpected reason, any unhandled logical paths (that are currently not known) should raise this exception |
+| TamperedTokenError | The token provided with the request was tampered with |
+| ExpiredTokenError | The token provided with the request has expired |
+| NotBeforeError | The token provided with the request has not realized its NotBefore time yet |
+| InvalidTokenError | Encompasses all other `JsonWebTokenError` (from jsonwebtoken npm module) exceptions as the default |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
 
 ### DataValidate
 Takes two inputs, `requestSchema` and `inputObject`. `inputObject` is the object to validate, `requestSchema` must be an instance of `RequestTemplate`, as defined in classes/requesttemplate.js
@@ -98,3 +133,48 @@ These functions will usually resolve with an array of arrays corresponding to th
 | DBClientNotAvailableError | No database clients were available to service the request |
 | QueryExecutionError | The query threw an error at the database |
 | BackreferenceError | A callable value threw an error or did not return a value |
+
+## Miscellaneous Functions
+
+### AuthenticationHandler
+The authenticationHandler class provides a set of asynchronous static methods to perform token creation `TR`, and token regeneration `TR` auth type requests. There are two main functions `AuthenticationHandler.accountLogin()` for accountLogin requests, and `AuthenticationHandler.regenerateToken()` to regenerate a new token from a current one that is about to expire.
+
+The `AuthenticationHandler.accountLogin()` has the following arguments:
+
+| key | type | description |
+|-----|------|-------------|
+| `db` | Database, required | The Database object that allows the securitySchema object to make database queries |
+| `query` | object, optional | Contains attributes that correspond to key/values in the request.body and request.head e.g. `query.password`, `query.email`|
+| `inputToken` | string, optional | This is an optional argument to the function, but if it is not null, then an `InvalidTokenError` should be raised |
+
+After awaiting for the function, if unsuccessful, one of the following errors should be thrown:
+
+| error | description |
+|-------|-------------|
+| InvalidTokenError | A token was provided in the request eventhough this is a Token Creation `TR` type request |
+| AbsentArgumentError | This is thrown if the query object is absent, or the attributes `query.password` or `query.email` are absent |
+| DirtyArgumentError | This is thrown if the query attributes were found to have validation errors |
+| InvalidCredentialsError | The credentials provided with the token for the `TC` type request was not valid |
+| QueryExecutionError | The database query for a single user returned multiple results |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
+Otherwise, it returns a `${JWT_Token}`
+
+The `AuthenticationHandler.regenerateToken()` has the following arguments:
+
+| key | type | description |
+|-----|------|-------------|
+| `token` | string, required | This is required in order to regenerate a new token |
+
+After awaiting for the function, if unsuccessful, on of the following errors should be thrown:
+
+| error | description |
+|-------|-------------|
+| AbsentArgumentError | A token wasn't provided with the request | 
+| TamperedTokenError | The token provided with the request was tampered with |
+| ExpiredTokenError | The token provided with the request has expired |
+| NotBeforeError | The token provided with the request has not realized its NotBefore time yet |
+| InvalidTokenError | Encompasses all other `JsonWebTokenError` (from jsonwebtoken npm module) exceptions as the default |
+| PrivateKeyReadError | The privatekey file was unable to be read successfully |
+
+Otherwise, it returns a `${JWT_Token}`

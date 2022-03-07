@@ -14,7 +14,7 @@ info:
     description: The url will be filled out as we push through development
   security:
     bearerAuth:
-    - \/account\/[\w\/]+ # except /account/reset-request and /account/reset-execute
+    - \/account\/[\w\/]+
     - \/conversation\/[\w\/]+
     - \/conversations
     - \/listing\/create
@@ -48,7 +48,41 @@ paths:
         '400':
           description: A valid old token wasn't provided in the header of the HTTP request
           $ref: 'responses.yaml#/components/responses/post'
-        
+
+  /passwordResetRequest:
+    post:
+      description: Sends a password reset email to the corresponding email if it exists
+      responses:
+        '200':
+          description: The request was processed without any exceptions (The email may or may not exist in the db)
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: The email provided was of an invalid format
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBodies:
+        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
+  
+  ## I was considering splitting this up into two but want to reduce the number of endpoints
+  /passwordResetExecute:
+    post:
+      description: Executes the password reset if the tokens are valid
+      responses:
+        '200':
+          description: The request was executed successfully and the account's password has now been changed
+          $ref: 'responses.yaml#/components/responses/post'
+        '400':
+          description: The arguments were of invalid formats
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBodies:
+        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
+
+  /categories/list:
+    get:
+      description: Retrieves the currently available categories
+      responses:
+        '200':
+          description: The categories list was successfully retrieved
+          $ref: 'responses.yaml#/components/responses/categories-list'
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
@@ -188,43 +222,77 @@ paths:
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
 
- ## TODO: Fix up account-reset endpoints (this has been raise as an issue on GitHub) -- Do not use the below two paths for routing
-  /account/reset-request:
-    post: 
-      description: Resets the account's password
-      responses:
-        '200': # Success
-          description: The request has succesfully been received
-          $ref: 'responses.yaml#/components/responses/post'
-        '400': # Bad Request
-          description: Bad request received
-          $ref: 'responses.yaml#/components/responses/post'
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/reset-request'
-
-  /account/reset-execute:
+  ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
+  ## that is saved is public) -- otherwise adversary has access to archived listings
+  ## NOTE: This isn't a create endpoint, but it's just to keep with the format
+  /account/saved-listings/create:
     post:
-      description: Resets the account's password
+      description: Saves a listing
       responses:
-        '200': # Success
-          description: The password has been succesfully reset
+        '201': # Succesfully created
+          description: The listing has been saved for the user
           $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
-          description: The password does not satify the format required
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
           $ref: 'responses.yaml#/components/responses/post'
-        '401': # Unauthorized
-          description: The user has not presented a token
+        '409': # Conflict
+          description: The listing has already been saved for the user
+          $ref: 'responses.yaml#/components/responses/post'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid.
+          $ref: 'responses.yaml#/components/responses/post'
+    parameters:
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
+
+  /account/saved-listings/delete:
+    post:
+      description: deletes a listing from the saved-listing
+      responses:
+        '200': # Success
+          description: The listing has been succesfully removed from saved-listings
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The request did not include a listingID
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
           $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
-          description: The user has not presented a token with sufficient priviledges to perform the action
+          description: The user has insufficient priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
-    requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/reset-execute'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/post'
+        '409': # Conflict
+          description: The listing is already closed
+          $ref: 'responses.yaml#/components/responses/post'
     parameters:
-      reset-token:
-        $ref: 'parameters.yaml#/components/parameters/reset-token'
+        listingID:
+          $ref: 'parameters.yaml#/components/parameters/listingID'
 
-    
+
+  /account/addresses/list:
+    get:
+      description: Returns the user's previously used/saved addresses
+      responses:
+        '200':
+          description: Returns a list of the user's previously used addresses
+          $ref: 'responses.yaml#/components/responses/account-address-list'
+
+
+
+
+
+  ## NOTE: /account/reset-request and /account/reset-execute endpoints have been eliminated
+  ## --> IF you are logged in and want to perform some password modification, please use the 
+  ## endpoint /account/modify which can modify passwords, names, age, email etc.
+
+
+
+
+
+
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification
 
   ################################ LISTINGS ######################################################
@@ -263,6 +331,8 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
+        category:
+          $ref: 'parameters.yaml#/components/parameters/category'
         query:
           $ref: 'parameters.yaml#/components/parameters/queryString'
    

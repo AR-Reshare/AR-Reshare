@@ -41,8 +41,36 @@ class CreateEntityPipeline extends Pipeline {
     }
 }
 
+class NotImplementedPipeline extends Pipeline {
+    constructor (...args) {
+        super(...args);
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    Execute(req, res) {
+        this.logger.log(`${req.method} ${req.originalUrl} 501`);
+        res.status(501).end();
+    }
+}
+
+class UnknownEndpointPipeline extends Pipeline {
+    constructor(...args) {
+        super(...args);
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    Execute(req, res) {
+        this.logger.log(`${req.method} ${req.originalUrl} 404`);
+        res.status(404).end();
+    }
+}
+
 module.exports = {
     CreateEntityPipeline,
+    NotImplementedPipeline,
+    UnknownEndpointPipeline,
     // ...
     // add other pipeline types here as they are defined
 };
