@@ -55,10 +55,6 @@ const viewAccountListingTemplate = new RequestTemplate([{
 }])
 
 const viewListingTemplate = new RequestTemplate([{
-    in_name: 'accountID',
-    required: false,
-    conditions: [IsPosInt],
-}, {
     in_name: 'listingID',
     required: true,
     conditions: [IsPosInt],

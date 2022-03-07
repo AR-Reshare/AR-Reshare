@@ -63,25 +63,7 @@ describe('System Test 9 - /listing/view', () => {
             .expect(401);
     });
 
-    test('Class 6: Open listing', () => {
-        let token = validToken;
-        let listingid = 2;
-        return request(app.app)
-            .get(`/account/listing/view?listingID=${listingid}`)
-            .set('Authorization', token)
-            .expect(200)
-            .expect({
-                title: 'Stuff',
-                description: 'Some things',
-                condition: 'poor',
-                country: 'US',
-                postcode: 'asdfgh',
-                category: 'Misc',
-                'category-icon': null, // TODO icon test
-                'category-colour': 'FFFFFFFF',
-                media: [], // TODO media test
-            });
-    });
+    // Class 6 removed
     
     test('Class 7: My closed listing', () => {
         let token = validToken;
@@ -90,16 +72,29 @@ describe('System Test 9 - /listing/view', () => {
             .get(`/account/listing/view?listingID=${listingid}`)
             .set('Authorization', token)
             .expect(200)
-            .expect({
-                title: 'Things',
-                description: 'Some stuff',
-                condition: 'good',
-                country: 'UK',
-                postcode: 'AB1 2CD',
-                category: 'Misc',
-                'category-icon': null, // TODO icon test
-                'category-colour': 'FFFFFFFF',
-                media: [], // TODO media test
+            .expect(res => {
+                expect(res.body).toMatchObject({
+                    listingId: 1,
+                    contributorId: 1,
+                    title: 'Things',
+                    description: 'Some stuff',
+                    condition: 'good',
+                    location: {
+                        country: 'UK',
+                        postcode: 'AB1 2CD',
+                    },
+                    category: {
+                        categoryname: 'Misc',
+                        icon: null, // TODO icon test
+                        colour: 'FFFFFFFF',
+                        parentcategory: null,
+                    },
+                    media: [], // TODO media test
+                });
+                expect(res.body).toHaveProperty('creationDate');
+                expect(res.body).toHaveProperty('modificationDate');
+                expect(res.body).toHaveProperty('closedDate');
+                expect(res.body).toHaveProperty('receiverId');
             });
     });
 
@@ -110,16 +105,29 @@ describe('System Test 9 - /listing/view', () => {
             .get(`/account/listing/view?listingID=${listingid}`)
             .set('Authorization', token)
             .expect(200)
-            .expect({
-                title: 'Egg box three hundred and sixty', // I was getting a bit bored of writing test cases by this point
-                description: 'For playing of the viddy games',
-                condition: 'like new',
-                country: 'US',
-                postcode: 'asdfgh',
-                category: 'Misc',
-                'category-icon': null, // TODO icon test
-                'category-colour': 'FFFFFFFF',
-                media: [], // TODO media test
+            .expect(res => {
+                expect(res.body).toMatchObject({
+                    listingId: 3,
+                    contributorId: 2,
+                    title: 'Egg box three hundred and sixty', // I was getting a bit bored of writing test cases by this point
+                    description: 'For playing of the viddy games',
+                    condition: 'like new',
+                    location: {
+                        country: 'US',
+                        postcode: 'asdfgh',
+                    },
+                    category: {
+                        categoryname: 'Misc',
+                        icon: null, // TODO icon test
+                        colour: 'FFFFFFFF',
+                        parentcategory: null,
+                    },
+                    media: [], // TODO media test
+                });
+                expect(res.body).toHaveProperty('creationDate');
+                expect(res.body).toHaveProperty('modificationDate');
+                expect(res.body).toHaveProperty('closedDate');
+                expect(res.body).toHaveProperty('receiverId', 1);
             });
     });
 

@@ -41,11 +41,23 @@ const LoginTemplate = new SQLTemplate({
 
 const ViewAccountListingTemplate = new SQLTemplate({
     get_listing: {
-        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND (ClosedDate IS NULL OR ContributorID = $2 OR ReceiverID = $2)',
+        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, AddressID, CategoryID, CreationDate, ModificationDate, ClosedDate, ReceiverID FROM Listing WHERE ListingID = $1 AND (ContributorID = $2 OR ReceiverID = $2)',
         values: [{
             from_input: 'listingID',
         }, {
             from_input: 'accountID',
+        }]
+    },
+    get_location: {
+        text: 'SELECT Country, Postcode FROM Address WHERE AddressID = $1',
+        values: [{
+            from_query: ['get_listing', 'addressid'],
+        }]
+    },
+    get_category: {
+        text: 'SELECT CategoryName, Icon, Colour, ParentCategory FROM Category WHERE CategoryID = $1',
+        values: [{
+            from_query: ['get_listing', 'categoryid'],
         }]
     },
     get_media: {
@@ -54,7 +66,7 @@ const ViewAccountListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing', 'get_media'], {error_on_empty_response: true})
+}, ['get_listing', 'get_location', 'get_category', 'get_media'], {error_on_empty_response: true})
 
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
@@ -66,20 +78,22 @@ const AddressTemplate = new SQLTemplate({
 }, ['get_addresses']);
 
 const ViewListingTemplate = new SQLTemplate({
-    get_listing_auth: {
-        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND (ClosedDate IS NULL OR ContributorID = $2 OR ReceiverID = $2)',
-        condition: (inputObject) => ('accountID' in inputObject),
+    get_listing: {
+        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, AddressID, CategoryID, CreationDate, ModificationDate FROM Listing WHERE ListingID = $1 AND ClosedDate IS NULL',
         values: [{
             from_input: 'listingID',
-        }, {
-            from_input: 'accountID',
         }]
     },
-    get_listing_noauth: {
-        text: 'SELECT Title, Description, Condition, Country, PostCode, CategoryName, Icon, Colour FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID INNER JOIN Category ON Listing.CategoryID = Category.CategoryID WHERE ListingID = $1 AND ClosedDate IS NULL',
-        condition: (inputObject) => (!('accountID' in inputObject)),
+    get_location: {
+        text: 'SELECT Country, Postcode FROM Address WHERE AddressID = $1',
         values: [{
-            from_input: 'listingID',
+            from_query: ['get_listing', 'addressid'],
+        }]
+    },
+    get_category: {
+        text: 'SELECT CategoryName, Icon, Colour, ParentCategory FROM Category WHERE CategoryID = $1',
+        values: [{
+            from_query: ['get_listing', 'categoryid'],
         }]
     },
     get_media: {
@@ -88,7 +102,7 @@ const ViewListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing_auth', 'get_listing_noauth', 'get_media'], {error_on_empty_response: true});
+}, ['get_listing', 'get_location', 'get_category', 'get_media'], {error_on_empty_response: true});
 
 const SearchListingTemplate = new SQLTemplate({
     get_listing_desc: {

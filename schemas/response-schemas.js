@@ -1,6 +1,12 @@
 const ResponseTemplate = require("../classes/responsetemplate");
 
 const listingDetails = new ResponseTemplate([{
+    out_name: 'listingId',
+    field: 'listingid',
+}, {
+    out_name: 'contributorId',
+    field: 'contributorid',
+}, {
     out_name: 'title',
     field: 'title',
 }, {
@@ -10,25 +16,29 @@ const listingDetails = new ResponseTemplate([{
     out_name: 'condition',
     field: 'condition',
 }, {
-    out_name: 'country',
-    field: 'country',
-}, {
-    out_name: 'postcode',
-    field: 'postcode',
+    out_name: 'location',
+    one_row_with_fields: ['country'],
 }, {
     out_name: 'category',
-    field: 'categoryname',
-}, {
-    out_name: 'category-icon',
-    field: 'icon',
-}, {
-    out_name: 'category-colour',
-    field: 'colour',
+    one_row_with_fields: ['categoryname'],
 }, {
     out_name: 'media',
     rows_with_fields: ['mimetype', 'url'],
+}, {
+    out_name: 'creationDate',
+    field: 'creationdate',
+}, {
+    out_name: 'modificationDate',
+    field: 'modificationdate',
+}, {
+    out_name: 'closedDate',
+    field: 'closeddate',
+}, {
+    out_name: 'receiverId',
+    field: 'receiverid',
 }], {
     'EmptyResponseError': 404,
+    'BackreferenceError': 404, // the first query returned nothing, so the backreferences failed
 });
 
 const ListingDesc = new ResponseTemplate([{

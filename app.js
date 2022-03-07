@@ -17,7 +17,7 @@ class App {
         const ExecuteReset = NA;
         const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger);
         const CreateAccount = NA; // CreateEntity (in question - see issue #25)
-        const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger); // CloseEntity
+        const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger);
         const Login = new pipes.LoginPipeline(db, logger);
         const ModifyAccount = NA; // ModifyEntity
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
@@ -25,7 +25,7 @@ class App {
         const SearchSavedListing = NA; //SearchEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // TODO: test media
-        const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger); // TODO: test
+        const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger); // TODO: test, maybe modify parameters
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // TODO: media upload
         const ModifyListing = NA; // ModifyEntity
         const CloseListing = NA; // CloseEntity
