@@ -91,6 +91,14 @@ CREATE TABLE PushToken (
     UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
 
+CREATE TABLE ConfirmActionToken (
+    UserID int4 PRIMARY KEY REFERENCES Account ON DELETE CASCADE, -- Management of this table should only keep the latest non-expired token
+    ResetTokenHash varchar NOT NULL,
+    IssuedTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ExpirationTimestamp TIMESTAMP NOT NULL
+    -- no need for validation timestamp, since we just remove used tokens from the DB
+);
+
 CREATE TABLE Media (
     MediaID serial4 PRIMARY KEY,
     MimeType mimetype NOT NULL,
