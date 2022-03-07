@@ -29,3 +29,11 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Mug', 'For drinking', 'poor', 3, 2);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Glass', 'For drinking', 'poor', 3, 2);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Potion of Asbestos', 'Restores 2d4+2 mesothelioma', 'poor', 3, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '4-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '6-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, '8-sided die', 'Black and red swirly pattern', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate) VALUES (1, '10-sided die', 'Black and red swirly pattern', 'like new', 1, 1, CURRENT_TIMESTAMP);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '12-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '20-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '60-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '100-sided die', 'Black and red swirly pattern', 'like new', 1, 1);

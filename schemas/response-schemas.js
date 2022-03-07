@@ -64,6 +64,7 @@ const ResponseTemplateDict = {
         out_name: 'listingID',
         field: 'listingid',
     }], {null: 201}),
+    'close-listing': new ResponseTemplate([], {}),
 };
 
 module.exports = ResponseTemplateDict;

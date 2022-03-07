@@ -116,6 +116,23 @@ const createListingTemplate = new RequestTemplate([{
     // TODO: add support for media. Issue #32
 }]);
 
+const closeListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'receiverID',
+    required: false,
+    conditions: [
+        IsPosInt,
+        (rcv, obj) => (Number.parseInt(obj['accountID']) !== rcv),
+    ],
+}]);
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -139,7 +156,7 @@ const RequestTemplateDefinitions = {
     'search-listing': searchListingTemplate,
     'create-listing': createListingTemplate,
     'modify-listing': null,
-    'close-listing': null,
+    'close-listing': closeListingTemplate,
 
     'create-conversation': null,
     'close-conversation': null,

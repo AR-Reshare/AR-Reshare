@@ -25,10 +25,10 @@ class App {
         const SearchSavedListing = NA; //SearchEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // TODO: test media
-        const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger); // TODO: test, maybe modify parameters
+        const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger); // TODO: maybe modify parameters
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // TODO: media upload
         const ModifyListing = NA; // ModifyEntity
-        const CloseListing = NA; // CloseEntity
+        const CloseListing = new pipes.CloseEntityPipeline('listing', {}, db, logger);
         const CreateConversation = NA; // CreateEntity
         const CloseConversation = NA; // CloseEntity
         const CreateMessage = NA; // CreateEntity

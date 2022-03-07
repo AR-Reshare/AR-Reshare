@@ -140,6 +140,17 @@ const CreateListingTemplate = new SQLTemplate({
     error_on_empty_response: true,
 });
 
+const CloseListingTemplate = new SQLTemplate({
+    close_listing: {
+        text: 'UPDATE Listing SET ClosedDate = CURRENT_TIMESTAMP, ReceiverID = $3 WHERE ContributorID = $1 AND ClosedDate IS NULL AND ListingID = $2 RETURNING ListingID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'receiverID'},
+        ]
+    }
+}, ['close_listing'], {error_on_empty_response: true});
+
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'close-account': CloseAccountTemplate,
@@ -149,6 +160,7 @@ const sqlTemplatesDict = {
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,
+    'close-listing': CloseListingTemplate,
 };
 
 module.exports = sqlTemplatesDict;
