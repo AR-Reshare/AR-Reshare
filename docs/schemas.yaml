@@ -76,7 +76,7 @@ components:
       - title
       - description
       - location
-      - category
+      - categoryId
       - condition
       - media ## this will encompass videos, photos and what other
       - creationDate
@@ -93,8 +93,8 @@ components:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
+        categoryId:
+          $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
         media:
@@ -115,7 +115,7 @@ components:
       - title
       - description
       - location
-      - category
+      - categoryId
       - condition
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
@@ -131,8 +131,8 @@ components:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
+        categoryId:
+          $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
         creationDate:
@@ -149,7 +149,7 @@ components:
       - contributorId
       - title
       - location
-      - category
+      - categoryId
       - media
       properties:
         listingId:
@@ -162,8 +162,8 @@ components:
           $ref: '#/components/schemas/media'
         condition:
           $ref: '#/components/schemas/condition'
-        category:
-          $ref: '#/components/schemas/category'
+        categoryId:
+          $ref: '#/components/schemas/id'
         title:
           $ref: '#/components/schemas/title'
 
@@ -188,7 +188,7 @@ components:
       - title
       - description
       - location
-      - category
+      - categoryId
       - condition
       - media ## this will encompass videos, photos and what other
       properties:
@@ -196,8 +196,8 @@ components:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
+        categoryId:
+          $ref: '#/components/schemas/id'
         media:
           $ref: '#/components/schemas/media'
         condition:
@@ -239,35 +239,37 @@ components:
       - title
       - description
       - location
-      - category
+      - categoryId
       - media
       properties:
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        category:
-          $ref: '#/components/schemas/category'
+        categoryId:
+          $ref: '#/components/schemas/id'
         media:
           $ref: '#/components/schemas/media'
 
     category-descriptor:
       type: object
       required:
-      - category
+      - categoryId
+      - categoryName
+      - categoryPath
       - icon
       - color
-      - categoryPath
       properties:
-        category:
+        categoryId:
+          $ref: '#/componnents/schemas/id'
+        categoryName:
           $ref: '#/components/schemas/category'
+        categoryPath: ## This can be used to derived parent categories
+          $ref: '#/components/schemas/path'
         icon:
           $ref: '#/components/schemas/photo'
         color:
           $ref: '#/components/schemas/color'
-        categoryPath:
-          $ref: '#/components/schemas/path'
-
 
 
 
@@ -310,11 +312,8 @@ components:
     account-close:
       type: object
       required:
-      - email
       - password
       properties:
-        email:
-          $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
 
@@ -352,10 +351,12 @@ components:
       items:
         $ref: '#/components/schemas/address'
 
-    categories-list:
+    ## The intention of this path is for the client to locally store this data so that it can be reused
+    ## when viewing future data
+    category-descriptor-list:
       type: array
       items:
-        $ref: '#/components/schemas/category'
+        $ref: '#/components/schemas/category-descriptor'
 
     
     ####################### ACCOUNT RESET SCHEMAS ####################
@@ -473,18 +474,15 @@ components:
       type: object
       required:
       - country
+      - region
       - postcode
-      optional:
-      - street # which would include door number
       properties:
         country:
           $ref: '#/components/schemas/country'
-        city:
-          $ref: '#/components/schemas/city'
+        region:
+          $ref: '#/components/schemas/region'
         postcode:
           $ref: '#/components/schemas/postcode'
-        street:
-          $ref: '#/components/schemas/street'
 
     media: # i.e media = ["url1", "url2", ...]
       type: array
@@ -502,8 +500,14 @@ components:
     country:
       type: string
 
-    city:
+    ##NOTE:  This is no longer used since not everyone lives in a city
+    # city:
+    #   type: string
+
+    ## This is replaceing the city attribute in address-related schemas
+    region:
       type: string
+      # current proposal is that the value should be enum of counties
 
     postcode:
       type: string
