@@ -200,7 +200,7 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/startResults'
         categoryId:
           $ref: 'parameters.yaml#/components/parameters/categoryId'
-  
+        ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
 
   ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
   /account/saved-listings/search:
