@@ -474,13 +474,13 @@ components:
       type: object
       required:
       - country
-      - city
+      - region
       - postcode
       properties:
         country:
           $ref: '#/components/schemas/country'
-        city:
-          $ref: '#/components/schemas/city'
+        region:
+          $ref: '#/components/schemas/region'
         postcode:
           $ref: '#/components/schemas/postcode'
 
@@ -500,8 +500,14 @@ components:
     country:
       type: string
 
-    city:
+    ##NOTE:  This is no longer used since not everyone lives in a city
+    # city:
+    #   type: string
+
+    ## This is replaceing the city attribute in address-related schemas
+    region:
       type: string
+      # current proposal is that the value should be enum of counties
 
     postcode:
       type: string
