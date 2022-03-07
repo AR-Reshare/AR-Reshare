@@ -6,13 +6,15 @@ const IsNonEmptyString = (aString) => {
 
 const IsPosInt = (anInt) => {
     let num = Number.parseFloat(anInt);
-    return Number.isInteger(num) && num >= 1;
+    return Number.isInteger(num) && num >= 0;
 }
 
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
             && 'country' in anObject
             && IsNonEmptyString(anObject['country'])
+            && 'region' in anObject
+            && IsNonEmptyString(anObject['region'])
             && 'postcode' in anObject
             && IsNonEmptyString(anObject['postcode'])
             );
@@ -73,13 +75,13 @@ const searchListingTemplate = new RequestTemplate([{
     required: true,
     conditions: [IsPosInt],
 }, {
-    in_name: 'endResults',
+    in_name: 'categoryID',
     required: false,
     conditions: [IsPosInt],
 }, {
-    in_name: 'categoryID',
-    required: true,
-    conditions: [IsPosInt],
+    in_name: 'region',
+    required: false,
+    conditions: [IsNonEmptyString],
 }]);
 
 const createListingTemplate = new RequestTemplate([{
@@ -101,7 +103,7 @@ const createListingTemplate = new RequestTemplate([{
         (loc) => { return IsPosInt(loc) || IsLocation(loc); },
     ],
 }, {
-    in_name: 'category',
+    in_name: 'categoryID',
     required: true,
     conditions: [IsPosInt],
 }, {

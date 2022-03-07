@@ -74,27 +74,23 @@ describe('System Test 9 - /listing/view', () => {
             .expect(200)
             .expect(res => {
                 expect(res.body).toMatchObject({
-                    listingId: 1,
-                    contributorId: 1,
+                    listingID: 1,
+                    contributorID: 1,
                     title: 'Things',
                     description: 'Some stuff',
                     condition: 'good',
                     location: {
                         country: 'UK',
+                        region: 'Durham',
                         postcode: 'AB1 2CD',
                     },
-                    category: {
-                        categoryname: 'Misc',
-                        icon: null, // TODO icon test
-                        colour: 'FFFFFFFF',
-                        parentcategory: null,
-                    },
+                    categoryID: 1,
                     media: [], // TODO media test
                 });
                 expect(res.body).toHaveProperty('creationDate');
                 expect(res.body).toHaveProperty('modificationDate');
                 expect(res.body).toHaveProperty('closedDate');
-                expect(res.body).toHaveProperty('receiverId');
+                expect(res.body).toHaveProperty('receiverID');
             });
     });
 
@@ -107,27 +103,23 @@ describe('System Test 9 - /listing/view', () => {
             .expect(200)
             .expect(res => {
                 expect(res.body).toMatchObject({
-                    listingId: 3,
-                    contributorId: 2,
+                    listingID: 3,
+                    contributorID: 2,
                     title: 'Egg box three hundred and sixty', // I was getting a bit bored of writing test cases by this point
                     description: 'For playing of the viddy games',
                     condition: 'like new',
                     location: {
                         country: 'US',
+                        region: 'Abcdef, GH',
                         postcode: 'asdfgh',
                     },
-                    category: {
-                        categoryname: 'Misc',
-                        icon: null, // TODO icon test
-                        colour: 'FFFFFFFF',
-                        parentcategory: null,
-                    },
+                    categoryID: 1,
                     media: [], // TODO media test
                 });
                 expect(res.body).toHaveProperty('creationDate');
                 expect(res.body).toHaveProperty('modificationDate');
                 expect(res.body).toHaveProperty('closedDate');
-                expect(res.body).toHaveProperty('receiverId', 1);
+                expect(res.body).toHaveProperty('receiverID', 1);
             });
     });
 

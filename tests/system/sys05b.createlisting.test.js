@@ -27,7 +27,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 1,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -48,7 +48,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 5,
             description: 'A big box of old stuff',
             location: 1,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -69,7 +69,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 5,
             location: 1,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -90,7 +90,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 'the bin behind greggs',
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -107,7 +107,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 5000,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -124,7 +124,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 2,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -141,7 +141,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 1,
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -159,9 +159,10 @@ describe('System Test 5b - /listing/create', () => {
             description: 'A big box of old stuff',
             location: {
                 country: 'Testenstein',
+                region: 'Beep Boop',
                 postcode: 'TE5 7Y',
             },
-            category: 1,
+            categoryID: 1,
             condition: 'good',
         };
 
@@ -178,7 +179,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 1,
-            category: 'no',
+            categoryID: 'no',
             condition: 'good',
         };
 
@@ -195,7 +196,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 1,
-            category: 5000,
+            categoryID: 5000,
             condition: 'good',
         };
 
@@ -214,7 +215,7 @@ describe('System Test 5b - /listing/create', () => {
             title: 'Old Stuff',
             description: 'A big box of old stuff',
             location: 1,
-            category: 1,
+            categoryID: 1,
             condition: 'absolutely abyssmal',
         };
 

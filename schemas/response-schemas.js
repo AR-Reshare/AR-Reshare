@@ -1,10 +1,10 @@
 const ResponseTemplate = require("../classes/responsetemplate");
 
 const listingDetails = new ResponseTemplate([{
-    out_name: 'listingId',
+    out_name: 'listingID',
     field: 'listingid',
 }, {
-    out_name: 'contributorId',
+    out_name: 'contributorID',
     field: 'contributorid',
 }, {
     out_name: 'title',
@@ -19,8 +19,8 @@ const listingDetails = new ResponseTemplate([{
     out_name: 'location',
     one_row_with_fields: ['country'],
 }, {
-    out_name: 'category',
-    one_row_with_fields: ['categoryname'],
+    out_name: 'categoryID',
+    field: 'categoryid',
 }, {
     out_name: 'media',
     rows_with_fields: ['mimetype', 'url'],
@@ -34,40 +34,22 @@ const listingDetails = new ResponseTemplate([{
     out_name: 'closedDate',
     field: 'closeddate',
 }, {
-    out_name: 'receiverId',
+    out_name: 'receiverID',
     field: 'receiverid',
 }], {
     'EmptyResponseError': 404,
     'BackreferenceError': 404, // the first query returned nothing, so the backreferences failed
 });
 
-const ListingDesc = new ResponseTemplate([{
-    out_name: 'title',
-    field: 'title',
-}, {
-    out_name: 'description',
-    field: 'description',
-}, {
-    out_name: 'condition',
-    field: 'condition',
-}, {
-    out_name: 'country',
-    field: 'country',
-}, {
-    out_name: 'postcode',
-    field: 'postcode',
-}, {
-    out_name: 'media_mime',
-    field: 'mimetype',
-}, {
-    out_name: 'media_url',
-    field: 'url',
+const ListingDescArray = new ResponseTemplate([{
+    out_name: 'listings',
+    rows_with_fields: ['listingID'],
 }]);
 
 const ResponseTemplateDict = {
     'search-category': new ResponseTemplate([{
         out_name: 'categories',
-        rows_with_fields: ['categoryid'],
+        rows_with_fields: ['categoryID'],
     }]),
     'close-account': new ResponseTemplate([], {}),
     'login': new ResponseTemplate([], {}),
@@ -77,7 +59,7 @@ const ResponseTemplateDict = {
         rows_with_fields: ['addressid'],
     }]),
     'view-listing': listingDetails,
-    'search-listing': ListingDesc,
+    'search-listing': ListingDescArray,
     'create-listing': new ResponseTemplate([{
         out_name: 'listingID',
         field: 'listingid',

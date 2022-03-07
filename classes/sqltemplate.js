@@ -177,7 +177,11 @@ class SQLTemplate {
                             }
 
                         } else {
-                            throw new QueryConstructionError(`Key ${valueCons['from_input']} does not exist in input object`);
+                            // throw new QueryConstructionError(`Key ${valueCons['from_input']} does not exist in input object`);
+                            for (let i=0; i<queryTimes; i++) {
+                                // "doesn't exist in input" should be handled by DataValidate anyway
+                                nextqueryvalueses[i].push(null);
+                            }
                         }
 
                     // handle from_query

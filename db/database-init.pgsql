@@ -33,6 +33,7 @@ CREATE TABLE Account (
 CREATE TABLE Address (
     AddressID serial4 PRIMARY KEY,
     Country varchar NOT NULL,
+    Region VARCHAR NOT NULL,
     PostCode varchar NOT NULL,
     UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );

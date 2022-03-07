@@ -3,11 +3,12 @@ const SQLTemplate = require('../classes/sqltemplate');
 /**
  * Some things to bear in mind when creating these:
  *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
+ *  2. Postgres automatically converts to lower case, if you want to preserve case use AS "caseSensitiveVersion"
  */
 
 const ListCategoryTemplate = new SQLTemplate({
     get_categories: {
-        text: 'SELECT * FROM Category',
+        text: 'SELECT CategoryID AS "categoryID", CategoryName AS "categoryName", Icon, Colour, Prompt, ParentCategory AS "parentCategoryID" FROM Category',
     }
 }, ['get_categories']);
 
@@ -49,15 +50,9 @@ const ViewAccountListingTemplate = new SQLTemplate({
         }]
     },
     get_location: {
-        text: 'SELECT Country, Postcode FROM Address WHERE AddressID = $1',
+        text: 'SELECT Country, Region, Postcode FROM Address WHERE AddressID = $1',
         values: [{
             from_query: ['get_listing', 'addressid'],
-        }]
-    },
-    get_category: {
-        text: 'SELECT CategoryName, Icon, Colour, ParentCategory FROM Category WHERE CategoryID = $1',
-        values: [{
-            from_query: ['get_listing', 'categoryid'],
         }]
     },
     get_media: {
@@ -66,7 +61,7 @@ const ViewAccountListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing', 'get_location', 'get_category', 'get_media'], {error_on_empty_response: true})
+}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true})
 
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
@@ -85,15 +80,9 @@ const ViewListingTemplate = new SQLTemplate({
         }]
     },
     get_location: {
-        text: 'SELECT Country, Postcode FROM Address WHERE AddressID = $1',
+        text: 'SELECT Country, Region, Postcode FROM Address WHERE AddressID = $1',
         values: [{
             from_query: ['get_listing', 'addressid'],
-        }]
-    },
-    get_category: {
-        text: 'SELECT CategoryName, Icon, Colour, ParentCategory FROM Category WHERE CategoryID = $1',
-        values: [{
-            from_query: ['get_listing', 'categoryid'],
         }]
     },
     get_media: {
@@ -102,32 +91,28 @@ const ViewListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing', 'get_location', 'get_category', 'get_media'], {error_on_empty_response: true});
+}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true});
 
 const SearchListingTemplate = new SQLTemplate({
-    get_listing_desc: {
-        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, Country, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID JOIN Media ON Media.MediaID = (SELECT TOP 1 Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index) WHERE CategoryID = $1 AND ClosedDate IS NULL',
-        condition: (inputObject) => (!('accountID' in inputObject)),
+    get_listing: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL AND (ContributorID != $1 OR $1 IS NULL) ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
         values: [
-            {from_input: 'categoryID'},
-        ],
-    },
-    get_listing_desc_auth: {
-        text: 'SELECT ListingID, ContributorID, Title, Description, Condition, Country, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID JOIN Media ON Media.MediaID = (SELECT TOP 1 Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index) WHERE CategoryID = $1 AND ClosedDate IS NULL AND ContributorID != $2',
-        condition: (inputObject) => ('accountID' in inputObject),
-        values: [
-            {from_input: 'categoryID'},
             {from_input: 'accountID'},
+            {from_input: 'categoryID'},
+            {from_input: 'region'},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
         ],
     },
-}, ['get_listing_desc', 'get_listing_desc_auth']);
+}, ['get_listing']);
 
 const CreateListingTemplate = new SQLTemplate({
     create_address: {
-        text: 'INSERT INTO Address (Country, Postcode, UserID) VALUES ($1, $2, $3) RETURNING AddressID',
+        text: 'INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ($1, $2, $3, $4) RETURNING AddressID',
         condition: (inputObject) => (typeof inputObject['location'] === 'object'),
         values: [
             (inputObject) => inputObject['location']['country'],
+            (inputObject) => inputObject['location']['region'],
             (inputObject) => inputObject['location']['postcode'],
             {from_input: 'accountID'},
         ],
@@ -146,7 +131,7 @@ const CreateListingTemplate = new SQLTemplate({
                     return inputObject['location'];
                 }
             },
-            {from_input: 'category'},
+            {from_input: 'categoryID'},
         ],
     },
     // TODO add media support

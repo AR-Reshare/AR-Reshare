@@ -47,27 +47,23 @@ describe('System Test 9 - /listing/view', () => {
             .expect(200)
             .expect(res => {
                 expect(res.body).toMatchObject({
-                    listingId: 2,
-                    contributorId: 2,
+                    listingID: 2,
+                    contributorID: 2,
                     title: 'Stuff',
                     description: 'Some things',
                     condition: 'poor',
                     location: {
                         country: 'US',
+                        region: 'Abcdef, GH',
                         postcode: 'asdfgh',
                     },
-                    category: {
-                        categoryname: 'Misc',
-                        icon: null, // TODO icon test
-                        colour: 'FFFFFFFF',
-                        parentcategory: null,
-                    },
+                    categoryID: 1,
                     media: [], // TODO media test
                 });
                 expect(res.body).toHaveProperty('creationDate');
                 expect(res.body).toHaveProperty('modificationDate');
                 expect(res.body).not.toHaveProperty('closedDate');
-                expect(res.body).not.toHaveProperty('receiverId');
+                expect(res.body).not.toHaveProperty('receiverID');
             });
     });
 });
