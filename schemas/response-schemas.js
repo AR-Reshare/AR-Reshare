@@ -51,6 +51,10 @@ const ResponseTemplateDict = {
         out_name: 'categories',
         rows_with_fields: ['categoryID'],
     }]),
+    'create-account': new ResponseTemplate([], {
+        null: 201,
+        'EmptyResponseError': 409,
+    }),
     'close-account': new ResponseTemplate([], {}),
     'login': new ResponseTemplate([], {}),
     'view-accountListing': listingDetails,

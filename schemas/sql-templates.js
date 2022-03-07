@@ -12,6 +12,31 @@ const ListCategoryTemplate = new SQLTemplate({
     }
 }, ['get_categories']);
 
+const CreateAccountTemplate = new SQLTemplate({
+    create_account: {
+        text: 'INSERT INTO Account (FullName, Email, Passhash, DoB) VALUES ($1, $2, $3, $4) ON CONFLICT (Email) DO NOTHING RETURNING UserID ',
+        values: [
+            {from_input: 'name'},
+            {from_input: 'email'},
+            {from_input: 'passhash'},
+            {from_input: 'dob'},
+        ]
+    },
+    store_address: {
+        text: 'INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ($1, $2, $3, $4) RETURNING AddressID',
+        condition: (inputObject) => ('address' in inputObject),
+        values: [
+            (inputObject) => inputObject['address']['country'],
+            (inputObject) => inputObject['address']['region'],
+            (inputObject) => inputObject['address']['postcode'],
+            {from_query: ['create_account', 'userid']},
+        ]
+    }
+}, ['create_account', 'store_address'], {
+    drop_from_results: ['store_address'],
+    error_on_empty_response: true,
+});
+
 const CloseAccountTemplate = new SQLTemplate({
     close_account: {
         text: 'UPDATE Account SET DeletionDate = CURRENT_TIMESTAMP WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
@@ -153,6 +178,7 @@ const CloseListingTemplate = new SQLTemplate({
 
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
+    'create-account': CreateAccountTemplate,
     'close-account': CloseAccountTemplate,
     'login': LoginTemplate,
     'view-accountListing': ViewAccountListingTemplate,
