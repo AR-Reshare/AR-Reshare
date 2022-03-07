@@ -311,11 +311,8 @@ components:
     account-close:
       type: object
       required:
-      - email
       - password
       properties:
-        email:
-          $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
 
