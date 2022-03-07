@@ -198,8 +198,9 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
-        query:
-          $ref: 'parameters.yaml#/components/parameters/queryString'
+        categoryId:
+          $ref: 'parameters.yaml#/components/parameters/categoryId'
+  
 
   ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
   /account/saved-listings/search:
@@ -219,8 +220,10 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
-        query:
-          $ref: 'parameters.yaml#/components/parameters/queryString'
+        categoryId:
+          $ref: 'parameters.yaml#/components/parameters/categoryId'
+        region:
+          $ref: 'parameters.yaml#/components/parameters/region'
 
   ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
   ## that is saved is public) -- otherwise adversary has access to archived listings
@@ -331,10 +334,10 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
-        category:
-          $ref: 'parameters.yaml#/components/parameters/category'
-        query:
-          $ref: 'parameters.yaml#/components/parameters/queryString'
+        categoryId:
+          $ref: 'parameters.yaml#/components/parameters/categoryId'
+        region:
+          $ref: 'parameters.yaml#/components/parameters/region'
    
   /listing/create:
     post:
