@@ -53,8 +53,7 @@ components:
             $ref: 'schemas.yaml#/components/schemas/account-address-list'
 
     token-regeneration:
-      description: A token is trying to be regenerated from one that is going to expire soon
-      $ref: 'schemas.yaml#/components/responses/post'
+      description: The new token has been successfully generated
       headers:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
