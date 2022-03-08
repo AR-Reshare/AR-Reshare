@@ -14,6 +14,11 @@ const securitySchemaDefinitions = {
     
     'regenerate-token': new SecuritySchema('AA_TO'), // should regenerating a token require re-entering a password?
     
+    'request-reset' : new SecuritySchema('NA'), // NOTE: Should a token be generated to validate reset-execute?
+    'execute-reset' : new SecuritySchema('NA'),
+
+    'search-category': new SecuritySchema('NA'),
+
     // NOTE: this path is in question. See issue #25
     'create-account': new SecuritySchema('NA'),
 
@@ -23,10 +28,7 @@ const securitySchemaDefinitions = {
     'view-accountListing': new SecuritySchema('AA_TO'),
     'search-accountListing': new SecuritySchema('AA_TO'),
     'search-savedListing': new SecuritySchema('AA_TO'),
-
-    // NOTE: these paths are in question. See issue #24
-    // 'request-reset' : new SecuritySchema('NA'), // NOTE: Should a token be generated to validate reset-execute?
-    // 'execute-reset' : new SecuritySchema('NA'),
+    'search-address': new SecuritySchema('AA_TO'),
 
     'view-listing': new SecuritySchema('NA'),
     'search-listing': new SecuritySchema('NA'),

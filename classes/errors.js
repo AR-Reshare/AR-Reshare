@@ -7,6 +7,27 @@ class EmailConfigurationReadError extends Error {
         this.name = 'EmailConfigurationReadError';
     }
 }
+      
+class PipelineInitialisationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'PipelineInitialisationError';
+    }
+}
+
+class MissingTemplateError extends PipelineInitialisationError {
+    constructor(message) {
+        super(message);
+        this.name = 'MissingTemplateError';
+    }
+}
+
+class PipelineExecutionError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'PipelineExecutionError';
+    }
+}
 
 class PrivateKeyReadError extends Error {
     constructor(message) {
@@ -187,14 +208,25 @@ class BackreferenceError extends QueryError {
 class QueryExecutionError extends QueryError {
     // Represents an error in executing a query
     // i.e. PostgreSQL-side
-    constructor(message) {
+    constructor(message, code) {
         super(message);
         this.name = 'QueryExecutionError';
+        this.code = code;
+    }
+}
+
+class ForeignKeyError extends QueryExecutionError {
+    constructor(message) {
+        super(message);
+        this.name = 'ForeignKeyError';
     }
 }
 
 module.exports = {
     EmailConfigurationReadError,
+    PipelineInitialisationError,
+    MissingTemplateError,
+    PipelineExecutionError,
     PrivateKeyReadError,
     AlreadyAuthenticatedError,
     UnauthenticatedUserError,
@@ -220,5 +252,6 @@ module.exports = {
     QueryConstructionError,
     BackreferenceError,
     QueryExecutionError,
+    ForeignKeyError,
     // ...
 };

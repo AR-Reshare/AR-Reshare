@@ -186,7 +186,7 @@ describe('Integration Test 14 - Pipeline.Store', () => {
             test: {
                 text: 'SELECT userid FROM Account WHERE fullname = $1',
                 values: [
-                    {from_input: 'nonexistantkey'},
+                    () => {throw new Error()},
                 ],
             },
         };

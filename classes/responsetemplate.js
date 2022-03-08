@@ -1,8 +1,36 @@
 const { TemplateError } = require('./errors');
 
 const DefaultErrorMap = {
-    null: 200,
-    AbsentArgumentError: 400,
+    'null': 200,
+    'PipelineInitialisationError': 500,
+    'MissingTemplateError': 500,
+    'PipelineExecutionError': 500,
+    'PrivateKeyReadError': 500,
+    'AlreadyAuthenticatedError': 401,
+    'UnauthenticatedUserError': 401,
+    'UnauthorizedUserError': 403,
+    'InvalidCredentialsError': 401,
+    'InvalidTokenError': 401,
+    'TamperedTokenError': 401,
+    'ExpiredTokenError': 401,
+    'NotBeforeTokenError': 401,
+    'ServerException': 500,
+    'TemplateError': 500,
+    'ValidationError': 400,
+    'AbsentArgumentError': 400,
+    'UnprocessableArgumentError': 422,
+    'InvalidArgumentError': 400,
+    'DirtyArgumentError': 400,
+    'QueryError': 500,
+    'DatabaseConnectionError': 500,
+    'DBClientNotAvailableError': 500,
+    'QueryTemplateError': 500,
+    'EmptyQueryError': 500,
+    'EmptyResponseError': 404,
+    'QueryConstructionError': 500,
+    'BackreferenceError': 500,
+    'QueryExecutionError': 500,
+    'ForeignKeyError': 404,
 };
 
 const isString = (aString) => {

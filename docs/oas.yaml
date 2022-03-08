@@ -24,30 +24,29 @@ info:
 
 
 paths:
-  /index:
-    get:
-      description: Returns the index page of the Application
-      responses:
-        '200':
-          description: The index page is succesfully returned
-
   /:
     get:
-      description: Returns the index page of the Application
+      description: Returns the API specification page
       responses:
         '200':
-          description: The index page is succesfully returned
+          description: The page is succesfully returned
+          
+  /index:
+    get:
+      description: Returns the API specification page
+      responses:
+        '200':
+          description: The page is succesfully returned
+
 
   /token/regeneration:
     post:
-      description: Regenerates a new token based of a currently valid token (that is about to expire)
+      description: Regenerates a new token based off of a currently valid token (that is about to expire)
       responses:
         '201':
-          description: The new token has been successfully generated
           $ref: 'responses.yaml#/components/responses/token-regeneration'
         '400':
           description: A valid old token wasn't provided in the header of the HTTP request
-          $ref: 'responses.yaml#/components/responses/post'
 
   /passwordResetRequest:
     post:
@@ -55,11 +54,9 @@ paths:
       responses:
         '200':
           description: The request was processed without any exceptions (The email may or may not exist in the db)
-          $ref: 'responses.yaml#/components/responses/post'
         '400':
           description: The email provided was of an invalid format
-          $ref: 'responses.yaml#/components/responses/post'
-      requestBodies:
+      requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
   
   ## I was considering splitting this up into two but want to reduce the number of endpoints
@@ -69,10 +66,8 @@ paths:
       responses:
         '200':
           description: The request was executed successfully and the account's password has now been changed
-          $ref: 'responses.yaml#/components/responses/post'
         '400':
           description: The arguments were of invalid formats
-          $ref: 'responses.yaml#/components/responses/post'
       requestBodies:
         $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
 
@@ -166,7 +161,7 @@ paths:
 
   /account/listing/view:
     get:
-      description: Returns the listing which matches the value of the parameter "listingId"
+      description: Returns the listing which matches the value of the parameter "listingID"
       responses:
         '200': # Success
           description: The listing exists and it is returned
@@ -187,10 +182,10 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings-private'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
         '400': # Bad Request
           description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-private'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
@@ -323,15 +318,13 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings-public'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
         '400': # Bad Request
-          description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-public'
+          description: The request did not include a valid query parameter'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
         categoryId:
