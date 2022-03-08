@@ -38,6 +38,7 @@
     "is-callable": "^1.2.4",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.3",
+    "nodemailer": "^6.7.2",
     "pg": "^8.7.1",
     "readline-sync": "^1.4.10",
     "secure-random-password": "^0.2.3"

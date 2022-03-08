@@ -1,6 +1,13 @@
 /* This will define the custom error classes to use throughout the project
 */
 
+class EmailConfigurationReadError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'EmailConfigurationReadError';
+    }
+}
+      
 class PipelineInitialisationError extends Error {
     constructor(message) {
         super(message);
@@ -216,6 +223,7 @@ class ForeignKeyError extends QueryExecutionError {
 }
 
 module.exports = {
+    EmailConfigurationReadError,
     PipelineInitialisationError,
     MissingTemplateError,
     PipelineExecutionError,

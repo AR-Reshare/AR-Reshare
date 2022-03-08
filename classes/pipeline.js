@@ -1,8 +1,9 @@
 const { QueryExecutionError, ForeignKeyError } = require("./errors");
 
 class Pipeline {
-    constructor(db, logger=console) {
+    constructor(db, logger=console, emailTransporter=null) {
         this.db = db; // expected to implement simpleQuery and complexQuery
+        this.emailTransporter = emailTransporter;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
         this.SecurityValidate = this.SecurityValidate.bind(this);
@@ -109,6 +110,24 @@ class Pipeline {
     }
 
     /**
+     * Creates and executes a transaction on the database
+     * @param {emailTemplate} emailTemplate Template of the email transaction, from the emailTemplate class
+     * @param {object} inputObject Object whose values to insert into the email transaction
+     * @returns 
+     */
+    EmailRespond(emailTemplate, email, argsReplaceObject) {
+        return new Promise((resolve, reject) => {
+            let out;
+            try {
+                out = emailTemplate.process(this.emailTransporter, email, argsReplaceObject);
+                resolve(out);
+            } catch (err){
+                reject(err);
+            }
+        });
+    }
+
+    /**
      * Builds and transmits a response
      * @param {ResponseTemplate} responseSchema ResponseTemplate describing this request type
      * @param {Response} res Response object for this request, provided by express
@@ -133,6 +152,7 @@ class Pipeline {
             resolve({status: statusCode, result: outputObject});
         });
     }
+
 
     PushRespond(pushSchema, inputObject, targetAccounts) {
         // pushSchema: an object detailing which values to include in the notification, as per schemas/push-schemas.js
