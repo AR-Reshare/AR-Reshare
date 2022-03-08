@@ -1,6 +1,6 @@
 class Pipeline {
     constructor(db, logger=console, emailTransporter=null) {
-        this.db = db; // expected to implement simpleQuery and complexQuery7
+        this.db = db; // expected to implement simpleQuery and complexQuery
         this.emailTransporter = emailTransporter;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
