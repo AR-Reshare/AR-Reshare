@@ -54,6 +54,7 @@ components:
 
     token-regeneration:
       description: A token is trying to be regenerated from one that is going to expire soon
+      $ref: 'schemas.yaml#/components/responses/post'
       headers:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'

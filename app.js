@@ -11,7 +11,6 @@ class App {
         const NF = new pipes.UnknownEndpointPipeline(db, logger);
 
         // one pipeline instance per endpoint
-        const Index = NA;
         const RegenerateToken = NA;
         const RequestReset = NA;
         const ExecuteReset = NA;
@@ -34,9 +33,11 @@ class App {
         const CreateMessage = NA; // CreateEntity
         const ListConversation = NA; // SearchEntity
         const ViewConversation = NA; // ViewEntity
+
+        // serve the docs directory statically, so the index page becomes the API docs
+        app.use(express.static('docs'));
         
         // connect endpoints to their relevant pipeline instances
-        app.get('/', Index.Execute);
         app.post('/token/regeneration', RegenerateToken.Execute);
         app.post('/passwordResetRequest', RequestReset.Execute);
         app.post('/passwordResetExecute', ExecuteReset.Execute);
