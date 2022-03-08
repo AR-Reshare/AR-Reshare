@@ -1,5 +1,6 @@
 const SQLTemplate = require('../../classes/sqltemplate');
 const {QueryConstructionError, EmptyQueryError} = require('../../classes/errors');
+const { expect } = require('@jest/globals');
 
 describe('Unit Test 22 - SQLTemplate.build', () => {
     test('Class 1: immediate query', () => {
@@ -272,7 +273,12 @@ describe('Unit Test 22 - SQLTemplate.build', () => {
         let inputObject = {valid: 5};
 
         let template = new SQLTemplate(queries, order);
-        expect(() => template.build(inputObject)).toThrow(QueryConstructionError);
+        let [names, result] = template.build(inputObject);
+
+        expect(result).toHaveLength(1);
+        expect(result[0]).toHaveProperty('text', queries.test.text);
+        expect(result[0]).toHaveProperty('values', [null]);
+        expect(names).toStrictEqual(['test']);
     });
 
     test('Class 13: query with exceptional condition', () => {

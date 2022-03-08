@@ -28,12 +28,12 @@ components:
     user:
       type: object
       required:
-      - userId
+      - userID
       - name
       - bio
       - profilePics
       properties:
-        userId:
+        userID:
           $ref: '#/components/schemas/id'
         name:
           $ref: '#/components/schemas/name'
@@ -71,21 +71,23 @@ components:
     listing-own:
       type: object
       required: 
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
+      - listingID # the id of the listing
+      - contributorID # the id of the contributor
       - title
       - description
       - location
-      - categoryId
+      - categoryID
       - condition
       - media ## this will encompass videos, photos and what other
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
+      optional:
+      - receiverID
       - closedDate
       properties:
-        listingId:
+        listingID:
           $ref: '#/components/schemas/id'
-        contributorId:
+        contributorID:
           $ref: '#/components/schemas/id'
         title:
           $ref: '#/components/schemas/title'
@@ -93,7 +95,7 @@ components:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        categoryId:
+        categoryID:
           $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
@@ -105,25 +107,27 @@ components:
           $ref: '#/components/schemas/date'
         closedDate:
           $ref: '#/components/schemas/date'
+        receiverID:
+          $ref: '#/components/schemas/id'
 
     listing-view:
       type: object
       # these are the required parameters
       required:
-      - listingId # the id of the listing
-      - contributorId # the id of the contributor
+      - listingID # the id of the listing
+      - contributorID # the id of the contributor
       - title
       - description
       - location
-      - categoryId
+      - categoryID
       - condition
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
       - media ## this will encompass videos, photos and what other
       properties:
-        listingId:
+        listingID:
           $ref: '#/components/schemas/id'
-        contributorId:
+        contributorID:
           $ref: '#/components/schemas/id'
         title:
           $ref: '#/components/schemas/title'
@@ -131,7 +135,7 @@ components:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        categoryId:
+        categoryID:
           $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
@@ -145,16 +149,16 @@ components:
     listing-descriptor:
       type: object
       required:
-      - listingId
-      - contributorId
+      - listingID
+      - contributorID
       - title
       - location
-      - categoryId
+      - categoryID
       - media
       properties:
-        listingId:
+        listingID:
           $ref: '#/components/schemas/id'
-        contributorId:
+        contributorID:
           $ref: '#/components/schemas/id'
         location:
           $ref: '#/components/schemas/address'
@@ -162,7 +166,7 @@ components:
           $ref: '#/components/schemas/media'
         condition:
           $ref: '#/components/schemas/condition'
-        categoryId:
+        categoryID:
           $ref: '#/components/schemas/id'
         title:
           $ref: '#/components/schemas/title'
@@ -187,16 +191,18 @@ components:
       required:
       - title
       - description
-      - location
-      - categoryId
+      - categoryID
       - condition
       - media ## this will encompass videos, photos and what other
+      oneOf:
+      - location
+      - addressID
       properties:
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        categoryId:
+        categoryID:
           $ref: '#/components/schemas/id'
         media:
           $ref: '#/components/schemas/media'
@@ -209,15 +215,14 @@ components:
       type: object
       required:
         - listingID
-        - outcome
-        - reason
+      optional:
+        - receiverID
       properties:
-        outcome:
-          type: string
-          format: enum(close)
-        reason:
-          type: string
-          format: enum(sold, removed)
+        listingID:
+          $ref: '#/components/schemas/id'
+        receiverID:
+          $ref: '#/components/schemas/id'
+        
 
     listing-modify:
       type: object
@@ -230,7 +235,7 @@ components:
           $ref: '#/components/schemas/password'
         variable-modification:
           $ref: '#/components/schemas/listing-modifiedDetails'
-        listingId:
+        listingID:
           $ref: '#/components/schemas/id'
     
     listing-modifiedDetails:
@@ -239,14 +244,14 @@ components:
       - title
       - description
       - location
-      - categoryId
+      - categoryID
       - media
       properties:
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
-        categoryId:
+        categoryID:
           $ref: '#/components/schemas/id'
         media:
           $ref: '#/components/schemas/media'
@@ -254,13 +259,13 @@ components:
     category-descriptor:
       type: object
       required:
-      - categoryId
+      - categoryID
       - categoryName
       - categoryPath
       - icon
       - color
       properties:
-        categoryId:
+        categoryID:
           $ref: '#/componnents/schemas/id'
         categoryName:
           $ref: '#/components/schemas/category'
@@ -281,9 +286,10 @@ components:
       - email
       - password
       - dob # DoB (keeping lowecase for consistency on naming)
+      optional:
       - address
       properties:
-        userId:
+        name:
           $ref: '#/components/schemas/name'
         email:
           $ref: '#/components/schemas/email'
@@ -303,11 +309,14 @@ components:
       required:
       - email
       - password
+      - registrationToken ## this is what FCM calls it
       properties:
         email:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
+        registrationToken:
+          $ref: '#/components/schemas/id'
 
     account-close:
       type: object
@@ -349,7 +358,18 @@ components:
     account-address-list:
       type: array
       items:
-        $ref: '#/components/schemas/address'
+        $ref: '#/components/schemas/account-address'
+
+    account-address:
+      type: object
+      required:
+        - addressID
+        - address
+      properties:
+        addressID:
+          $ref: '#/components/schemas/id'
+        address:
+          $ref: '#/components/schemas/address'
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
     ## when viewing future data

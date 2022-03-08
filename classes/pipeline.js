@@ -1,3 +1,5 @@
+const { QueryExecutionError, ForeignKeyError } = require("./errors");
+
 class Pipeline {
     constructor(db, logger=console) {
         this.db = db; // expected to implement simpleQuery and complexQuery
@@ -21,7 +23,8 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             let userID;
             try {
-                userID = securitySchema.process(this.db, token, query);
+                if (token) userID = securitySchema.process(this.db, token, query);
+                else userID = securitySchema.noToken();
                 // console.log(userID);
                 resolve(userID);
             } catch (err) {
@@ -78,17 +81,29 @@ class Pipeline {
                 }
             };
 
+            let prepAndReject = (err) => {
+                if (!(err instanceof QueryExecutionError)) {
+                    reject(err);
+                } else {
+                    if (err.code === '23503' || err.message.includes('owner_agrees')) {
+                        reject(new ForeignKeyError(err.message));
+                    } else {
+                        reject(err);
+                    }
+                }
+            };
+
             // execute transaction
             if (transaction.length === 0) {
                 resolve([]); // no queries, so don't do anything
             } else if (transaction.length === 1) {
                 if ('values' in transaction[0]) {
-                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, reject);
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, prepAndReject);
                 } else {
-                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, reject);
+                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, prepAndReject);
                 }
             } else {
-                this.db.complexQuery(transaction).then(prepAndResolve, reject);
+                this.db.complexQuery(transaction).then(prepAndResolve, prepAndReject);
             }
         });
     }

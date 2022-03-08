@@ -156,7 +156,7 @@ class AuthenticationHandler extends SecurityValMethods{
 
     static async isUserCredentialsValid(db, email, password){
         // 1. Check whether the userID and the hashed (maybe salted and peppered?) password is used
-        const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1';
+        const getHash = 'SELECT userid, passhash FROM Account WHERE email = $1 AND DeletionDate IS NULL';
         let userID;
         return db.simpleQuery(getHash, [email]).then(res => {
             if (res[0].length === 0){
@@ -210,8 +210,16 @@ class SecuritySchema extends SecurityValMethods{
         return await this.verifyAuthentication(db, decodedToken, query); 
     }
 
+    noToken(){
+        if (this.authenticationType === 'NA') {
+            return null;
+        } else {
+            throw new UnauthenticatedUserError();
+        }
+    }
+
     // TODO: Rename this function to something more correctly descriptive
-    verifyAuthentication(db, decodedToken, query){
+    async verifyAuthentication(db, decodedToken, query){
         // NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
         // NOTE: Authorization doesn't happen here to reduce overhead from multiple calls to the db for same resource - It will be handled by the data-store component
         if (this.authenticationType === 'NA'){
@@ -220,14 +228,14 @@ class SecuritySchema extends SecurityValMethods{
             if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else {
-                return true;
+                return decodedToken.userID;
             }
         } else if (this.authenticationType === 'AA_TAP'){
             if (!decodedToken){
                 throw new UnauthenticatedUserError();
             } else if (query.password === undefined){
-                throw new AbsentArgumentError();
-            } else if (!this.isUserPasswordValid(db, decodedToken.userID, query.password)){
+                throw new InvalidCredentialsError();
+            } else if (!await this.isUserPasswordValid(db, decodedToken.userID, query.password)){
                 throw new InvalidCredentialsError();
             } else {
                 return decodedToken.userID;
@@ -239,7 +247,7 @@ class SecuritySchema extends SecurityValMethods{
 
     isUserPasswordValid(db, userID, password){
         // TODO: Check whether this sql query string is correct
-        const getHash = 'SELECT passhash FROM Account WHERE userid = $1';
+        const getHash = 'SELECT passhash FROM Account WHERE userid = $1 AND DeletionDate IS NULL';
         return db.simpleQuery(getHash, [userID]).then(res => {
             if (res.length === 0){
                 throw new InvalidCredentialsError();

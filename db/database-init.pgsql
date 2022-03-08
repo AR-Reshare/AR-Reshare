@@ -15,8 +15,6 @@ CREATE DOMAIN mimetype AS citext
 
 -- Enums should be listed here in the order they are used in the CREATE TABLEs
 CREATE TYPE itemCondition AS ENUM ('poor', 'average', 'good', 'like new', 'new');
-CREATE TYPE reportReason AS ENUM ('request', 'scam', 'illegal content', 'malicious language', 'other');
-CREATE TYPE reportStatus AS ENUM ('reported', 'investigating', 'closed');
 
 -- Table creations are in dependency order, since foreign keys must always reference existing tables
 -- All text fields should be NOT NULL, since if NULL was allowed there would be two different values for nothing - NULL or an empty string
@@ -35,6 +33,7 @@ CREATE TABLE Account (
 CREATE TABLE Address (
     AddressID serial4 PRIMARY KEY,
     Country varchar NOT NULL,
+    Region VARCHAR NOT NULL,
     PostCode varchar NOT NULL,
     UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
 );
@@ -42,9 +41,9 @@ CREATE TABLE Address (
 CREATE TABLE Category (
     CategoryID serial4 PRIMARY KEY,
     CategoryName varchar NOT NULL,
-    Icon bytea NOT NULL,
+    Icon bytea,
     Colour char(8) NOT NULL, -- HEX code RGBA
-    Prompt varchar NOT NULL,
+    Prompt varchar,
     ParentCategory int4 REFERENCES Category ON DELETE SET NULL
 );
 
@@ -103,20 +102,21 @@ CREATE TABLE Media (
     MediaID serial4 PRIMARY KEY,
     MimeType mimetype NOT NULL,
     URL varchar NOT NULL,
-    Index int2 NOT NULL DEFAULT 0
+    Index int2 NOT NULL DEFAULT 0,
+    UserID int4 REFERENCES Account ON DELETE CASCADE,
+    ListingID int4 REFERENCES Listing ON DELETE CASCADE,
+    MessageID int4 REFERENCES Message ON DELETE CASCADE,
+    UNIQUE (Index, UserID, ListingID, MessageID),
+    CHECK ((UserID IS NOT NULL AND ListingID IS NULL AND MessageID IS NULL) OR
+           (UserID IS NULL AND ListingID IS NOT NULL AND MessageID IS NULL) OR
+           (UserID IS NULL AND ListingID IS NULL AND MessageID IS NOT NULL))
 );
 
-CREATE TABLE ProfilePicture (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    UserID int4 NOT NULL REFERENCES Account ON DELETE CASCADE
-);
+-- Some functions for more complex constraints
+CREATE OR REPLACE FUNCTION is_address_owned_by (int4, int4) RETURNS boolean AS $$
+    SELECT EXISTS (
+        SELECT 1 FROM Address WHERE AddressID = $1 AND UserID = $2
+    );
+$$ LANGUAGE SQL;
 
-CREATE TABLE ListingMedia (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE
-);
-
-CREATE TABLE MessageMedia (
-    MediaID int4 PRIMARY KEY REFERENCES Media ON DELETE CASCADE,
-    MessageID int4 NOT NULL REFERENCES Message ON DELETE CASCADE
-);
+ALTER TABLE Listing ADD CONSTRAINT addr_owner_agrees CHECK (is_address_owned_by(AddressID, ContributorID));
