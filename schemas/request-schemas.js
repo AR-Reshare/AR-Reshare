@@ -90,7 +90,7 @@ const loginTemplate = new RequestTemplate([{
     required: true,
     conditions: [IsNonEmptyString],
 }, {
-    in_name: 'device_token',
+    in_name: 'deviceToken',
     required: false,
 }]);
 
