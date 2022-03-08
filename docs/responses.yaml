@@ -36,10 +36,7 @@ components:
     # TODO: I believe authentication information can be removed from here and put into a seperate security component
     account-login:
       description: The account was sign in
-      content:
-        'application/json':
-          schema:
-            type: object
+      $ref: '#/components/responses/post'
       headers:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'

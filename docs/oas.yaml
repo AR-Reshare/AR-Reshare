@@ -166,7 +166,7 @@ paths:
 
   /account/listing/view:
     get:
-      description: Returns the listing which matches the value of the parameter "listingId"
+      description: Returns the listing which matches the value of the parameter "listingID"
       responses:
         '200': # Success
           description: The listing exists and it is returned
@@ -187,10 +187,10 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings-private'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
         '400': # Bad Request
           description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-private'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
@@ -270,15 +270,13 @@ paths:
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings-public'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
         '400': # Bad Request
-          description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-public'
+          description: The request did not include a valid query parameter'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
         maxResults:
           $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
         startResults:
           $ref: 'parameters.yaml#/components/parameters/startResults'
         query:
