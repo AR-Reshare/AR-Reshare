@@ -52,3 +52,44 @@ class PushNotifications {
     }
 
 }
+
+
+// NOTE: THis class needs to handle
+// 1. Taking templates and replacing information there with the user-specific data 
+// 2. Then send this message to the FCM backend HTTP v1 service via the sdk
+
+// 2a. If too busy, then we keep on trying (exponential backoff)
+// 2b. If stale then we want to manipulate the database to remove the token
+
+// NOTE: It also needs to handle
+// 1. storing device token hashes in the database for a specific user
+// 2. ...
+
+class PushNotificationsTemplates {
+    static messageSend = {
+        notification: {
+            title: '${senderName} sent you a message',
+            body: '${senderName} said \'${senderMessage}\''
+          }
+        };
+
+    static messageClose = {
+        notification: {
+            title: '${senderName} has closed the conversation',
+            // body: ''
+          }       
+    };
+
+    static messageCreate = {
+        notification: {
+            title: '${senderName} has started a conversation',
+            // body: ''
+          }
+    };
+
+    static templateArguments = {
+        'messageSend': ['senderName', 'senderMessage'],
+        'messageClose': ['senderName'],
+        'messageStart': ['senderName'],
+    };
+}
