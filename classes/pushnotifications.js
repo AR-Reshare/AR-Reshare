@@ -33,3 +33,6 @@
 // e.g. app restoration on new device, uninstall/reinstall app, user clears app data
 
 // Recomendation: Update tokens on a regular basis
+
+const {initializeApp} = require('firebase-admin/app');
+
