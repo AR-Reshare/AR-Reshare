@@ -60,7 +60,7 @@ const ResponseTemplateDict = {
     'view-accountListing': listingDetails,
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',
-        rows_with_fields: ['addressid'],
+        rows_with_fields: ['addressID'],
     }]),
     'view-listing': listingDetails,
     'search-listing': ListingDescArray,

@@ -90,7 +90,7 @@ const ViewAccountListingTemplate = new SQLTemplate({
 
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
-        text: 'SELECT * FROM Address WHERE UserID = $1',
+        text: 'SELECT AddressID AS "addressID", Country, Region, Postcode FROM Address WHERE UserID = $1',
         values: [{
             from_input: 'accountID',
         }],
