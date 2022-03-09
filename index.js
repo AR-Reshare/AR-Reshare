@@ -12,7 +12,7 @@ const logger = console;
 const app = new App(db, logger);
 
 db.testConnection().then(() => {
-   app.listen(8080, () => {
+   app.listen(process.env.PORT, () => {
       console.log(`Listening on port 8080`);
    });
 }).catch(console.error);
