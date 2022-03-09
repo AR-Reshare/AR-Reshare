@@ -114,10 +114,10 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetStatus).toBeCalledWith(err);
             expect(mockGetResponse).not.toBeCalled();
             expect(mockStatus).toBeCalledWith(status);
-            expect(mockSend).toBeCalledWith(null);
+            expect(mockSend).toBeCalledWith({success: true});
 
             expect(out).toHaveProperty('status', status);
-            expect(out).toHaveProperty('result', null);
+            expect(out).toHaveProperty('result', {success: true});
         });
     });
 });

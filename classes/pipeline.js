@@ -142,7 +142,8 @@ class Pipeline {
             
             let outputObject = null;
             if (statusCode >= 200 && statusCode < 300) {
-                outputObject = inputArray === null ? null : responseSchema.getResponse(inputArray);
+                outputObject = inputArray === null ? {success: true} : responseSchema.getResponse(inputArray);
+                outputObject = Object.keys(outputObject).length === 0 ? {success: true} : outputObject;
             } else {
                 outputObject = {
                     error: err.message
