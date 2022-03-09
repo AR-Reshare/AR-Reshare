@@ -77,7 +77,7 @@ paths:
       responses:
         '200':
           description: The categories list was successfully retrieved
-          $ref: 'responses.yaml#/components/responses/category-descriptor-list'
+          $ref: 'responses.yaml#/components/responses/category-descriptors'
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:

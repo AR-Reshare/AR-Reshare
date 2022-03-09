@@ -58,12 +58,12 @@ components:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
 
-    categories-list:
-      description: A list of the currently available categories
+    category-descriptors:
+      description: A list of the currently available category descriptors
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/categories-list'
+            $ref: 'schemas.yaml#/components/schemas/category-descriptors'
 
     ####################### COMMS RESPONSES #######################
     conversation-descriptors:

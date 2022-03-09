@@ -266,7 +266,7 @@ components:
       - color
       properties:
         categoryID:
-          $ref: '#/componnents/schemas/id'
+          $ref: '#/components/schemas/id'
         categoryName:
           $ref: '#/components/schemas/category'
         categoryPath: ## This can be used to derived parent categories
@@ -276,7 +276,11 @@ components:
         color:
           $ref: '#/components/schemas/color'
 
-
+    category-descriptors:
+      type: array
+      items:
+        $ref: '#/components/schemas/category-descriptor'
+      
 
     ######################## ACCOUNT SCHEMAS ###########################
     account-signup:
@@ -443,7 +447,7 @@ components:
       - textContent
       properties:
         listingID:
-          $ref: '#/components/schemas/listingID'
+          $ref: '#/components/schemas/id'
         datetime:
           $ref: '#/components/schemas/datetime'
         mediaContent:
