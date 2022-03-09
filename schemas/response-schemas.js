@@ -65,7 +65,7 @@ const ResponseTemplateDict = {
     'view-listing': listingDetails,
     'search-listing': ListingDescArray,
     'create-listing': new ResponseTemplate([{
-        out_name: 'listingID',
+        out_name: 'success',
         field: 'listingid',
     }], {null: 201}),
     'close-listing': new ResponseTemplate([], {}),
