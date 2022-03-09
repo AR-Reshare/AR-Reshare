@@ -1,11 +1,11 @@
-CREATE USER :account WITH ENCRYPTED PASSWORD :password;
-CREATE DATABASE :account WITH OWNER :account;
+-- CREATE USER :account WITH ENCRYPTED PASSWORD :password;
+-- CREATE DATABASE :account WITH OWNER :account;
 
-\c :account;
+-- \c :account;
 
 CREATE EXTENSION citext;
 
-SET ROLE :account;
+-- SET ROLE :account;
 
 CREATE DOMAIN passtype AS VARCHAR
     CHECK ( value ~ '^\$2(a|b)\$\d+\$[A-Za-z0-9./$]{53}$' ); -- enforce bcrypt
