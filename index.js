@@ -1,8 +1,12 @@
 const App = require('./app');
 const Database = require('./classes/database');
-const credentials = require('./connection.json');
 
-const db = new Database(credentials['db']);
+const db = new Database({
+   connectionString: process.env.DATABASE_URL,
+   ssl: {
+     rejectUnauthorized: false
+   }
+ });
 const logger = console;
 
 const app = new App(db, logger);
