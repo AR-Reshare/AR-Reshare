@@ -81,7 +81,7 @@ paths:
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
-    post:
+    put:
       description: Creates an account with request arguments
       responses:
         '201': # Succesfully created
@@ -100,7 +100,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
                
   /account/close:
-    post: # not delete
+    patch: # not delete
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
         '200': # Success
@@ -141,7 +141,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
      
   /account/modify:
-    put:
+    patch:
       description: Modifies the details of the current account
       responses:
         '200': # Success
@@ -333,7 +333,7 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/region'
    
   /listing/create:
-    post:
+    put:
       description: Creates a new listing
       responses: 
         '201': # Successfully Created
@@ -349,7 +349,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
-    put:
+    patch:
       description: Modifies the listings
       responses:
         '200': # Success
@@ -371,7 +371,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /listing/close:
-    post:
+    patch:
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       responses:
         '200': # Success
@@ -407,7 +407,7 @@ paths:
 
   # NOTE: All of these will be using some authentication token (e.g. jwt)
   /conversation/create:
-    post:
+    put:
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
         '201': # Successfully Created
@@ -435,7 +435,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
   /conversation/close:
-    post:
+    patch:
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
         '200': # Success
@@ -457,7 +457,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
   /conversation/message:
-    post:
+    put:
       description: Sends a message to a conversation via it's conversationID
       responses:
         '200': # Success
