@@ -141,12 +141,16 @@ class Pipeline {
             res.status(statusCode);
             
             let outputObject = null;
-            if (statusCode >= 200 && statusCode < 300 && inputArray !== null) {
-                outputObject = responseSchema.getResponse(inputArray);
+            if (statusCode >= 200 && statusCode < 300) {
+                outputObject = inputArray === null ? {success: true} : responseSchema.getResponse(inputArray);
+                outputObject = Object.keys(outputObject).length === 0 ? {success: true} : outputObject;
+            } else {
+                outputObject = {
+                    error: err.message
+                };
             }
 
-            if (outputObject) res.send(outputObject);
-            else res.end();
+            res.send(outputObject);
             
             // mainly returned so that wrappers can check the status code
             resolve({status: statusCode, result: outputObject});
