@@ -3,7 +3,7 @@
  * Pipeline.Store, and whatever other functions end up accessing the database, should do so by calling something in this file.
  */
 
-const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError, BackreferenceError} = require('./errors');
+const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError, BackreferenceError, ForeignKeyError} = require('./errors');
 const {Pool} = require('pg');
 const isCallable = require('is-callable');
 
@@ -92,7 +92,7 @@ class Database {
                 resolve([res.rows]); // put into unit list for consistency with complexQuery
             }).catch(err => {
                 // query failed
-                reject(new QueryExecutionError(err.message));
+                reject(new QueryExecutionError(err.message, err.code));
             });
         });
     }
@@ -123,7 +123,7 @@ class Database {
                     // a query failed
                     if (!(err instanceof QueryError)) {
                         // cast non-QueryErrors to QueryExecutionError
-                        err = new QueryExecutionError(err.message);
+                        err = new QueryExecutionError(err.message, err.code);
                     }
                     finish = () => reject(err);
                     return client.query('ROLLBACK');

@@ -92,13 +92,13 @@ components:
     ################# PASSWORD-RESET REQUESTBODIES ##################
     password-reset-request:
       content:
-      'application/json':
-        schema:
-          $ref: 'schemas.yaml#/components/schemas/password-reset-request'
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/password-reset-request'
 
     password-reset-execute:
       content:
-      'application/json':
-        schema:
-          $ref: 'schemas.yaml#/components/schemas/password-reset-execute'
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/password-reset-execute'
         

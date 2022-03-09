@@ -1,6 +1,9 @@
+const { QueryExecutionError, ForeignKeyError } = require("./errors");
+
 class Pipeline {
-    constructor(db, logger=console) {
+    constructor(db, logger=console, emailTransporter=null) {
         this.db = db; // expected to implement simpleQuery and complexQuery
+        this.emailTransporter = emailTransporter;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
         this.SecurityValidate = this.SecurityValidate.bind(this);
@@ -21,7 +24,8 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             let userID;
             try {
-                userID = securitySchema.process(this.db, token, query);
+                if (token) userID = securitySchema.process(this.db, token, query);
+                else userID = securitySchema.noToken();
                 // console.log(userID);
                 resolve(userID);
             } catch (err) {
@@ -78,17 +82,47 @@ class Pipeline {
                 }
             };
 
+            let prepAndReject = (err) => {
+                if (!(err instanceof QueryExecutionError)) {
+                    reject(err);
+                } else {
+                    if (err.code === '23503' || err.message.includes('owner_agrees')) {
+                        reject(new ForeignKeyError(err.message));
+                    } else {
+                        reject(err);
+                    }
+                }
+            };
+
             // execute transaction
             if (transaction.length === 0) {
                 resolve([]); // no queries, so don't do anything
             } else if (transaction.length === 1) {
                 if ('values' in transaction[0]) {
-                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, reject);
+                    this.db.simpleQuery(transaction[0].text, transaction[0].values).then(prepAndResolve, prepAndReject);
                 } else {
-                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, reject);
+                    this.db.simpleQuery(transaction[0].text).then(prepAndResolve, prepAndReject);
                 }
             } else {
-                this.db.complexQuery(transaction).then(prepAndResolve, reject);
+                this.db.complexQuery(transaction).then(prepAndResolve, prepAndReject);
+            }
+        });
+    }
+
+    /**
+     * Creates and executes a transaction on the database
+     * @param {emailTemplate} emailTemplate Template of the email transaction, from the emailTemplate class
+     * @param {object} inputObject Object whose values to insert into the email transaction
+     * @returns 
+     */
+    EmailRespond(emailTemplate, email, argsReplaceObject) {
+        return new Promise((resolve, reject) => {
+            let out;
+            try {
+                out = emailTemplate.process(this.emailTransporter, email, argsReplaceObject);
+                resolve(out);
+            } catch (err){
+                reject(err);
             }
         });
     }
@@ -118,6 +152,7 @@ class Pipeline {
             resolve({status: statusCode, result: outputObject});
         });
     }
+
 
     PushRespond(pushSchema, inputObject, targetAccounts) {
         // pushSchema: an object detailing which values to include in the notification, as per schemas/push-schemas.js
