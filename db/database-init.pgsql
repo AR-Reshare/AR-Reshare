@@ -72,7 +72,8 @@ CREATE TABLE Conversation (
     ReceiverID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ClosedDate timestamp
+    ClosedDate timestamp,
+    UNIQUE (ReceiverID, ListingID)
 );
 
 CREATE TABLE Message (

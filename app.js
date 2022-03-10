@@ -30,7 +30,7 @@ class App {
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // TODO: media upload
         const ModifyListing = NA; // ModifyEntity
         const CloseListing = new pipes.CloseEntityPipeline('listing', {}, db, logger);
-        const CreateConversation = NA; // CreateEntity
+        const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger); // CreateEntity
         const CloseConversation = NA; // CloseEntity
         const CreateMessage = NA; // CreateEntity
         const ListConversation = NA; // SearchEntity

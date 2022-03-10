@@ -1,4 +1,4 @@
-const { QueryExecutionError, ForeignKeyError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError } = require("./errors");
 
 class Pipeline {
     constructor(db, logger=console, emailTransporter=null) {
@@ -88,6 +88,8 @@ class Pipeline {
                 } else {
                     if (err.code === '23503' || err.message.includes('owner_agrees')) {
                         reject(new ForeignKeyError(err.message));
+                    } else if (err.code === '23505') {
+                        reject(new UniqueConstraintError(err.message));
                     } else {
                         reject(err);
                     }

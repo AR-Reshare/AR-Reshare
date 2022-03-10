@@ -222,6 +222,13 @@ class ForeignKeyError extends QueryExecutionError {
     }
 }
 
+class UniqueConstraintError extends QueryExecutionError {
+    constructor(message) {
+        super(message);
+        this.name = 'UniqueConstraintError';
+    }
+}
+
 module.exports = {
     EmailConfigurationReadError,
     PipelineInitialisationError,
@@ -253,5 +260,6 @@ module.exports = {
     BackreferenceError,
     QueryExecutionError,
     ForeignKeyError,
+    UniqueConstraintError,
     // ...
 };

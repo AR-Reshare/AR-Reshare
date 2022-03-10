@@ -199,6 +199,16 @@ const closeListingTemplate = new RequestTemplate([{
     ],
 }]);
 
+const createConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -224,7 +234,7 @@ const RequestTemplateDefinitions = {
     'modify-listing': null,
     'close-listing': closeListingTemplate,
 
-    'create-conversation': null,
+    'create-conversation': createConversationTemplate,
     'close-conversation': null,
     'create-message': null,
     'search-conversation': null,

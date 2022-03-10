@@ -37,3 +37,5 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '20-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '60-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '100-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);

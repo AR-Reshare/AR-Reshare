@@ -70,6 +70,10 @@ const ResponseTemplateDict = {
         field: 'listingid',
     }], {null: 201}),
     'close-listing': new ResponseTemplate([], {}),
+    'create-conversation': new ResponseTemplate([{
+        out_name: 'success',
+        field: 'conversationid',
+    }], {null: 201}),
 };
 
 module.exports = ResponseTemplateDict;

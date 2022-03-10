@@ -188,6 +188,16 @@ const CloseListingTemplate = new SQLTemplate({
     }
 }, ['close_listing'], {error_on_empty_response: true});
 
+const CreateConversationTemplate = new SQLTemplate({
+    create_conversation: {
+        text: 'INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) RETURNING ConversationID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
+    }
+}, ['create_conversation'], {error_on_empty_response: true});
+
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'create-account': CreateAccountTemplate,
@@ -200,6 +210,7 @@ const sqlTemplatesDict = {
     'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,
     'close-listing': CloseListingTemplate,
+    'create-conversation': CreateConversationTemplate,
 };
 
 module.exports = sqlTemplatesDict;
