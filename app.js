@@ -44,10 +44,10 @@ class App {
 
         app.get('/categories/list', ListCategories.Execute);
 
-        app.post('/account/create', CreateAccount.Execute);
-        app.post('/account/close', CloseAccount.Execute);
+        app.put('/account/create', CreateAccount.Execute);
+        app.patch('/account/close', CloseAccount.Execute);
         app.post('/account/login', Login.Execute);
-        app.put('/account/modify', ModifyAccount.Execute);
+        app.patch('/account/modify', ModifyAccount.Execute);
         app.get('/account/listing/view', ViewAccountListing.Execute);
         app.get('/account/listings/search', SearchAccountListing.Execute);
         app.get('/account/saved-listings/search', SearchSavedListing.Execute);
@@ -55,13 +55,13 @@ class App {
         
         app.get('/listing/view', ViewListing.Execute);
         app.get('/listings/search', SearchListing.Execute);
-        app.post('/listing/create', CreateListing.Execute);
-        app.put('/listing/modify', ModifyListing.Execute);
-        app.post('/listing/close', CloseListing.Execute);
+        app.put('/listing/create', CreateListing.Execute);
+        app.patch('/listing/modify', ModifyListing.Execute);
+        app.patch('/listing/close', CloseListing.Execute);
         
-        app.post('/conversation/create', CreateConversation.Execute);
-        app.post('/conversation/close', CloseConversation.Execute);
-        app.post('/conversation/message', CreateMessage.Execute);
+        app.put('/conversation/create', CreateConversation.Execute);
+        app.patch('/conversation/close', CloseConversation.Execute);
+        app.put('/conversation/message', CreateMessage.Execute);
         app.get('/conversations', ListConversation.Execute);
         app.get('/conversation/view', ViewConversation.Execute);
 
