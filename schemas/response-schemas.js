@@ -69,7 +69,7 @@ const ResponseTemplateDict = {
         out_name: 'success',
         field: 'listingid',
     }], {null: 201}),
-    'close-listing': new ResponseTemplate([], {}),
+    'close-listing': new ResponseTemplate([], {'BackreferenceError': 404}),
     'create-conversation': new ResponseTemplate([{
         out_name: 'success',
         field: 'conversationid',

@@ -42,3 +42,9 @@ INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
 INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 6, CURRENT_TIMESTAMP);
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (3, 2);
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 5);
+
+INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'test', 'test', 9);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (9, 'Test', 'test', 'good', 4, 1);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 18);
+
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 17);

@@ -44,7 +44,19 @@ const CloseAccountTemplate = new SQLTemplate({
             from_input: 'accountID',
         }],
     },
-}, ['close_account'], {error_on_empty_response: true});
+    close_listings: {
+        text: 'UPDATE Listing SET ClosedDate = CURRENT_TIMESTAMP WHERE ContributorID = $1',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+    close_conversations: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ReceiverID = $1 OR EXISTS (SELECT 1 FROM Listing WHERE ListingID = Conversation.ListingID AND ContributorID = $1)',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+}, ['close_account', 'close_listings', 'close_conversations'], {drop_from_results: ['close_listings', 'close_conversations'], error_on_empty_response: true});
 
 const LoginTemplate = new SQLTemplate({
     get_id: {
@@ -185,8 +197,14 @@ const CloseListingTemplate = new SQLTemplate({
             {from_input: 'listingID'},
             {from_input: 'receiverID'},
         ]
-    }
-}, ['close_listing'], {error_on_empty_response: true});
+    },
+    close_conversations: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ListingID = $1',
+        values: [
+            {from_query: ['close_listing', 'listingid']},
+        ]
+    },
+}, ['close_listing', 'close_conversations'], {drop_from_results: ['close_conversations'], error_on_empty_response: true});
 
 const CreateConversationTemplate = new SQLTemplate({
     create_conversation: {
