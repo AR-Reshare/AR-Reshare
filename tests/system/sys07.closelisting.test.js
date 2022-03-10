@@ -27,7 +27,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .send(data)
             .expect(401);
     });
@@ -39,7 +39,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(401);
@@ -51,7 +51,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -64,7 +64,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -77,7 +77,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -90,7 +90,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -103,7 +103,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(200);
@@ -117,7 +117,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -131,7 +131,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -145,7 +145,7 @@ describe('System Test 7 - /listing/close', () => {
         };
 
         return request(app.app)
-            .post('/listing/close')
+            .patch('/listing/close')
             .set('Authorization', token)
             .send(data)
             .expect(200);

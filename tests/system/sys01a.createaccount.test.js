@@ -22,7 +22,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(400);
     });
@@ -36,7 +36,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(409);
     });
@@ -52,7 +52,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(400);
     });
@@ -68,7 +68,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(400);
     });
@@ -83,7 +83,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(422);
     });
@@ -101,7 +101,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(400);
     });
@@ -115,7 +115,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(422);
     });
@@ -129,7 +129,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(201);
     });
@@ -147,7 +147,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(400);
     });
@@ -166,7 +166,7 @@ describe('System Test 1a - /account/create', () => {
         };
 
         return request(app.app)
-            .post('/account/create')
+            .put('/account/create')
             .send(data)
             .expect(201);
     });
