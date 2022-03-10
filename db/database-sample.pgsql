@@ -37,14 +37,20 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '20-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '60-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '100-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 2', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Thing 1', 'From cat in the hat', 'like new', 1, 1);
 
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
 INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 6, CURRENT_TIMESTAMP);
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (3, 2);
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 5);
-
-INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'test', 'test', 9);
-INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (9, 'Test', 'test', 'good', 4, 1);
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 18);
-
-INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 17);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 19);
+INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 20, CURRENT_TIMESTAMP);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (3, 21);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 22);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 23);

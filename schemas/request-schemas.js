@@ -209,6 +209,16 @@ const createConversationTemplate = new RequestTemplate([{
     conditions: [IsPosInt],
 }]);
 
+const closeConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}])
+
 const createMessageTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -249,7 +259,7 @@ const RequestTemplateDefinitions = {
     'close-listing': closeListingTemplate,
 
     'create-conversation': createConversationTemplate,
-    'close-conversation': null,
+    'close-conversation': closeConversationTemplate,
     'create-message': createMessageTemplate,
     'search-conversation': null,
     'view-conversation': null,

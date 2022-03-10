@@ -31,7 +31,7 @@ class App {
         const ModifyListing = NA; // ModifyEntity
         const CloseListing = new pipes.CloseEntityPipeline('listing', {}, db, logger);
         const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger);
-        const CloseConversation = NA; // CloseEntity
+        const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger); // CloseEntity
         const CreateMessage = new pipes.CreateEntityPipeline('message', {}, db, logger);
         const ListConversation = NA; // SearchEntity
         const ViewConversation = NA; // ViewEntity

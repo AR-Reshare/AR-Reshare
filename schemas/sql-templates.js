@@ -216,6 +216,16 @@ const CreateConversationTemplate = new SQLTemplate({
     }
 }, ['create_conversation'], {error_on_empty_response: true});
 
+const CloseConversationTemplate = new SQLTemplate({
+    close_conversation: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ConversationID = $2 AND ClosedDate IS NULL AND (ReceiverID = $1 OR EXISTS (SELECT 1 FROM Listing WHERE ListingID = Conversation.ListingID AND ContributorID = $1)) RETURNING ConversationID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'conversationID'},
+        ]
+    }
+}, ['close_conversation'], {error_on_empty_response: true});
+
 const CreateMessageTemplate = new SQLTemplate({
     create_message: {
         text: 'INSERT INTO Message (SenderID, ConversationID, ContentText) SELECT $1, $2, $3 WHERE EXISTS (SELECT 1 FROM Conversation JOIN Listing ON Listing.ListingID = Conversation.ListingID WHERE ConversationID = $2 AND Conversation.ClosedDate IS NULL AND (Conversation.ReceiverID = $1 OR Listing.ContributorID = $1)) RETURNING MessageID',
@@ -240,6 +250,7 @@ const sqlTemplatesDict = {
     'create-listing': CreateListingTemplate,
     'close-listing': CloseListingTemplate,
     'create-conversation': CreateConversationTemplate,
+    'close-conversation': CloseConversationTemplate,
     'create-message': CreateMessageTemplate,
 };
 

@@ -74,6 +74,7 @@ const ResponseTemplateDict = {
         out_name: 'success',
         field: 'conversationid',
     }], {null: 201}),
+    'close-conversation': new ResponseTemplate([], {}),
     'create-message': new ResponseTemplate([{
         out_name: 'success',
         field: 'messageid',
