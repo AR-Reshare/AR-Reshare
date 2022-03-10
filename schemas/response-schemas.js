@@ -58,6 +58,7 @@ const ResponseTemplateDict = {
     'close-account': new ResponseTemplate([], {}),
     'login': new ResponseTemplate([], {}),
     'view-accountListing': listingDetails,
+    'search-accountListing': ListingDescArray,
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',
         rows_with_fields: ['addressID'],

@@ -86,7 +86,19 @@ const ViewAccountListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true})
+}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true});
+
+const SearchAccountListingTemplate = new SQLTemplate({
+    get_listing: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND ContributorID = $1 ORDER BY Listing.ListingID LIMIT $3 OFFSET $4',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'categoryID'},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
+        ],
+    }
+}, ['get_listing']);
 
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
@@ -182,6 +194,7 @@ const sqlTemplatesDict = {
     'close-account': CloseAccountTemplate,
     'login': LoginTemplate,
     'view-accountListing': ViewAccountListingTemplate,
+    'search-accountListing': SearchAccountListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
