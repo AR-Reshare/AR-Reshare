@@ -78,7 +78,7 @@ paths:
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
-    post:
+    put:
       operationId: createAccount
       description: Creates an account with request arguments
       responses:
@@ -98,7 +98,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
                
   /account/close:
-    post: # not delete
+    patch: # not delete
       operationId: closeAccount
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
@@ -141,7 +141,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
      
   /account/modify:
-    put:
+    patch:
       operationId: modifyAccount
       description: Modifies the details of the current account
       responses:
@@ -342,7 +342,7 @@ paths:
           $ref: 'parameters.yaml#/components/parameters/region'
    
   /listing/create:
-    post:
+    put:
       operationId: createListing
       description: Creates a new listing
       responses: 
@@ -359,7 +359,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
-    put:
+    patch:
       operationId: modifyListing
       description: Modifies the listings
       responses:
@@ -382,7 +382,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /listing/close:
-    post:
+    patch:
       operationId: closeListing
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       responses:
@@ -419,7 +419,7 @@ paths:
 
   # NOTE: All of these will be using some authentication token (e.g. jwt)
   /conversation/create:
-    post:
+    put:
       operationId: createConversation
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
@@ -448,7 +448,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
   /conversation/close:
-    post:
+    patch:
       operationId: closeConversation
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
@@ -471,7 +471,7 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
   /conversation/message:
-    post:
+    put:
       operationId: sendConversationMessage
       description: Sends a message to a conversation via it's conversationID
       responses:
