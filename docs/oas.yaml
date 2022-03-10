@@ -64,7 +64,7 @@ paths:
           description: The request was executed successfully and the account's password has now been changed
         '400':
           description: The arguments were of invalid formats
-      requestBodies:
+      requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
 
   /categories/list:
@@ -117,8 +117,8 @@ paths:
         '409': # Conflict
           description: The account is already queued for close
           $ref: 'responses.yaml#/components/responses/account-close'
-    requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
   
   /account/login:
     post:
@@ -175,8 +175,7 @@ paths:
           description: The listing does not exist
           $ref: 'responses.yaml#/components/responses/listing-private'
       parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /account/listings/search:
     get:
@@ -190,14 +189,10 @@ paths:
           description: The request did not include a valid query parameter
           $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/endResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/categoryId'
         ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
 
   ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
@@ -213,16 +208,11 @@ paths:
           description: The request did not include a valid query parameter
           $ref: 'responses.yaml#/components/responses/listings-public'
       parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
-        region:
-          $ref: 'parameters.yaml#/components/parameters/region'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/endResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/categoryId'
+        - $ref: 'parameters.yaml#/components/parameters/region'
 
   ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
   ## that is saved is public) -- otherwise adversary has access to archived listings
@@ -244,9 +234,8 @@ paths:
         '422': # Unprocessable Entity
           description: At least one parameter was invalid.
           $ref: 'responses.yaml#/components/responses/post'
-    parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /account/saved-listings/delete:
     post:
@@ -271,9 +260,8 @@ paths:
         '409': # Conflict
           description: The listing is already closed
           $ref: 'responses.yaml#/components/responses/post'
-    parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
 
   /account/addresses/list:
@@ -317,8 +305,7 @@ paths:
           description: The listing does not exist
           $ref: 'responses.yaml#/components/responses/listing-public'
       parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /listings/search:
     get:
@@ -332,14 +319,10 @@ paths:
           description: The request did not include a valid query parameter'
           $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
-        region:
-          $ref: 'parameters.yaml#/components/parameters/region'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/categoryId'
+        - $ref: 'parameters.yaml#/components/parameters/region'
    
   /listing/create:
     put:
@@ -355,7 +338,7 @@ paths:
         '403': # Forbidden
           description: The user is not allowed to create a listing
           $ref: 'responses.yaml#/components/responses/post'
-      requestBodies:
+      requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
@@ -404,8 +387,8 @@ paths:
         '409': # Conflict
           description: The listing is already closed
           $ref: 'responses.yaml#/components/responses/post'
-    requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
 
 
   ####################################### CONVERSATION ###################################
@@ -514,12 +497,9 @@ paths:
           description: The user has insufficient priviledges to perform the action
           $ref: 'responses.yaml#/components/responses/post'
       parameters:
-        start:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        end:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        max:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/endResults'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
   /conversation/view:
     get:
@@ -538,9 +518,8 @@ paths:
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
           $ref: 'responses.yaml#/components/responses/conversation-view'     
-    parameters:
-      conversationID:
-        $ref: 'parameters.yaml#/components/parameters/conversationID'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/conversationID'
 
 
 
