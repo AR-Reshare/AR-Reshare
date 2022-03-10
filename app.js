@@ -33,7 +33,7 @@ class App {
         const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger);
         const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger); // CloseEntity
         const CreateMessage = new pipes.CreateEntityPipeline('message', {}, db, logger);
-        const ListConversation = NA; // SearchEntity
+        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger); // SearchEntity
         const ViewConversation = NA; // ViewEntity
 
         // serve the docs directory statically, so the index page becomes the API docs

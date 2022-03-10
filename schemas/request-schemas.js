@@ -233,6 +233,20 @@ const createMessageTemplate = new RequestTemplate([{
     conditions: [IsNonEmptyString],
 }]);
 
+const listConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}])
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -261,7 +275,7 @@ const RequestTemplateDefinitions = {
     'create-conversation': createConversationTemplate,
     'close-conversation': closeConversationTemplate,
     'create-message': createMessageTemplate,
-    'search-conversation': null,
+    'search-conversation': listConversationTemplate,
     'view-conversation': null,
 };
 

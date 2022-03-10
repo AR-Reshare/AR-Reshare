@@ -79,6 +79,10 @@ const ResponseTemplateDict = {
         out_name: 'success',
         field: 'messageid',
     }], {null: 201}),
+    'search-conversation': new ResponseTemplate([{
+        out_name: 'conversations',
+        rows_with_fields: ['conversationID'],
+    }]),
 };
 
 module.exports = ResponseTemplateDict;

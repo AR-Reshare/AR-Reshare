@@ -237,6 +237,17 @@ const CreateMessageTemplate = new SQLTemplate({
     },
 }, ['create_message'], {error_on_empty_response: true});
 
+const ListConversationTemplate = new SQLTemplate({
+    get_conversations: {
+        text: 'SELECT Conversation.ConversationID AS "conversationID", Listing.ListingID AS "listingID", Listing.Title AS "title", Receiver.UserID AS "receiverID", Receiver.FullName AS "receiverName", Media.MimeType AS "mimetype", Media.URL AS "url", Contributor.UserID AS "contributorID", Contributor.FullName AS "contributorName" FROM Conversation JOIN Listing ON Listing.ListingID = Conversation.ListingID JOIN Account AS Receiver ON Conversation.ReceiverID = Receiver.UserID JOIN Account AS Contributor ON Listing.ContributorID = Contributor.UserID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (Contributor.UserID = $1 OR Receiver.UserID = $1) AND Conversation.ClosedDate IS NULL ORDER BY ConversationID OFFSET $2 LIMIT $3',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'startResults'},
+            {from_input: 'maxResults'},
+        ]
+    }
+}, ['get_conversations']);
+
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'create-account': CreateAccountTemplate,
@@ -252,6 +263,7 @@ const sqlTemplatesDict = {
     'create-conversation': CreateConversationTemplate,
     'close-conversation': CloseConversationTemplate,
     'create-message': CreateMessageTemplate,
+    'search-conversation': ListConversationTemplate,
 };
 
 module.exports = sqlTemplatesDict;
