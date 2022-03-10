@@ -22,6 +22,8 @@ class App {
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
         const SearchAccountListing = NA; // SearchEntity
         const SearchSavedListing = NA; //SearchEntity
+        const SaveListing = NA; // CreateEntity
+        const ForgetListing = NA; // CloseEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // TODO: test media
         const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger);
@@ -51,6 +53,8 @@ class App {
         app.get('/account/listing/view', ViewAccountListing.Execute);
         app.get('/account/listings/search', SearchAccountListing.Execute);
         app.get('/account/saved-listings/search', SearchSavedListing.Execute);
+        app.post('/account/saved-listings/create', SaveListing.Execute);
+        app.post('/account/saved-listings/delete', ForgetListing.Execute);
         app.get('/account/addresses/list', ListAddresses.Execute);
         
         app.get('/listing/view', ViewListing.Execute);
