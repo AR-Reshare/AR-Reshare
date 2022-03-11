@@ -57,6 +57,10 @@ const ResponseTemplateDict = {
     }),
     'close-account': new ResponseTemplate([], {}),
     'login': new ResponseTemplate([], {}),
+    'modify-account': new ResponseTemplate([], {
+        'EmptyQueryError': 400,
+        'EmptyResponseError': 403,
+    }),
     'view-accountListing': listingDetails,
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',

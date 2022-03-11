@@ -94,6 +94,47 @@ const loginTemplate = new RequestTemplate([{
     required: false,
 }]);
 
+const modifyAccountTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'name',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'email',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (email) => (email.length >= 3 && email.includes('@')),
+    ],
+}, {
+    in_name: 'newPassword',
+    out_name: 'passhash',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (password) => {
+            if (PassPattern.test(password)) return true;
+            else throw new Error('Password not strong enough'); // trigger 422
+        },
+    ],
+    sanitise: (password) => bcrypt.hashSync(password, 12),
+}, {
+    in_name: 'dob',
+    required: false,
+    conditions: [
+        (dob) => {
+            let date = new Date(`${dob}Z`);
+            if (isNaN(date)) return false;
+            else if (getAge(date) < 13) throw new Error('Not old enough');
+            else return true;
+        }
+    ],
+    sanitise: (dob) => new Date(`${dob}Z`),
+}]);
+
 const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -102,7 +143,7 @@ const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
     required: true,
     conditions: [IsPosInt],
-}])
+}]);
 
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
@@ -194,7 +235,7 @@ const RequestTemplateDefinitions = {
 
     'close-account': accountIDOnly,
     'login': loginTemplate,
-    'modify-account': null,
+    'modify-account': modifyAccountTemplate,
     'view-accountListing': viewAccountListingTemplate,
     'search-accountListing': null,
     'search-savedListing': null,

@@ -18,7 +18,7 @@ class App {
         const CreateAccount = new pipes.CreateEntityPipeline('account', {}, db, logger); // (in question - see issue #25)
         const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger);
         const Login = new pipes.LoginPipeline(db, logger);
-        const ModifyAccount = NA; // ModifyEntity
+        const ModifyAccount = new pipes.ModifyEntityPipeline('account', {}, db, logger);
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
         const SearchAccountListing = NA; // SearchEntity
         const SearchSavedListing = NA; //SearchEntity

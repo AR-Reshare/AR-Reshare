@@ -65,6 +65,44 @@ const LoginTemplate = new SQLTemplate({
     },
 }, ['get_id', 'store_token']);
 
+const ModifyAccountTemplate = new SQLTemplate({
+    change_name: {
+        text: 'UPDATE Account SET FullName = $2 WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
+        condition: (inputObject) => ('name' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'name'},
+        ],
+    },
+    change_email: {
+        text: 'UPDATE Account SET Email = $2 WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
+        condition: (inputObject) => ('email' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'email'},
+        ]
+    },
+    change_password: {
+        text: 'UPDATE Account SET PassHash = $2 WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
+        condition: (inputObject) => ('passhash' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'passhash'},
+        ]
+    },
+    change_dob: {
+        text: 'UPDATE Account SET DoB = $2 WHERE UserID = $1 AND DeletionDate IS NULL RETURNING UserID',
+        condition: (inputObject) => ('dob' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'dob'},
+        ]
+    },
+}, ['change_name', 'change_email', 'change_password', 'change_dob'], {
+    error_on_empty_transaction: true,
+    error_on_empty_response: true,
+})
+
 const ViewAccountListingTemplate = new SQLTemplate({
     get_listing: {
         text: 'SELECT ListingID, ContributorID, Title, Description, Condition, AddressID, CategoryID, CreationDate, ModificationDate, ClosedDate, ReceiverID FROM Listing WHERE ListingID = $1 AND (ContributorID = $2 OR ReceiverID = $2)',
@@ -181,6 +219,7 @@ const sqlTemplatesDict = {
     'create-account': CreateAccountTemplate,
     'close-account': CloseAccountTemplate,
     'login': LoginTemplate,
+    'modify-account': ModifyAccountTemplate,
     'view-accountListing': ViewAccountListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
