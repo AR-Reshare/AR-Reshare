@@ -257,7 +257,7 @@ const ViewConversationTemplate = new SQLTemplate({
         ],
     },
     get_messages: {
-        text: 'SELECT SenderID AS "senderID", SentTime AS "sentTime", ContentText AS "textContent" FROM Message WHERE ConversationID = $1 ORDER BY SentTime DESC OFFSET $2 LIMIT $3',
+        text: 'SELECT SenderID AS "senderID", SentTime AS "datetime", ContentText AS "textContent" FROM Message WHERE ConversationID = $1 ORDER BY SentTime DESC OFFSET $2 LIMIT $3',
         values: [
             {from_query: ['get_conversation', 'conversationID']},
             {from_input: 'startResults'},
