@@ -145,6 +145,24 @@ const viewAccountListingTemplate = new RequestTemplate([{
     conditions: [IsPosInt],
 }]);
 
+const searchAccountListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}]);
+
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
     required: true,
@@ -222,6 +240,72 @@ const closeListingTemplate = new RequestTemplate([{
     ],
 }]);
 
+const createConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const closeConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const createMessageTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'textContent',
+    required: true,
+    conditions: [IsNonEmptyString],
+}]);
+
+const listConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const viewConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -237,7 +321,7 @@ const RequestTemplateDefinitions = {
     'login': loginTemplate,
     'modify-account': modifyAccountTemplate,
     'view-accountListing': viewAccountListingTemplate,
-    'search-accountListing': null,
+    'search-accountListing': searchAccountListingTemplate,
     'search-savedListing': null,
     'search-address': accountIDOnly,
 
@@ -247,11 +331,11 @@ const RequestTemplateDefinitions = {
     'modify-listing': null,
     'close-listing': closeListingTemplate,
 
-    'create-conversation': null,
-    'close-conversation': null,
-    'create-message': null,
-    'search-conversation': null,
-    'view-conversation': null,
+    'create-conversation': createConversationTemplate,
+    'close-conversation': closeConversationTemplate,
+    'create-message': createMessageTemplate,
+    'search-conversation': listConversationTemplate,
+    'view-conversation': viewConversationTemplate,
 };
 
 module.exports = RequestTemplateDefinitions;

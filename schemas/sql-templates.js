@@ -44,7 +44,19 @@ const CloseAccountTemplate = new SQLTemplate({
             from_input: 'accountID',
         }],
     },
-}, ['close_account'], {error_on_empty_response: true});
+    close_listings: {
+        text: 'UPDATE Listing SET ClosedDate = CURRENT_TIMESTAMP WHERE ContributorID = $1',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+    close_conversations: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ReceiverID = $1 OR EXISTS (SELECT 1 FROM Listing WHERE ListingID = Conversation.ListingID AND ContributorID = $1)',
+        values: [{
+            from_input: 'accountID',
+        }],
+    },
+}, ['close_account', 'close_listings', 'close_conversations'], {drop_from_results: ['close_listings', 'close_conversations'], error_on_empty_response: true});
 
 const LoginTemplate = new SQLTemplate({
     get_id: {
@@ -124,7 +136,19 @@ const ViewAccountListingTemplate = new SQLTemplate({
             from_input: 'listingID',
         }]
     }
-}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true})
+}, ['get_listing', 'get_location', 'get_media'], {error_on_empty_response: true});
+
+const SearchAccountListingTemplate = new SQLTemplate({
+    get_listing: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND ContributorID = $1 ORDER BY Listing.ListingID LIMIT $3 OFFSET $4',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'categoryID'},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
+        ],
+    }
+}, ['get_listing']);
 
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
@@ -211,8 +235,74 @@ const CloseListingTemplate = new SQLTemplate({
             {from_input: 'listingID'},
             {from_input: 'receiverID'},
         ]
+    },
+    close_conversations: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ListingID = $1',
+        values: [
+            {from_query: ['close_listing', 'listingid']},
+        ]
+    },
+}, ['close_listing', 'close_conversations'], {drop_from_results: ['close_conversations'], error_on_empty_response: true});
+
+const CreateConversationTemplate = new SQLTemplate({
+    create_conversation: {
+        text: 'INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) RETURNING ConversationID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
     }
-}, ['close_listing'], {error_on_empty_response: true});
+}, ['create_conversation'], {error_on_empty_response: true});
+
+const CloseConversationTemplate = new SQLTemplate({
+    close_conversation: {
+        text: 'UPDATE Conversation SET ClosedDate = CURRENT_TIMESTAMP WHERE ConversationID = $2 AND ClosedDate IS NULL AND (ReceiverID = $1 OR EXISTS (SELECT 1 FROM Listing WHERE ListingID = Conversation.ListingID AND ContributorID = $1)) RETURNING ConversationID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'conversationID'},
+        ]
+    }
+}, ['close_conversation'], {error_on_empty_response: true});
+
+const CreateMessageTemplate = new SQLTemplate({
+    create_message: {
+        text: 'INSERT INTO Message (SenderID, ConversationID, ContentText) SELECT $1, $2, $3 WHERE EXISTS (SELECT 1 FROM Conversation JOIN Listing ON Listing.ListingID = Conversation.ListingID WHERE ConversationID = $2 AND Conversation.ClosedDate IS NULL AND (Conversation.ReceiverID = $1 OR Listing.ContributorID = $1)) RETURNING MessageID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'conversationID'},
+            {from_input: 'textContent'},
+        ],
+    },
+}, ['create_message'], {error_on_empty_response: true});
+
+const ListConversationTemplate = new SQLTemplate({
+    get_conversations: {
+        text: 'SELECT Conversation.ConversationID AS "conversationID", Listing.ListingID AS "listingID", Listing.Title AS "title", Receiver.UserID AS "receiverID", Receiver.FullName AS "receiverName", Media.MimeType AS "mimetype", Media.URL AS "url", Contributor.UserID AS "contributorID", Contributor.FullName AS "contributorName" FROM Conversation JOIN Listing ON Listing.ListingID = Conversation.ListingID JOIN Account AS Receiver ON Conversation.ReceiverID = Receiver.UserID JOIN Account AS Contributor ON Listing.ContributorID = Contributor.UserID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (Contributor.UserID = $1 OR Receiver.UserID = $1) AND Conversation.ClosedDate IS NULL ORDER BY ConversationID OFFSET $2 LIMIT $3',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'startResults'},
+            {from_input: 'maxResults'},
+        ]
+    }
+}, ['get_conversations']);
+
+const ViewConversationTemplate = new SQLTemplate({
+    get_conversation: {
+        text: 'SELECT Conversation.ConversationID AS "conversationID", Listing.ListingID AS "listingID", Listing.Title AS "title", Receiver.UserID AS "receiverID", Receiver.FullName AS "receiverName", Media.MimeType AS "mimetypeMain", Media.URL AS "urlMain", Contributor.UserID AS "contributorID", Contributor.FullName AS "contributorName", Conversation.ClosedDate AS "closedDate" FROM Conversation JOIN Listing ON Listing.ListingID = Conversation.ListingID JOIN Account AS Receiver ON Conversation.ReceiverID = Receiver.UserID JOIN Account AS Contributor ON Listing.ContributorID = Contributor.UserID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE ConversationID = $2 AND (Contributor.UserID = $1 OR Receiver.UserID = $1)',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'conversationID'},
+        ],
+    },
+    get_messages: {
+        text: 'SELECT SenderID AS "senderID", SentTime AS "sentTime", ContentText AS "textContent" FROM Message WHERE ConversationID = $1 ORDER BY SentTime DESC OFFSET $2 LIMIT $3',
+        values: [
+            {from_query: ['get_conversation', 'conversationID']},
+            {from_input: 'startResults'},
+            {from_input: 'maxResults'},
+        ],
+    },
+}, ['get_conversation', 'get_messages'], {error_on_empty_response: true});
 
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
@@ -221,11 +311,17 @@ const sqlTemplatesDict = {
     'login': LoginTemplate,
     'modify-account': ModifyAccountTemplate,
     'view-accountListing': ViewAccountListingTemplate,
+    'search-accountListing': SearchAccountListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,
     'close-listing': CloseListingTemplate,
+    'create-conversation': CreateConversationTemplate,
+    'close-conversation': CloseConversationTemplate,
+    'create-message': CreateMessageTemplate,
+    'search-conversation': ListConversationTemplate,
+    'view-conversation': ViewConversationTemplate,
 };
 
 module.exports = sqlTemplatesDict;

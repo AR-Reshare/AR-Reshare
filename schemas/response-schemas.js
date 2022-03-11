@@ -46,6 +46,38 @@ const ListingDescArray = new ResponseTemplate([{
     rows_with_fields: ['listingID'],
 }]);
 
+const ConversationDetails = new ResponseTemplate([{
+    out_name: 'listingID',
+    field: 'listingID'
+}, {
+    out_name: 'title',
+    field: 'title',
+}, {
+    out_name: 'mimetype',
+    field: 'mimetypeMain',
+}, {
+    out_name: 'url',
+    field: 'urlMain',
+}, {
+    out_name: 'receiverID',
+    field: 'receiverID',
+}, {
+    out_name: 'receiverName',
+    field: 'receiverName',
+}, {
+    out_name: 'contributorID',
+    field: 'contributorID',
+}, {
+    out_name: 'contributorName',
+    field: 'contributorName',
+}, {
+    out_name: 'closedDate',
+    field: 'closedDate',
+}, {
+    out_name: 'messages',
+    rows_with_fields: 'senderID',
+}], {'BackreferenceError': 404});
+
 const ResponseTemplateDict = {
     'search-category': new ResponseTemplate([{
         out_name: 'categories',
@@ -62,6 +94,7 @@ const ResponseTemplateDict = {
         'EmptyResponseError': 403,
     }),
     'view-accountListing': listingDetails,
+    'search-accountListing': ListingDescArray,
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',
         rows_with_fields: ['addressID'],
@@ -72,7 +105,21 @@ const ResponseTemplateDict = {
         out_name: 'success',
         field: 'listingid',
     }], {null: 201}),
-    'close-listing': new ResponseTemplate([], {}),
+    'close-listing': new ResponseTemplate([], {'BackreferenceError': 404}),
+    'create-conversation': new ResponseTemplate([{
+        out_name: 'success',
+        field: 'conversationid',
+    }], {null: 201}),
+    'close-conversation': new ResponseTemplate([], {}),
+    'create-message': new ResponseTemplate([{
+        out_name: 'success',
+        field: 'messageid',
+    }], {null: 201}),
+    'search-conversation': new ResponseTemplate([{
+        out_name: 'conversations',
+        rows_with_fields: ['conversationID'],
+    }]),
+    'view-conversation': ConversationDetails,
 };
 
 module.exports = ResponseTemplateDict;

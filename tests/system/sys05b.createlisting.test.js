@@ -32,7 +32,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(401);
@@ -53,7 +53,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -74,7 +74,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -95,7 +95,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -112,7 +112,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -129,7 +129,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -146,7 +146,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(201);
@@ -167,7 +167,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(201);
@@ -184,7 +184,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
@@ -201,7 +201,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(404);
@@ -220,7 +220,7 @@ describe('System Test 5b - /listing/create', () => {
         };
 
         return request(app.app)
-            .post('/listing/create')
+            .put('/listing/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
