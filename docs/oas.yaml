@@ -424,130 +424,120 @@ paths:
       operationId: createConversation
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '201': # Successfully Created
-      #     description: The conversation has been initiated
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '400': # Bad Request
-      #     description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '403': # Forbidden
-      #     description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '404': # Not Found
-      #     description: The listing does not exist
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '409': # Conflict
-      #     description: The converstaion already exists
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      #   '410': # Gone
-      #     description: The listing is closed
-      #     $ref: 'responses.yaml#/components/responses/conversation-create'
-      # requestBody:
-      #   $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
+        '201': # Successfully Created
+          description: The conversation has been initiated
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '403': # Forbidden
+          description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '409': # Conflict
+          description: The converstaion already exists
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+        '410': # Gone
+          description: The listing is closed
+          $ref: 'responses.yaml#/components/responses/conversation-create'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
   /conversation/close:
     patch:
       operationId: closeConversation
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: The conversation has been closed
-      #     $ref: 'responses.yaml#/components/responses/conversation-close'
-      #   '400': # Bad Request
-      #     description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-      #     $ref: 'responses.yaml#/components/responses/conversation-close'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/conversation-close'
-      #   '404': # Not Found
-      #     description: The conversation does not exist
-      #     $ref: 'responses.yaml#/components/responses/conversation-close'
-      #   '409': # Conflict
-      #     description: The conversation is already closed
-      #     $ref: 'responses.yaml#/components/responses/conversation-close'
-      # requestBody:
-      #   $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
+        '200': # Success
+          description: The conversation has been closed
+          $ref: 'responses.yaml#/components/responses/conversation-close'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/conversation-close'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-close'
+        '404': # Not Found
+          description: The conversation does not exist
+          $ref: 'responses.yaml#/components/responses/conversation-close'
+        '409': # Conflict
+          description: The conversation is already closed
+          $ref: 'responses.yaml#/components/responses/conversation-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
   /conversation/message:
     put:
       operationId: sendConversationMessage
       description: Sends a message to a conversation via it's conversationID
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: The message has been successfully delivered
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      #   '400': # Bad Request
-      #     description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      #   '403': # Forbidden
-      #     description: The user does not have permission to send this message (for example, because the seller has blocked them)
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      #   '404': # Not Found
-      #     description: The conversation does not exist, or this user is not part of it
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      #   '410': # Gone
-      #     description: The conversation is closed
-      #     $ref: 'responses.yaml#/components/responses/conversation-message'
-      # requestBody:
-      #   $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
+        '200': # Success
+          description: The message has been successfully delivered
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+        '403': # Forbidden
+          description: The user does not have permission to send this message (for example, because the seller has blocked them)
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+        '404': # Not Found
+          description: The conversation does not exist, or this user is not part of it
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+        '410': # Gone
+          description: The conversation is closed
+          $ref: 'responses.yaml#/components/responses/conversation-message'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
   /conversations:
     get:
       operationId: getConversationDescriptors
       description: Returns descriptors of conversations that the user still has open
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: Returns a set of the descriptors of the most recent converstaions
-      #     $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-      #   '400': # Bad Request
-      #     description: The parameters sent in the request were badly formatted
-      #     $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/conversation-descriptors'
-      #   '403': # Forbidden
-      #     description: The user has insufficient priviledges to perform the action
-      #     $ref: 'responses.yaml#/components/responses/post'
-      # parameters:
-      #   - $ref: 'parameters.yaml#/components/parameters/startResults'
-      #   - $ref: 'parameters.yaml#/components/parameters/endResults'
-      #   - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        '200': # Success
+          description: Returns a set of the descriptors of the most recent converstaions
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '400': # Bad Request
+          description: The parameters sent in the request were badly formatted
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/endResults'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
   /conversation/view:
     get:
       operationId: getConversationByID
       description: Returns the conversation of a given conversationID
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: The conversation exists and it has been returned
-      #     $ref: 'responses.yaml#/components/responses/conversation-view'
-      #   '400': # Bad Request
-      #     description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-      #     $ref: 'responses.yaml#/components/responses/conversation-view'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/conversation-view'
-      #   '404': # Not Found
-      #     description: The conversation does not exist, or this user is not part of it
-      #     $ref: 'responses.yaml#/components/responses/conversation-view'     
-      # parameters:
-      #   - $ref: 'parameters.yaml#/components/parameters/conversationID'
+        '200': # Success
+          description: The conversation exists and it has been returned
+          $ref: 'responses.yaml#/components/responses/conversation-view'
+        '400': # Bad Request
+          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+          $ref: 'responses.yaml#/components/responses/conversation-view'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/conversation-view'
+        '404': # Not Found
+          description: The conversation does not exist, or this user is not part of it
+          $ref: 'responses.yaml#/components/responses/conversation-view'     
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/conversationID'
 
 
 
