@@ -71,6 +71,9 @@ const ConversationDetails = new ResponseTemplate([{
     out_name: 'contributorName',
     field: 'contributorName',
 }, {
+    out_name: 'closedDate',
+    field: 'closedDate',
+}, {
     out_name: 'messages',
     rows_with_fields: 'senderID',
 }], {'BackreferenceError': 404});
