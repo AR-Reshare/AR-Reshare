@@ -79,7 +79,7 @@ describe('System Test 1a - /account/create', () => {
             email: 'class7@testingtons.net',
             name: 'Uevareth Sarjyre',
             password: 'P@ssw0rd',
-            dob: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`,
+            dob: `${now.getFullYear()-1}-${now.getMonth()}-${now.getDate()}`,
         };
 
         return request(app.app)

@@ -16,6 +16,15 @@ const IsPosInt = (anInt) => {
     return Number.isInteger(num) && num >= 0;
 }
 
+const IsDate = (aString) => {
+    if (!IsNonEmptyString(aString)) return false;
+    let split = aString.split('-');
+    if (!split.length === 3) return false;
+    let date = new Date(`${split[0]}-${split[1]}-${split[2]}Z`);
+    if (isNaN(date)) return false;
+    return true;
+}
+
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
             && 'country' in anObject
@@ -64,10 +73,10 @@ const createAccountTemplate = new RequestTemplate([{
     in_name: 'dob',
     required: true,
     conditions: [
+        IsDate,
         (dob) => {
             let date = new Date(`${dob}Z`);
-            if (isNaN(date)) return false;
-            else if (getAge(date) < 13) throw new Error('Not old enough');
+            if (getAge(date) < 13) throw new Error('Not old enough');
             else return true;
         }
     ],
@@ -125,10 +134,10 @@ const modifyAccountTemplate = new RequestTemplate([{
     in_name: 'dob',
     required: false,
     conditions: [
+        IsDate,
         (dob) => {
             let date = new Date(`${dob}Z`);
-            if (isNaN(date)) return false;
-            else if (getAge(date) < 13) throw new Error('Not old enough');
+            if (getAge(date) < 13) throw new Error('Not old enough');
             else return true;
         }
     ],

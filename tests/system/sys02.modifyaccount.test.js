@@ -190,9 +190,10 @@ describe('System Test 2 - /account/modify', () => {
     });
 
     test('Class 13: Too recent DoB', () => {
+        let now = new Date();
         let data = {
             password: 'MyUltraSecurePassword',
-            dob: new Date(),
+            dob: `${now.getFullYear()-1}-${now.getMonth()}-${now.getDate()}`,
         };
 
         return AuthenticationHandler.createNewToken(db, 'changeme11@yahoo.net', 'MyUltraSecurePassword').then(token => {
