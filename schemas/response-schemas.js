@@ -46,6 +46,35 @@ const ListingDescArray = new ResponseTemplate([{
     rows_with_fields: ['listingID'],
 }]);
 
+const ConversationDetails = new ResponseTemplate([{
+    out_name: 'listingID',
+    field: 'listingID'
+}, {
+    out_name: 'title',
+    field: 'title',
+}, {
+    out_name: 'mimetype',
+    field: 'mimetypeMain',
+}, {
+    out_name: 'url',
+    field: 'urlMain',
+}, {
+    out_name: 'receiverID',
+    field: 'receiverID',
+}, {
+    out_name: 'receiverName',
+    field: 'receiverName',
+}, {
+    out_name: 'contributorID',
+    field: 'contributorID',
+}, {
+    out_name: 'contributorName',
+    field: 'contributorName',
+}, {
+    out_name: 'messages',
+    rows_with_fields: 'senderID',
+}], {'BackreferenceError': 404});
+
 const ResponseTemplateDict = {
     'search-category': new ResponseTemplate([{
         out_name: 'categories',
@@ -83,6 +112,7 @@ const ResponseTemplateDict = {
         out_name: 'conversations',
         rows_with_fields: ['conversationID'],
     }]),
+    'view-conversation': ConversationDetails,
 };
 
 module.exports = ResponseTemplateDict;

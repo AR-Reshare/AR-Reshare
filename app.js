@@ -31,10 +31,10 @@ class App {
         const ModifyListing = NA; // ModifyEntity
         const CloseListing = new pipes.CloseEntityPipeline('listing', {}, db, logger);
         const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger);
-        const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger); // CloseEntity
+        const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger);
         const CreateMessage = new pipes.CreateEntityPipeline('message', {}, db, logger);
-        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger); // SearchEntity
-        const ViewConversation = NA; // ViewEntity
+        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger);
+        const ViewConversation = new pipes.ViewEntityPipeline('conversation', {}, db, logger);
 
         // serve the docs directory statically, so the index page becomes the API docs
         app.use(express.static('docs'));

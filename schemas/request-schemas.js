@@ -217,7 +217,7 @@ const closeConversationTemplate = new RequestTemplate([{
     in_name: 'conversationID',
     required: true,
     conditions: [IsPosInt],
-}])
+}]);
 
 const createMessageTemplate = new RequestTemplate([{
     in_name: 'accountID',
@@ -245,7 +245,25 @@ const listConversationTemplate = new RequestTemplate([{
     in_name: 'startResults',
     required: true,
     conditions: [IsPosInt],
-}])
+}]);
+
+const viewConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
 
 const RequestTemplateDefinitions = {
     'get-index': null,
@@ -276,7 +294,7 @@ const RequestTemplateDefinitions = {
     'close-conversation': closeConversationTemplate,
     'create-message': createMessageTemplate,
     'search-conversation': listConversationTemplate,
-    'view-conversation': null,
+    'view-conversation': viewConversationTemplate,
 };
 
 module.exports = RequestTemplateDefinitions;

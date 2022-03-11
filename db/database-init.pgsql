@@ -81,7 +81,6 @@ CREATE TABLE Message (
     SenderID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ConversationID int4 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ReadTime timestamp,
     ContentText varchar NOT NULL
 );
 
