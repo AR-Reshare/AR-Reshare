@@ -227,6 +227,73 @@ const CreateListingTemplate = new SQLTemplate({
     error_on_empty_response: true,
 });
 
+const ModifyListingTemplate = new SQLTemplate({
+    create_address: {
+        text: 'INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ($1, $2, $3, $4) RETURNING AddressID',
+        condition: (inputObject) => ('location' in inputObject && typeof inputObject['location'] === 'object'),
+        values: [
+            (inputObject) => inputObject['location']['country'],
+            (inputObject) => inputObject['location']['region'],
+            (inputObject) => inputObject['location']['postcode'],
+            {from_input: 'accountID'},
+        ],
+    },
+    change_title: {
+        text: 'UPDATE Listing SET Title = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        condition: (inputObject) => ('title' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'title'},
+        ]
+    },
+    change_description: {
+        text: 'UPDATE Listing SET Description = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        condition: (inputObject) => ('description' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'description'},
+        ]
+    },
+    change_location: {
+        text: 'UPDATE Listing SET Location = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        condition: (inputObject) => ('location' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            (inputObject, queryList) => {
+                if (queryList.includes('create_address')) {
+                    return res => res[0][0]['addressid'];
+                } else {
+                    return inputObject['location'];
+                }
+            },
+        ]
+    },
+    change_category: {
+        text: 'UPDATE Listing SET CategoryID = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        condition: (inputObject) => ('categoryID' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'categoryID'},
+        ]
+    },
+    change_condition: {
+        text: 'UPDATE Listing SET Condition = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        condition: (inputObject) => ('condition' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'condition'},
+        ]
+    },
+}, ['create_address', 'change_title', 'change_description', 'change_location', 'change_category', 'change_condition'], {
+    error_on_empty_transaction: true,
+    error_on_empty_response: true,
+});
+
 const CloseListingTemplate = new SQLTemplate({
     close_listing: {
         text: 'UPDATE Listing SET ClosedDate = CURRENT_TIMESTAMP, ReceiverID = $3 WHERE ContributorID = $1 AND ClosedDate IS NULL AND ListingID = $2 RETURNING ListingID',
@@ -316,6 +383,7 @@ const sqlTemplatesDict = {
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,
+    'modify-listing': ModifyListingTemplate,
     'close-listing': CloseListingTemplate,
     'create-conversation': CreateConversationTemplate,
     'close-conversation': CloseConversationTemplate,

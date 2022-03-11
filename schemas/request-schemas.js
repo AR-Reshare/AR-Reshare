@@ -232,6 +232,38 @@ const createListingTemplate = new RequestTemplate([{
     // TODO: add support for media. Issue #32
 }]);
 
+const modifyListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'title',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'description',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'location',
+    required: false,
+    conditions: [
+        (loc) => { return IsPosInt(loc) || IsLocation(loc); },
+    ],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'condition',
+    required: false,
+    conditions: [IsCondition],
+}]);
+
 const closeListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -337,7 +369,7 @@ const RequestTemplateDefinitions = {
     'view-listing': viewListingTemplate,
     'search-listing': searchListingTemplate,
     'create-listing': createListingTemplate,
-    'modify-listing': null,
+    'modify-listing': modifyListingTemplate,
     'close-listing': closeListingTemplate,
 
     'create-conversation': createConversationTemplate,

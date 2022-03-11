@@ -105,6 +105,9 @@ const ResponseTemplateDict = {
         out_name: 'success',
         field: 'listingid',
     }], {null: 201}),
+    'modify-listing': new ResponseTemplate([], {
+        'EmptyQueryError': 400,
+    }),
     'close-listing': new ResponseTemplate([], {'BackreferenceError': 404}),
     'create-conversation': new ResponseTemplate([{
         out_name: 'success',
