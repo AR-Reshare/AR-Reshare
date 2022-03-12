@@ -59,6 +59,7 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'For testing the conversations', 'good', 2, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Widgets', 'For testing the conversations', 'good', 2, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Things', 'For testing the conversations', 'good', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
 
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
 INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 24, CURRENT_TIMESTAMP);
