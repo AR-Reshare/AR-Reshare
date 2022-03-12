@@ -29,9 +29,11 @@ INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'chang
 INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ('UK', 'Durham', 'AB1 2CD', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, GH', 'asdfgh', 2);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Bristol', 'BR15 7OL', 1);
+INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Location', 'PL ACE', 1);
 
 INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Misc', 'FFFFFFFF', 'Remember to do the things');
 INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Searchtest', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
+INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('New Category', 'BBBBBBBB', 'This category is for testing changing of categories');
 
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (1, 'Things', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP, 3);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'Some things', 'poor', 2, 1);
@@ -59,6 +61,9 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'For testing the conversations', 'good', 2, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Widgets', 'For testing the conversations', 'good', 2, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Things', 'For testing the conversations', 'good', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'A thing', 'Some stuff', 'good', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
 
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);

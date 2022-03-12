@@ -257,7 +257,7 @@ const ModifyListingTemplate = new SQLTemplate({
         ]
     },
     change_location: {
-        text: 'UPDATE Listing SET Location = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
+        text: 'UPDATE Listing SET AddressID = $3 WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL RETURNING ListingID',
         condition: (inputObject) => ('location' in inputObject),
         values: [
             {from_input: 'accountID'},
