@@ -151,22 +151,20 @@ paths:
       operationId: modifyAccount
       description: Modifies the details of the current account
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: The details has been successfully modified
-      #     $ref: 'responses.yaml#/components/responses/account-modify'
-      #   '400': # Bad Request
-      #     description: Bad schemas/account-modifiedDetails object received
-      #     $ref: 'responses.yaml#/components/responses/account-modify'
-      #   '401': # Unauthorised
-      #     description: The user did not provide a valid authentication token
-      #     $ref: 'responses.yaml#/components/responses/account-modify'
-      #   '403': # Not Found
-      #     description: Insufficient privileges to perform request
-      #     $ref: 'responses.yaml#/components/responses/account-modify'
-      # requestBody:
-      #   $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
+        '200': # Success
+          description: The details has been successfully modified
+          $ref: 'responses.yaml#/components/responses/account-modify'
+        '400': # Bad Request
+          description: Bad schemas/account-modifiedDetails object received
+          $ref: 'responses.yaml#/components/responses/account-modify'
+        '401': # Unauthorised
+          description: The user did not provide a valid authentication token
+          $ref: 'responses.yaml#/components/responses/account-modify'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
+          $ref: 'responses.yaml#/components/responses/account-create'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
   /account/listing/view:
     get:
@@ -362,25 +360,23 @@ paths:
       operationId: modifyListing
       description: Modifies the listings
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     description: The listing has been modified successfully
-      #     $ref: 'responses.yaml#/components/responses/post'
-      #   '400': # Bad Request
-      #     description: The modification form is in an invalid format
-      #     $ref: 'responses.yaml#/components/responses/post'
-      #   '401': # Unauthorised
-      #     description: The user did not send an authentication token, or the authentication token does not match a valid account
-      #     $ref: 'responses.yaml#/components/responses/post'
-      #   '403': # Forbidden
-      #     description: The user has insufficient priviledges to perform the action
-      #     $ref: 'responses.yaml#/components/responses/post'
-      #   '404': # Not Found
-      #     description: The listing does not exist
-      #     $ref: 'responses.yaml#/components/responses/post'
-      # requestBody:
-      #   $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
+        '200': # Success
+          description: The listing has been modified successfully
+          $ref: 'responses.yaml#/components/responses/post'
+        '400': # Bad Request
+          description: The modification form is in an invalid format
+          $ref: 'responses.yaml#/components/responses/post'
+        '401': # Unauthorised
+          description: The user did not send an authentication token, or the authentication token does not match a valid account
+          $ref: 'responses.yaml#/components/responses/post'
+        '403': # Forbidden
+          description: The user has insufficient priviledges to perform the action
+          $ref: 'responses.yaml#/components/responses/post'
+        '404': # Not Found
+          description: The listing does not exist
+          $ref: 'responses.yaml#/components/responses/post'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /listing/close:
     patch:
@@ -426,25 +422,19 @@ paths:
       responses:
         '201': # Successfully Created
           description: The conversation has been initiated
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-create'
-        '403': # Forbidden
-          description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
           description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '409': # Conflict
           description: The converstaion already exists
-          $ref: 'responses.yaml#/components/responses/conversation-create'
-        '410': # Gone
-          description: The listing is closed
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
@@ -455,19 +445,16 @@ paths:
       responses:
         '200': # Success
           description: The conversation has been closed
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
-          description: The conversation does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-close'
-        '409': # Conflict
-          description: The conversation is already closed
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          description: The conversation does not exist, the user is not part of it, or it is closed
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
@@ -478,22 +465,19 @@ paths:
       responses:
         '200': # Success
           description: The message has been successfully delivered
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
           description: The user does not have permission to send this message (for example, because the seller has blocked them)
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
-          $ref: 'responses.yaml#/components/responses/conversation-message'
-        '410': # Gone
-          description: The conversation is closed
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
@@ -513,10 +497,9 @@ paths:
           $ref: 'responses.yaml#/components/responses/conversation-descriptors'
         '403': # Forbidden
           description: The user has insufficient priviledges to perform the action
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/startResults'
-        - $ref: 'parameters.yaml#/components/parameters/endResults'
         - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
   /conversation/view:
@@ -538,6 +521,8 @@ paths:
           $ref: 'responses.yaml#/components/responses/conversation-view'     
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/conversationID'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
 
 

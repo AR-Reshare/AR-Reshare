@@ -30,15 +30,12 @@ components:
       required:
       - userID
       - name
-      - bio
       - profilePics
       properties:
         userID:
           $ref: '#/components/schemas/id'
         name:
           $ref: '#/components/schemas/name'
-        bio:
-          $ref: '#/components/schemas/description'
         profilePics:
           $ref: '#/components/schemas/media'
 
@@ -228,11 +225,8 @@ components:
       type: object
       required:
       - listingID
-      - password
       - modifiedDetails
       properties:
-        password:
-          $ref: '#/components/schemas/password'
         variable-modification:
           $ref: '#/components/schemas/listing-modifiedDetails'
         listingID:
@@ -245,16 +239,21 @@ components:
       - description
       - location
       - categoryID
-      - media
+      # - media
+      - condition
       properties:
+        title:
+          $ref: '#/components/schemas/title'
+        condition:
+          $ref: '#/components/schemas/condition'
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
         categoryID:
           $ref: '#/components/schemas/id'
-        media:
-          $ref: '#/components/schemas/media'
+        # media:
+        #   $ref: '#/components/schemas/media'
 
     category-descriptor:
       type: object
@@ -426,43 +425,50 @@ components:
       properties:
         conversationID:
           $ref: '#/components/schemas/id'
-        listing-descriptor:
+        listing:
           $ref: '#/components/schemas/listing-descriptor'
-        receiver-descriptor:
+        receiver:
           $ref: '#/components/schemas/user'
 
     conversation:
-      type: array
-      items:
-        $ref: '#/components/schemas/conversation-message'
+      type: object
+      required:
+      - receiver
+      - listing
+      - messages
+      properties:
+        listing:
+          $ref: '#/components/schemas/listing-descriptor'
+        receiver:
+          $ref: '#/components/schemas/user'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/conversation-message'
 
     conversation-message:
       type: object
       required:
       # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
       - receiverID
-      - listingID
-      - datetime
-      - mediaContent
+      - conversationID
+      # - mediaContent
       - textContent
       properties:
-        listingID:
+        receiverID:
           $ref: '#/components/schemas/id'
-        datetime:
-          $ref: '#/components/schemas/datetime'
-        mediaContent:
-          $ref: '#/components/schemas/mediaContent'
+        conversationID:
+          $ref: '#/components/schemas/id'
+        # mediaContent:
+        #   $ref: '#/components/schemas/mediaContent'
         textContent:
           $ref: '#/components/schemas/textContent'
      
     conversation-create:
       type: object
       required:
-      - receiverID  # this can be derived from listingID
       - listingID
       properties:
-        receiverID:
-          $ref: 'schemas.yaml#/components/schemas/id'
         listingID:
           $ref: 'schemas.yaml#/components/schemas/id'
   
