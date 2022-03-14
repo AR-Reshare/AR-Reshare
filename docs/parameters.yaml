@@ -3,7 +3,7 @@ components:
     maxResults:
       name: max
       in: query
-      description: Returns <= maxResults results
+      description: Returns <= max results
       required: true
       schema:
         type: integer
@@ -73,7 +73,7 @@ components:
         $ref: 'schemas.yaml#/components/schemas/id'
 
     conversationID:
-      name: conversation's
+      name: conversationID
       in: query
       description: The conversation's id
       required: true
