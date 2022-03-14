@@ -16,6 +16,15 @@ const IsPosInt = (anInt) => {
     return Number.isInteger(num) && num >= 0;
 }
 
+const IsDate = (aString) => {
+    if (!IsNonEmptyString(aString)) return false;
+    let split = aString.split('-');
+    if (!split.length === 3) return false;
+    let date = new Date(`${split[0]}-${split[1]}-${split[2]}Z`);
+    if (isNaN(date)) return false;
+    return true;
+}
+
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
             && 'country' in anObject
@@ -64,10 +73,10 @@ const createAccountTemplate = new RequestTemplate([{
     in_name: 'dob',
     required: true,
     conditions: [
+        IsDate,
         (dob) => {
             let date = new Date(`${dob}Z`);
-            if (isNaN(date)) return false;
-            else if (getAge(date) < 13) throw new Error('Not old enough');
+            if (getAge(date) < 13) throw new Error('Not old enough');
             else return true;
         }
     ],
@@ -94,6 +103,47 @@ const loginTemplate = new RequestTemplate([{
     required: false,
 }]);
 
+const modifyAccountTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'name',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'email',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (email) => (email.length >= 3 && email.includes('@')),
+    ],
+}, {
+    in_name: 'newPassword',
+    out_name: 'passhash',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (password) => {
+            if (PassPattern.test(password)) return true;
+            else throw new Error('Password not strong enough'); // trigger 422
+        },
+    ],
+    sanitise: (password) => bcrypt.hashSync(password, 12),
+}, {
+    in_name: 'dob',
+    required: false,
+    conditions: [
+        IsDate,
+        (dob) => {
+            let date = new Date(`${dob}Z`);
+            if (getAge(date) < 13) throw new Error('Not old enough');
+            else return true;
+        }
+    ],
+    sanitise: (dob) => new Date(`${dob}Z`),
+}]);
+
 const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -102,7 +152,25 @@ const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
     required: true,
     conditions: [IsPosInt],
-}])
+}]);
+
+const searchAccountListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}]);
 
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
@@ -164,6 +232,38 @@ const createListingTemplate = new RequestTemplate([{
     // TODO: add support for media. Issue #32
 }]);
 
+const modifyListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'title',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'description',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'location',
+    required: false,
+    conditions: [
+        (loc) => { return IsPosInt(loc) || IsLocation(loc); },
+    ],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'condition',
+    required: false,
+    conditions: [IsCondition],
+}]);
+
 const closeListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -181,6 +281,72 @@ const closeListingTemplate = new RequestTemplate([{
     ],
 }]);
 
+const createConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const closeConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const createMessageTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'textContent',
+    required: true,
+    conditions: [IsNonEmptyString],
+}]);
+
+const listConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const viewConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -194,23 +360,23 @@ const RequestTemplateDefinitions = {
 
     'close-account': accountIDOnly,
     'login': loginTemplate,
-    'modify-account': null,
+    'modify-account': modifyAccountTemplate,
     'view-accountListing': viewAccountListingTemplate,
-    'search-accountListing': null,
+    'search-accountListing': searchAccountListingTemplate,
     'search-savedListing': null,
     'search-address': accountIDOnly,
 
     'view-listing': viewListingTemplate,
     'search-listing': searchListingTemplate,
     'create-listing': createListingTemplate,
-    'modify-listing': null,
+    'modify-listing': modifyListingTemplate,
     'close-listing': closeListingTemplate,
 
-    'create-conversation': null,
-    'close-conversation': null,
-    'create-message': null,
-    'search-conversation': null,
-    'view-conversation': null,
+    'create-conversation': createConversationTemplate,
+    'close-conversation': closeConversationTemplate,
+    'create-message': createMessageTemplate,
+    'search-conversation': listConversationTemplate,
+    'view-conversation': viewConversationTemplate,
 };
 
 module.exports = RequestTemplateDefinitions;

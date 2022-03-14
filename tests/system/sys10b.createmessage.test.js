@@ -20,134 +20,156 @@ afterAll(() => {
     db.end();
 });
 
-describe('System Test 7 - /listing/close', () => {
+describe('System Test 10b - /conversation/message', () => {
     test('Class 1: No token', () => {
         let data = {
-            listingID: 10,
+            conversationID: 1,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .send(data)
             .expect(401);
     });
 
-    test('Class 2: An invalid token', () => {
-        let token = 'ABCDE';
+    test('Class 2: No valid token', () => {
+        let token = 'AAAAAA';
         let data = {
-            listingID: 11,
+            conversationID: 1,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
             .expect(401);
     });
-    
-    test('Class 3: No listingID', () => {
+
+    test('Class 3: No conversationID', () => {
         let token = validToken;
         let data = {
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
+            .set('Authorization', token)
+            .send(data)
+            .expect(400);
+    });
+
+    test('Class 4: Invalid conversationID', () => {
+        let token = validToken;
+        let data = {
+            conversationID: -1,
+            textContent: 'Hello',
+        };
+
+        return request(app.app)
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
             .expect(400);
     });
     
-    test('Class 4: Listing does not exist', () => {
+    test('Class 5: ID does not match a conversation', () => {
         let token = validToken;
         let data = {
-            listingID: 5000,
+            conversationID: 5000,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
             .expect(404);
     });
     
-    test('Class 5: Listing belongs to a different account', () => {
+    test('Class 6: ID matches a closed conversation', () => {
         let token = validToken;
         let data = {
-            listingID: 12,
+            conversationID: 2,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
+            .set('Authorization', token)
+            .send(data)
+            .expect(404);
+    });
+
+    test('Class 7: ID matches a conversation that does not involve this user', () => {
+        let token = validToken;
+        let data = {
+            conversationID: 3,
+            textContent: 'Hello',
+        };
+
+        return request(app.app)
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
             .expect(404);
     });
     
-    test('Class 6: Listing is already closed', () => {
+    test('Class 8: ID matches a conversation where this user is receiver', () => {
         let token = validToken;
         let data = {
-            listingID: 13,
+            conversationID: 1,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
-            .expect(404);
+            .expect(201)
+            .expect(/success/);
     });
     
-    test('Class 7: Valid close request', () => {
+    test('Class 9: ID matches a conversation where this user is giver', () => {
         let token = validToken;
         let data = {
-            listingID: 14,
+            conversationID: 4,
+            textContent: 'Hello',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
-            .expect(200);
+            .expect(201)
+            .expect(/success/);
     });
-    
-    test('Class 8: Receiver is self', () => {
+
+    test('Class 10: No text content', () => {
         let token = validToken;
         let data = {
-            listingID: 15,
-            receiverID: 1,
+            conversationID: 4,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
             .expect(400);
     });
-    
-    test('Class 9: Receiver does not exist', () => {
+
+    test('Class 11: Invalid text content', () => {
         let token = validToken;
         let data = {
-            listingID: 16,
-            receiverID: 1000,
+            conversationID: 4,
+            textContent: '',
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/message')
             .set('Authorization', token)
             .send(data)
-            .expect(404);
-    });
-    
-    test('Class 10: Receiver is valid', () => {
-        let token = validToken;
-        let data = {
-            listingID: 17,
-            receiverID: 2,
-        };
-
-        return request(app.app)
-            .patch('/listing/close')
-            .set('Authorization', token)
-            .send(data)
-            .expect(200);
+            .expect(400);
     });
 });
