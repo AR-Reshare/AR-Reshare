@@ -5,7 +5,6 @@ const mockGetStatus = jest.fn();
 const mockGetResponse = jest.fn();
 const mockStatus = jest.fn();
 const mockSend = jest.fn();
-const mockEnd = jest.fn();
 
 let schema, res, pipe;
 
@@ -17,7 +16,6 @@ beforeAll(() => {
     res = MockResponseHandle = {
         status: mockStatus,
         send: mockSend,
-        end: mockEnd,
     };
     pipe = new Pipeline();
 });
@@ -27,7 +25,6 @@ beforeEach(() => {
     mockGetResponse.mockClear();
     mockStatus.mockClear();
     mockSend.mockClear();
-    mockEnd.mockClear();
 });
 
 describe('Unit Test 15 - Pipeline.APIRespond', () => {
@@ -44,7 +41,6 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetResponse).toBeCalledWith(inputArray);
             expect(mockStatus).toBeCalledWith(status);
             expect(mockSend).toBeCalledWith(processed);
-            expect(mockEnd).not.toBeCalled();
 
             expect(out).toHaveProperty('status', status);
             expect(out).toHaveProperty('result', processed);
@@ -65,7 +61,6 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetResponse).toBeCalledWith(inputArray);
             expect(mockStatus).toBeCalledWith(status);
             expect(mockSend).toBeCalledWith(processed);
-            expect(mockEnd).not.toBeCalled();
 
             expect(out).toHaveProperty('status', status);
             expect(out).toHaveProperty('result', processed);
@@ -74,7 +69,7 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
 
     test('Class 3: error, null input array', () => {
         let inputArray = null;
-        let err = new QueryExecutionError;
+        let err = new QueryExecutionError('Some message');
         let status = 404;
 
         mockGetStatus.mockReturnValueOnce(status);
@@ -83,17 +78,16 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetStatus).toBeCalledWith(err);
             expect(mockGetResponse).not.toBeCalled();
             expect(mockStatus).toBeCalledWith(status);
-            expect(mockSend).not.toBeCalled();
-            expect(mockEnd).toBeCalled();
+            expect(mockSend).toBeCalledWith({error: 'Some message'});
 
             expect(out).toHaveProperty('status', status);
-            expect(out).toHaveProperty('result', null);
+            expect(out).toHaveProperty('result', {error: 'Some message'});
         });
     });
 
     test('Class 4: error, non-null input array', () => {
         let inputArray = [[{userid: 12345}]];
-        let err = new QueryExecutionError;
+        let err = new QueryExecutionError('Some message');
         let status = 404;
 
         mockGetStatus.mockReturnValueOnce(status);
@@ -102,11 +96,10 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetStatus).toBeCalledWith(err);
             expect(mockGetResponse).not.toBeCalled();
             expect(mockStatus).toBeCalledWith(status);
-            expect(mockSend).not.toBeCalled();
-            expect(mockEnd).toBeCalled();
+            expect(mockSend).toBeCalledWith({error: 'Some message'});
 
             expect(out).toHaveProperty('status', status);
-            expect(out).toHaveProperty('result', null);
+            expect(out).toHaveProperty('result', {error: 'Some message'});
         });
     });
 
@@ -121,11 +114,10 @@ describe('Unit Test 15 - Pipeline.APIRespond', () => {
             expect(mockGetStatus).toBeCalledWith(err);
             expect(mockGetResponse).not.toBeCalled();
             expect(mockStatus).toBeCalledWith(status);
-            expect(mockSend).not.toBeCalled();
-            expect(mockEnd).toBeCalled();
+            expect(mockSend).toBeCalledWith({success: true});
 
             expect(out).toHaveProperty('status', status);
-            expect(out).toHaveProperty('result', null);
+            expect(out).toHaveProperty('result', {success: true});
         });
     });
 });

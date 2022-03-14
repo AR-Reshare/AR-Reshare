@@ -18,21 +18,23 @@ class App {
         const CreateAccount = new pipes.CreateEntityPipeline('account', {}, db, logger); // (in question - see issue #25)
         const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger);
         const Login = new pipes.LoginPipeline(db, logger);
-        const ModifyAccount = NA; // ModifyEntity
+        const ModifyAccount = new pipes.ModifyEntityPipeline('account', {}, db, logger);
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
-        const SearchAccountListing = NA; // SearchEntity
+        const SearchAccountListing = new pipes.SearchEntityPipeline('accountListing', {}, db, logger);
         const SearchSavedListing = NA; //SearchEntity
+        const SaveListing = NA; // CreateEntity
+        const ForgetListing = NA; // CloseEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // TODO: test media
         const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger);
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger); // TODO: media upload
-        const ModifyListing = NA; // ModifyEntity
+        const ModifyListing = new pipes.ModifyEntityPipeline('listing', {}, db, logger);
         const CloseListing = new pipes.CloseEntityPipeline('listing', {}, db, logger);
-        const CreateConversation = NA; // CreateEntity
-        const CloseConversation = NA; // CloseEntity
-        const CreateMessage = NA; // CreateEntity
-        const ListConversation = NA; // SearchEntity
-        const ViewConversation = NA; // ViewEntity
+        const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger);
+        const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger);
+        const CreateMessage = new pipes.CreateEntityPipeline('message', {}, db, logger);
+        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger);
+        const ViewConversation = new pipes.ViewEntityPipeline('conversation', {}, db, logger);
 
         // serve the docs directory statically, so the index page becomes the API docs
         app.use(express.static('docs'));
@@ -44,24 +46,26 @@ class App {
 
         app.get('/categories/list', ListCategories.Execute);
 
-        app.post('/account/create', CreateAccount.Execute);
-        app.post('/account/close', CloseAccount.Execute);
+        app.put('/account/create', CreateAccount.Execute);
+        app.patch('/account/close', CloseAccount.Execute);
         app.post('/account/login', Login.Execute);
-        app.put('/account/modify', ModifyAccount.Execute);
+        app.patch('/account/modify', ModifyAccount.Execute);
         app.get('/account/listing/view', ViewAccountListing.Execute);
         app.get('/account/listings/search', SearchAccountListing.Execute);
         app.get('/account/saved-listings/search', SearchSavedListing.Execute);
+        app.post('/account/saved-listings/create', SaveListing.Execute);
+        app.post('/account/saved-listings/delete', ForgetListing.Execute);
         app.get('/account/addresses/list', ListAddresses.Execute);
         
         app.get('/listing/view', ViewListing.Execute);
         app.get('/listings/search', SearchListing.Execute);
-        app.post('/listing/create', CreateListing.Execute);
-        app.put('/listing/modify', ModifyListing.Execute);
-        app.post('/listing/close', CloseListing.Execute);
+        app.put('/listing/create', CreateListing.Execute);
+        app.patch('/listing/modify', ModifyListing.Execute);
+        app.patch('/listing/close', CloseListing.Execute);
         
-        app.post('/conversation/create', CreateConversation.Execute);
-        app.post('/conversation/close', CloseConversation.Execute);
-        app.post('/conversation/message', CreateMessage.Execute);
+        app.put('/conversation/create', CreateConversation.Execute);
+        app.patch('/conversation/close', CloseConversation.Execute);
+        app.put('/conversation/message', CreateMessage.Execute);
         app.get('/conversations', ListConversation.Execute);
         app.get('/conversation/view', ViewConversation.Execute);
 

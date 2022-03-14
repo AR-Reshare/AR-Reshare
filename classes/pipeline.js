@@ -1,4 +1,4 @@
-const { QueryExecutionError, ForeignKeyError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError } = require("./errors");
 
 class Pipeline {
     constructor(db, logger=console, emailTransporter=null) {
@@ -88,6 +88,8 @@ class Pipeline {
                 } else {
                     if (err.code === '23503' || err.message.includes('owner_agrees')) {
                         reject(new ForeignKeyError(err.message));
+                    } else if (err.code === '23505') {
+                        reject(new UniqueConstraintError(err.message));
                     } else {
                         reject(err);
                     }
@@ -141,12 +143,16 @@ class Pipeline {
             res.status(statusCode);
             
             let outputObject = null;
-            if (statusCode >= 200 && statusCode < 300 && inputArray !== null) {
-                outputObject = responseSchema.getResponse(inputArray);
+            if (statusCode >= 200 && statusCode < 300) {
+                outputObject = inputArray === null ? {success: true} : responseSchema.getResponse(inputArray);
+                outputObject = Object.keys(outputObject).length === 0 ? {success: true} : outputObject;
+            } else {
+                outputObject = {
+                    error: err.message
+                };
             }
 
-            if (outputObject) res.send(outputObject);
-            else res.end();
+            res.send(outputObject);
             
             // mainly returned so that wrappers can check the status code
             resolve({status: statusCode, result: outputObject});

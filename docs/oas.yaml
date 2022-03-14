@@ -26,62 +26,66 @@ info:
 paths:
   /:
     get:
+      operationId: getHomePage
       description: Returns the API specification page
       responses:
         '200':
           description: The page is succesfully returned
           
-  /index:
-    get:
-      description: Returns the API specification page
-      responses:
-        '200':
-          description: The page is succesfully returned
-
-
   /token/regeneration:
     post:
+      operationId: getRegeneratedToken
       description: Regenerates a new token based off of a currently valid token (that is about to expire)
       responses:
-        '201':
-          $ref: 'responses.yaml#/components/responses/token-regeneration'
-        '400':
-          description: A valid old token wasn't provided in the header of the HTTP request
+        '501':
+          description: This action is not yet supported
+        # '201':
+        #   $ref: 'responses.yaml#/components/responses/token-regeneration'
+        # '400':
+        #   description: A valid old token wasn't provided in the header of the HTTP request
 
   /passwordResetRequest:
     post:
+      operationId: requestPasswordReset
       description: Sends a password reset email to the corresponding email if it exists
       responses:
-        '200':
-          description: The request was processed without any exceptions (The email may or may not exist in the db)
-        '400':
-          description: The email provided was of an invalid format
-      requestBody:
-        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
+        '501':
+          description: This action is not yet supported
+      #   '200':
+      #     description: The request was processed without any exceptions (The email may or may not exist in the db)
+      #   '400':
+      #     description: The email provided was of an invalid format
+      # requestBody:
+      #   $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
   
   ## I was considering splitting this up into two but want to reduce the number of endpoints
   /passwordResetExecute:
     post:
+      operationId: executePasswordReset
       description: Executes the password reset if the tokens are valid
       responses:
-        '200':
-          description: The request was executed successfully and the account's password has now been changed
-        '400':
-          description: The arguments were of invalid formats
-      requestBodies:
-        $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
+        '501':
+          description: This action is not yet supported
+      #   '200':
+      #     description: The request was executed successfully and the account's password has now been changed
+      #   '400':
+      #     description: The arguments were of invalid formats
+      # requestBody:
+      #   $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
 
   /categories/list:
     get:
+      operationId: getCategoryDescriptors
       description: Retrieves the currently available categories
       responses:
         '200':
           description: The categories list was successfully retrieved
-          $ref: 'responses.yaml#/components/responses/category-descriptor-list'
+          $ref: 'responses.yaml#/components/responses/category-descriptors'
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
-    post:
+    put:
+      operationId: createAccount
       description: Creates an account with request arguments
       responses:
         '201': # Succesfully created
@@ -100,7 +104,8 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
                
   /account/close:
-    post: # not delete
+    patch: # not delete
+      operationId: closeAccount
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
         '200': # Success
@@ -118,11 +123,12 @@ paths:
         '409': # Conflict
           description: The account is already queued for close
           $ref: 'responses.yaml#/components/responses/account-close'
-    requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
   
   /account/login:
     post:
+      operationId: loginAccount
       description: Login in to the requested account using request arguments
       responses:
         '200': # Success
@@ -141,7 +147,8 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
      
   /account/modify:
-    put:
+    patch:
+      operationId: modifyAccount
       description: Modifies the details of the current account
       responses:
         '200': # Success
@@ -153,14 +160,15 @@ paths:
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
           $ref: 'responses.yaml#/components/responses/account-modify'
-        '403': # Not Found
-          description: Insufficient privileges to perform request
-          $ref: 'responses.yaml#/components/responses/account-modify'
+        '422': # Unprocessable Entity
+          description: At least one parameter was invalid. For example, the submitted password does not meet security requirements, the email address is fake, or the date of birth is not far enough in the past
+          $ref: 'responses.yaml#/components/responses/account-create'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
   /account/listing/view:
     get:
+      operationId: getAccountListingByID
       description: Returns the listing which matches the value of the parameter "listingID"
       responses:
         '200': # Success
@@ -173,105 +181,106 @@ paths:
           description: The listing does not exist
           $ref: 'responses.yaml#/components/responses/listing-private'
       parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /account/listings/search:
     get:
+      operationId: searchAccountListings
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
-        '200': # Success
-          description: Returns all available listings with the parameters required
-          $ref: 'responses.yaml#/components/responses/listings-descriptor'
-        '400': # Bad Request
-          description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-descriptor'
-      parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
+        '501':
+          description: This action is not yet supported
+      #   '200': # Success
+      #     description: Returns all available listings with the parameters required
+      #     $ref: 'responses.yaml#/components/responses/listings-descriptor'
+      #   '400': # Bad Request
+      #     description: The request did not include a valid query parameter
+      #     $ref: 'responses.yaml#/components/responses/listings-descriptor'
+      # parameters:
+      #   - $ref: 'parameters.yaml#/components/parameters/maxResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/endResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/startResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
         ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
 
   ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
   /account/saved-listings/search:
     get:
+      operationId: searchSavedListings
       description: Returns the user's saved listings
       responses:
-        '200': # Success
-          description: Returns all saved listings
-          $ref: 'responses.yaml#/components/responses/listings-public'
-        '400':
-          description: The request did not include a valid query parameter
-          $ref: 'responses.yaml#/components/responses/listings-public'
-      parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        endResults:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
-        region:
-          $ref: 'parameters.yaml#/components/parameters/region'
+        '501':
+          description: This action is not yet supported
+      #   '200': # Success
+      #     description: Returns all saved listings
+      #     $ref: 'responses.yaml#/components/responses/listings-public'
+      #   '400':
+      #     description: The request did not include a valid query parameter
+      #     $ref: 'responses.yaml#/components/responses/listings-public'
+      # parameters:
+      #   - $ref: 'parameters.yaml#/components/parameters/maxResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/endResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/startResults'
+      #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
+      #   - $ref: 'parameters.yaml#/components/parameters/region'
 
   ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
   ## that is saved is public) -- otherwise adversary has access to archived listings
   ## NOTE: This isn't a create endpoint, but it's just to keep with the format
   /account/saved-listings/create:
     post:
+      operationId: createSavedListing
       description: Saves a listing
       responses:
-        '201': # Succesfully created
-          description: The listing has been saved for the user
-          $ref: 'responses.yaml#/components/responses/post'
-        '400': # Bad Request
-          description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/post'
-        '409': # Conflict
-          description: The listing has already been saved for the user
-          $ref: 'responses.yaml#/components/responses/post'
-        '422': # Unprocessable Entity
-          description: At least one parameter was invalid.
-          $ref: 'responses.yaml#/components/responses/post'
-    parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        '501':
+          description: This action is not yet supported
+      #   '201': # Succesfully created
+      #     description: The listing has been saved for the user
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '400': # Bad Request
+      #     description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '409': # Conflict
+      #     description: The listing has already been saved for the user
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '422': # Unprocessable Entity
+      #     description: At least one parameter was invalid.
+      #     $ref: 'responses.yaml#/components/responses/post'
+      # parameters:
+      #   - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /account/saved-listings/delete:
     post:
+      operationId: deleteSavedListing
       description: deletes a listing from the saved-listing
       responses:
-        '200': # Success
-          description: The listing has been succesfully removed from saved-listings
-          $ref: 'responses.yaml#/components/responses/post'
-        '400': # Bad Request
-          description: The request did not include a listingID
-          $ref: 'responses.yaml#/components/responses/post'
-        '401': # Unauthorised
-          description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/post'
-        '403': # Forbidden
-          description: The user has insufficient priviledges to perform the action
-          $ref: 'responses.yaml#/components/responses/post'
-        '404': # Not Found
-          description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/post'
-        '409': # Conflict
-          description: The listing is already closed
-          $ref: 'responses.yaml#/components/responses/post'
-    parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        '501':
+          description: This action is not yet supported
+      #   '200': # Success
+      #     description: The listing has been succesfully removed from saved-listings
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '400': # Bad Request
+      #     description: The request did not include a listingID
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '401': # Unauthorised
+      #     description: The user did not provide a valid authentication token
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '403': # Forbidden
+      #     description: The user has insufficient priviledges to perform the action
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '404': # Not Found
+      #     description: The listing does not exist
+      #     $ref: 'responses.yaml#/components/responses/post'
+      #   '409': # Conflict
+      #     description: The listing is already closed
+      #     $ref: 'responses.yaml#/components/responses/post'
+      # parameters:
+      #   - $ref: 'parameters.yaml#/components/parameters/listingID'
 
 
   /account/addresses/list:
     get:
+      operationId: getAccountAddresses
       description: Returns the user's previously used/saved addresses
       responses:
         '200':
@@ -297,6 +306,7 @@ paths:
   ## Some of the below functionality does not require authentication - hence the missing 401, 403 codes
   /listing/view:
     get:
+      operationId: getListingByID
       description: Returns the listing which matches the value of the parameter "listingId"
       responses:
         '200': # Success
@@ -309,11 +319,11 @@ paths:
           description: The listing does not exist
           $ref: 'responses.yaml#/components/responses/listing-public'
       parameters:
-        listingID:
-          $ref: 'parameters.yaml#/components/parameters/listingID'
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
   /listings/search:
     get:
+      operationId: searchListings
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
         '200': # Success
@@ -323,17 +333,14 @@ paths:
           description: The request did not include a valid query parameter'
           $ref: 'responses.yaml#/components/responses/listings-descriptor'
       parameters:
-        maxResults:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
-        startResults:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        categoryId:
-          $ref: 'parameters.yaml#/components/parameters/categoryId'
-        region:
-          $ref: 'parameters.yaml#/components/parameters/region'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/categoryId'
+        - $ref: 'parameters.yaml#/components/parameters/region'
    
   /listing/create:
-    post:
+    put:
+      operationId: createListing
       description: Creates a new listing
       responses: 
         '201': # Successfully Created
@@ -345,11 +352,12 @@ paths:
         '403': # Forbidden
           description: The user is not allowed to create a listing
           $ref: 'responses.yaml#/components/responses/post'
-      requestBodies:
+      requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
 
   /listing/modify:
-    put:
+    patch:
+      operationId: modifyListing
       description: Modifies the listings
       responses:
         '200': # Success
@@ -371,7 +379,8 @@ paths:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
 
   /listing/close:
-    post:
+    patch:
+      operationId: closeListing
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       responses:
         '200': # Success
@@ -392,8 +401,8 @@ paths:
         '409': # Conflict
           description: The listing is already closed
           $ref: 'responses.yaml#/components/responses/post'
-    requestBody:
-      $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
+      requestBody:
+        $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
 
 
   ####################################### CONVERSATION ###################################
@@ -407,82 +416,74 @@ paths:
 
   # NOTE: All of these will be using some authentication token (e.g. jwt)
   /conversation/create:
-    post:
+    put:
+      operationId: createConversation
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
         '201': # Successfully Created
           description: The conversation has been initiated
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-create'
-        '403': # Forbidden
-          description: The user does not have permission to start this conversation (for example, because the seller has blocked them)
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
           description: The listing does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
         '409': # Conflict
           description: The converstaion already exists
-          $ref: 'responses.yaml#/components/responses/conversation-create'
-        '410': # Gone
-          description: The listing is closed
-          $ref: 'responses.yaml#/components/responses/conversation-create'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
   
   /conversation/close:
-    post:
+    patch:
+      operationId: closeConversation
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
         '200': # Success
           description: The conversation has been closed
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
-          description: The conversation does not exist
-          $ref: 'responses.yaml#/components/responses/conversation-close'
-        '409': # Conflict
-          description: The conversation is already closed
-          $ref: 'responses.yaml#/components/responses/conversation-close'
+          description: The conversation does not exist, the user is not part of it, or it is closed
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
 
   /conversation/message:
-    post:
+    put:
+      operationId: sendConversationMessage
       description: Sends a message to a conversation via it's conversationID
       responses:
         '200': # Success
           description: The message has been successfully delivered
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '400': # Bad Request
           description: The request did not include a/some required parameter(s), or those parameters were formatted incorrectly
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorised
           description: The user did not provide a valid authentication token
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
           description: The user does not have permission to send this message (for example, because the seller has blocked them)
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
-          $ref: 'responses.yaml#/components/responses/conversation-message'
-        '410': # Gone
-          description: The conversation is closed
-          $ref: 'responses.yaml#/components/responses/conversation-message'
+          $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
   /conversations:
     get:
+      operationId: getConversationDescriptors
       description: Returns descriptors of conversations that the user still has open
       responses:
         '200': # Success
@@ -496,17 +497,14 @@ paths:
           $ref: 'responses.yaml#/components/responses/conversation-descriptors'
         '403': # Forbidden
           description: The user has insufficient priviledges to perform the action
-          $ref: 'responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/conversation-descriptors'
       parameters:
-        start:
-          $ref: 'parameters.yaml#/components/parameters/startResults'
-        end:
-          $ref: 'parameters.yaml#/components/parameters/endResults'
-        max:
-          $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
   /conversation/view:
     get:
+      operationId: getConversationByID
       description: Returns the conversation of a given conversationID
       responses:
         '200': # Success
@@ -521,9 +519,10 @@ paths:
         '404': # Not Found
           description: The conversation does not exist, or this user is not part of it
           $ref: 'responses.yaml#/components/responses/conversation-view'     
-    parameters:
-      conversationID:
-        $ref: 'parameters.yaml#/components/parameters/conversationID'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/conversationID'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
 
 
 

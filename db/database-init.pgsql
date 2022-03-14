@@ -72,7 +72,8 @@ CREATE TABLE Conversation (
     ReceiverID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ClosedDate timestamp
+    ClosedDate timestamp,
+    UNIQUE (ReceiverID, ListingID)
 );
 
 CREATE TABLE Message (
@@ -80,7 +81,6 @@ CREATE TABLE Message (
     SenderID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ConversationID int4 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ReadTime timestamp,
     ContentText varchar NOT NULL
 );
 
