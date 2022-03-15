@@ -104,8 +104,12 @@ class GeneralPipe extends Pipeline {
             error_final = err;
             return;
         }).finally(() => {
+            res.send({
+                results: result_final,
+                error: error_final,
+            });
             // build response
-            this.APIRespond(this.responseTemplate, res, result_final, error_final);
+            // this.APIRespond(this.responseTemplate, res, result_final, error_final);
         });
     }
 }
