@@ -104,12 +104,8 @@ class GeneralPipe extends Pipeline {
             error_final = err;
             return;
         }).finally(() => {
-            res.send({
-                results: result_final,
-                error: error_final,
-            });
             // build response
-            // this.APIRespond(this.responseTemplate, res, result_final, error_final);
+            this.APIRespond(this.responseTemplate, res, result_final, error_final);
         });
     }
 }
@@ -199,8 +195,10 @@ class LoginPipeline extends Pipeline {
             res.status(status);
             if (status === 200) {
                 res.set('Authorization', result_final);
+                res.send({success: true});
+            } else {
+                res.send({error: error_final});
             }
-            res.end();
             return;
         });
     }
