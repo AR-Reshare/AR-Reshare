@@ -35,6 +35,7 @@
 // Recomendation: Update tokens on a regular basis
 
 var admin = require('firebase-admin');
+var path = require('path');
 
 
 class PushNotifications {
@@ -42,11 +43,11 @@ class PushNotifications {
         //pass
     }
 
-    static serviceAccountKeyPath = 'ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json';
+    static serviceAccountKeyPath = `secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
     
     static initializeApp() {
         let serviceAccount = require(PushNotifications.serviceAccountKeyPath);
-        return admin.initializeApp({
+        return admin.initializeApp({   
             credential: admin.credential.cert(serviceAccount)
         });
     }
