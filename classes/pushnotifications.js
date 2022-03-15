@@ -159,7 +159,26 @@ class PushNotif {
         return true;
     }
 
-    async sendPushNotif(fcmApp, registration, message){
+    async sendPushNotif(fcmApp, registrationToken, message){
+        // No need to add exponential backoff as this is handled by fcm-admin package
+        fcmApp.message().sendToDevice(registrationToken, message)
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+          })
+        .catch((error) => {
+            if (typeof(error) === admin.messaging.INVALID_ARGUMENT){
+                console.log('invalid argument');
+                throw error;
+            } else if (typeof(error) === admin.messaging.UNREGISTERED){
+                console.log('unregistered');
+                throw error;
+            }
+            console.log('Error sending message:', error);
+          });
+
+          return;
+        
 
     };
 
