@@ -2,9 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const pipes = require('./pipeline');
 
+// code from https://stackoverflow.com/a/23894573/18101380 to require HTTPS use
+const forceSecure = (req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    return next();
+ };
+
 class App {
     constructor(db, logger) {
         let app = express();
+        app.use(forceSecure);
         app.use(bodyParser.json());
         // NOTE: NA here refers to notImplementedPipelines, which differentiates from NA (noAuth) in SecurityValidate
         const NA = new pipes.NotImplementedPipeline(db, logger); // for unimplemented endpoints
