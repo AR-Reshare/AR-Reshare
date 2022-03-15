@@ -40,7 +40,7 @@ class EmailTemplateDefinitions {
 }
 
 class EmailTransporter {
-    static emailConfigLocation = `classes${path.sep}emailConfig.conf`;
+    static emailConfigLocation = `configs${path.sep}emailConfig.conf`;
 
     static async getConfig(){
         let out, config;
