@@ -96,6 +96,82 @@ class PushNotifTemplates {
           }
     };
 
+    static arguments = {
+        'Message-Send': ['senderName', 'senderMessage'],
+        'Message-Close': ['senderName'],
+        'Message-Start': ['senderName'],
+    };
+
+    static templates = {
+        'Message-Send': PushNotifTemplates.messageSend,
+        'Message-Close': PushNotifTemplates.messageClose,
+        'Message-Start': PushNotifTemplates.messageStart,
+    };
+    
+}
+
+
+// NOTE: THis is very similar structure to the EmailRespond
+// TODO: Make sure to make a subclass
+class PushNotif {
+    constructor(templateType){
+        let supportedTemplateTypes = ['Message-Send', 'Message-Start', 'Message-Close'];
+        if (!templateType){
+            throw new TemplateError('No TemplateType was provided');
+        } else if (!supportedTemplateTypes.includes(templateType)){
+            throw new TemplateError('An accepted TemplateType was not provided');
+        } else {
+            this.templateType = templateType;
+            this.templateDict = PushNotifTemplates.templates[this.template];
+            this.templateArguments = PushNotifTemplates.arguments[this.templateType];
+        }
+
+    }
+
+    async templateReplace(replacementObject){
+        // TODO: Quite inefficient -- If you have time modify later
+        let message = this.templateDict;
+        for (const arg of this.templateArguments){
+            message.notification.title = message.notification.title.replace(`\${${arg}}`, replacementObject[arg]);
+            message.notification.body = message.notification.body.replace(`\${${arg}}`, replacementObject[arg]);
+        }
+        return content;
+    };
+
+    async replacementObjectValidate(replacementObject){
+        // existance check and type check
+        if (!replacementObject){
+            throw new AbsentArgumentError();
+        } else if (replacementObject.length != this.templateArguments.length){
+            throw new InvalidArgumentError();
+        }
+
+        for (arg in replacementObject){
+            if (!this.templateArguments.includes(arg)) {
+                throw new InvalidArgumentError();
+            } else if(replacementObject[arg] === undefined){
+                throw new AbsentArgumentError();
+            } else if (!replacementObject[arg] instanceof String){
+                throw new InvalidArgumentError();
+            }
+        }
+
+        return true;
+    }
+
+    async sendPushNotif(fcmApp, registration, message){
+
+    };
+
+    async process(fcmApp, registrationToken, inputObject){
+        // throws an error if the inputObject is invalid
+        await this.replacementObjectValidate(inputObject);
+        // replaces the templates using the validated input object
+        let message = await this.templateReplace(inputObject);
+        // sends the pushnotification using the fcm app instance
+        this.sendPushNotif(fcmApp, registrationToken, message);
+
+    };
 }
 
 
