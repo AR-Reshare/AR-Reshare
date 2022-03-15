@@ -36,23 +36,31 @@
 
 var admin = require('firebase-admin');
 var path = require('path');
-
+const {TemplateError, InvalidArgumentError, AbsentArgumentError, PrivateKeyReadError} = require('./errors.js');
 
 class PushNotifications {
     constructor(){
         //pass
     }
 
-    static serviceAccountKeyPath = `secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
+    static serviceAccountKeyPath = `..${path.sep}secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
     
     static initializeApp() {
-        let serviceAccount = require(PushNotifications.serviceAccountKeyPath);
+        let serviceAccount;
+        try {
+            serviceAccount = require(PushNotifications.serviceAccountKeyPath);
+        } catch(err){
+            throw new PrivateKeyReadError();
+        }
         return admin.initializeApp({   
             credential: admin.credential.cert(serviceAccount)
         });
     }
 
+
+
 }
+
 
 
 // NOTE: THis class needs to handle
@@ -66,13 +74,13 @@ class PushNotifications {
 // 1. storing device token hashes in the database for a specific user
 // 2. ...
 
-class PushNotificationsTemplates {
+class PushNotifTemplates {
     static messageSend = {
         notification: {
             title: '${senderName} sent you a message',
             body: '${senderName} said \'${senderMessage}\''
           }
-        };
+    };
 
     static messageClose = {
         notification: {
@@ -88,9 +96,8 @@ class PushNotificationsTemplates {
           }
     };
 
-    static templateArguments = {
-        'messageSend': ['senderName', 'senderMessage'],
-        'messageClose': ['senderName'],
-        'messageStart': ['senderName'],
-    };
 }
+
+
+
+fcmApp = PushNotifications.initializeApp();
