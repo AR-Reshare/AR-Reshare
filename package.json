@@ -10,6 +10,7 @@
     "setup-interactive": "node scripts/db-interactive-setup.js",
     "setup": "node scripts/db-setup.js",
     "teardown": "node scripts/db-teardown.js",
+    "postinstall": "node scripts/gen-private.js",
     "pretest": "node scripts/db-test-setup.js",
     "test": "echo \"\nRunning Unit Tests\n\" && jest unit && echo \"\nRunning Integration Tests\n\" && jest int && echo \"\nRunning System Tests\n\" && jest sys",
     "posttest": "node scripts/db-test-teardown.js",

@@ -197,7 +197,7 @@ class LoginPipeline extends Pipeline {
                 res.set('Authorization', result_final);
                 res.send({success: true});
             } else {
-                res.send({error: error_final});
+                res.send({error: error_final.message || error_final.name});
             }
             return;
         });
