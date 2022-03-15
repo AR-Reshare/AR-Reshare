@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
 const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, UnauthenticatedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
-const path = require('path');
 const bcrypt = require('bcrypt');
 
 // There are two parts to the securityValidation
@@ -48,7 +47,7 @@ const bcrypt = require('bcrypt');
 // Split up into (Token Creation and Token Generation) && (evnerything else)
 
 class SecurityValMethods{
-    static PrivatekeyLocation = `classes${path.sep}private.key`;
+    static PrivatekeyLocation = 'private.key';
 
     static async verifyToken(token){
         let privateKey, decodedToken;

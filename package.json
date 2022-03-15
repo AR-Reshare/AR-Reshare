@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "postinstall": "node scripts/db-interactive-setup.js",
+    "postinstall": "node scripts/db-interactive-setup.js && node scripts/gen-private.js",
     "setup": "node scripts/db-setup.js",
     "teardown": "node scripts/db-teardown.js",
     "pretest": "node scripts/db-test-setup.js",
