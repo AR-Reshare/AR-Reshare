@@ -36,20 +36,24 @@
 
 var admin = require('firebase-admin');
 var path = require('path');
+var fs = require('fs/promises');
 const {TemplateError, InvalidArgumentError, AbsentArgumentError, PrivateKeyReadError} = require('./errors.js');
 
-class PushNotifications {
+class PushNotifHelper {
     constructor(){
         //pass
     }
 
-    static serviceAccountKeyPath = `..${path.sep}secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
+    static serviceAccountKeyPath = `secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
     
-    static initializeApp() {
+    static async initializeApp() {
         let serviceAccount;
+        let out;
         try {
-            serviceAccount = require(PushNotifications.serviceAccountKeyPath);
+            out = await fs.readFile(PushNotifHelper.serviceAccountKeyPath);
+            serviceAccount = JSON.parse(out);
         } catch(err){
+            console.log(err);
             throw new PrivateKeyReadError();
         }
         return admin.initializeApp({   
@@ -122,7 +126,7 @@ class PushNotif {
             throw new TemplateError('An accepted TemplateType was not provided');
         } else {
             this.templateType = templateType;
-            this.templateDict = PushNotifTemplates.templates[this.template];
+            this.templateDict = PushNotifTemplates.templates[this.templateType];
             this.templateArguments = PushNotifTemplates.arguments[this.templateType];
         }
 
@@ -195,4 +199,8 @@ class PushNotif {
 
 
 
-fcmApp = PushNotifications.initializeApp();
+module.exports = {
+    PushNotif,
+    PushNotifHelper,
+    PushNotifTemplates,
+}
