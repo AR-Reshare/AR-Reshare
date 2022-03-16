@@ -498,10 +498,33 @@ components:
       type: string
       format: url
 
+    post-response-success:
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          $ref: '#/components/schemas/boolean'
 
+    post-response-error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/error-message'
+
+    post-response:
+      type: string
 
 
     ############################## LOW-LEVEL COMPONENTS ###############################
+    error-message:
+      type: string
+
+    boolean:
+      type: boolean
+
     country:
       type: string
 

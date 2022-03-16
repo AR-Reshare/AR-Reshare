@@ -8,17 +8,13 @@ components:
         'application/json':
           schema:
             type: object
-            required:
-            - success
-            optional:
-            - error
-            properties:
-              success: boolean
-              error: errorMsg
+            oneOf:
+            - $ref: 'schemas.yaml#/components/schemas/post-response-success' # THis attribute is named "success"
+            - $ref: 'schemas.yaml#/components/schemas/post-response-error' # This attribute is named "error"
             examples:
-              post-success:
+            - post-success:
                 success: true
-              post-failure:
+            - post-failure:
                 success: false
                 error: this is an error message
 
@@ -88,8 +84,6 @@ components:
             type: object
             required:
             - success
-            optional:
-            - conversation
             properties:
               conversation:
                 $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
