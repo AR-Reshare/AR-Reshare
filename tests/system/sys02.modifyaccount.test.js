@@ -1,13 +1,24 @@
+/*
+* @jest-environment node
+*/
+
 const App = require('../../app');
 const Database = require('../../classes/database');
 const credentials = require('../../connection.json');
+const cloudinary = require('cloudinary').v2;
+const mediaConfig = require('../../configs/mediaConfig.json');
+
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
+const { readFileSync } = require('fs');
 
 const request = require('supertest');
 
+cloudinary.config(mediaConfig);
+
 const db = new Database(credentials['test']);
 const logger = console;
-const app = new App(db, logger);
+const mediaHandler = cloudinary.uploader;
+const app = new App(db, logger, null, mediaHandler);
 
 afterAll(() => {
     db.end();
@@ -230,6 +241,36 @@ describe('System Test 2 - /account/modify', () => {
         };
 
         return AuthenticationHandler.createNewToken(db, 'changeme13@yahoo.net', 'MyUltraSecurePassword').then(token => {
+            return request(app.app)
+                .patch('/account/modify')
+                .set('Authorization', token)
+                .send(data)
+                .expect(200);
+        });
+    });
+
+    test('Class 16: Invalid picture', () => {
+        let data = {
+            password: 'MyUltraSecurePassword',
+            picture: 'data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB',
+        };
+
+        return AuthenticationHandler.createNewToken(db, 'changeme14@yahoo.net', 'MyUltraSecurePassword').then(token => {
+            return request(app.app)
+                .patch('/account/modify')
+                .set('Authorization', token)
+                .send(data)
+                .expect(422);
+        });
+    });
+
+    test('Class 17: Valid picture', () => {
+        let data = {
+            password: 'MyUltraSecurePassword',
+            picture: readFileSync('tests/data/b64_img.txt').toString(),
+        };
+
+        return AuthenticationHandler.createNewToken(db, 'changeme15@yahoo.net', 'MyUltraSecurePassword').then(token => {
             return request(app.app)
                 .patch('/account/modify')
                 .set('Authorization', token)

@@ -20,7 +20,7 @@ afterAll(() => {
     db.end();
 });
 
-describe('System Test 8 - /listings/search', () => {
+describe('System Test 8 - /account/listing/search', () => {
     test('Class 1: No token', () => {
         let data = {
             startResults: 0,
@@ -126,6 +126,20 @@ describe('System Test 8 - /listings/search', () => {
             .get(`/account/listings/search?startResults=${data.startResults}&maxResults=${data.maxResults}&categoryID=${data.categoryID}`)
             .set('Authorization', token)
             .expect(200)
-            .expect(res => {if(res.body['listings'].length !== 3) throw new Error()});
+            .expect(res => {if(res.body['listings'].length !== 3) throw new Error()})
+            .expect(res => {
+                expect(res.body['listings'][0]).toMatchObject({
+                    listingID: 6,
+                    title: 'Cup', // I was getting a bit bored of writing test cases by this point
+                    description: 'For drinking',
+                    condition: 'poor',
+                    categoryID: 2,
+                    country: 'UK',
+                    region: 'Durham',
+                    postcode: 'AB1 2CD',
+                    mimetype: 'image/jpeg',
+                    url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg',
+                });
+            });
     });
 });

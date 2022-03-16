@@ -1,12 +1,23 @@
+/*
+* @jest-environment node
+*/
+
 const App = require('../../app');
 const Database = require('../../classes/database');
 const credentials = require('../../connection.json');
+const cloudinary = require('cloudinary').v2;
+const mediaConfig = require('../../configs/mediaConfig.json');
+
+const { readFileSync } = require('fs');
 
 const request = require('supertest');
 
+cloudinary.config(mediaConfig);
+
 const db = new Database(credentials['test']);
 const logger = console;
-const app = new App(db, logger);
+const mediaHandler = cloudinary.uploader;
+const app = new App(db, logger, null, mediaHandler);
 
 afterAll(() => {
     db.end();
@@ -163,6 +174,36 @@ describe('System Test 1a - /account/create', () => {
                 region: 'Sword Coast',
                 postcode: 'WD1 5BC',
             }
+        };
+
+        return request(app.app)
+            .put('/account/create')
+            .send(data)
+            .expect(201);
+    });
+
+    test('Class 14: Invalid picture', () => {
+        let data = {
+            email: 'class14@testingtons.net',
+            name: 'Reluvethel Sylgolor',
+            password: 'P@ssw0rd',
+            dob: '1990-01-01',
+            picture: 'data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB'
+        };
+
+        return request(app.app)
+            .put('/account/create')
+            .send(data)
+            .expect(422);
+    });
+
+    test('Class 15: Valid picture', () => {
+        let data = {
+            email: 'class15@testingtons.net',
+            name: 'Maradeim Elhice',
+            password: 'P@ssw0rd',
+            dob: '1990-01-01',
+            picture: readFileSync('tests/data/b64_img.txt').toString(),
         };
 
         return request(app.app)

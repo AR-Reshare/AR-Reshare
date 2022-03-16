@@ -1,5 +1,6 @@
 const RequestTemplate = require("../classes/requesttemplate");
 const bcrypt = require('bcrypt');
+const { UnprocessableArgumentError } = require("../classes/errors");
 
 // combination of lowercase, uppercase, numbers, and special characters
 // change the numbers to require more of each
@@ -37,6 +38,22 @@ const IsLocation = (anObject) => {
 }
 
 const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
+
+const IsImage = (aString) => {
+    const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
+    let matches = Array.from(aString.matchAll(mimetypepattern));
+    if (matches.length !== 1 || matches[0].length !== 3) return false;
+    if (matches[0][1] === 'image') return true;
+    else throw new UnprocessableArgumentError('Media must be an image');
+}
+
+const IsImageOrVideo = (aString) => {
+    const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
+    let matches = Array.from(aString.matchAll(mimetypepattern));
+    if (matches.length !== 1 || matches[0].length !== 3) return false;
+    if (matches[0][1] === 'image' || matches[0][1] === 'video') return true;
+    throw new UnprocessableArgumentError('Media must be an image or video');
+}
 
 const emptyReq = new RequestTemplate([]);
 
@@ -85,6 +102,12 @@ const createAccountTemplate = new RequestTemplate([{
     in_name: 'address',
     required: false,
     conditions: [IsLocation],
+}, {
+    in_name: 'picture',
+    out_name: 'media',
+    required: false,
+    conditions: [IsImage],
+    sanitise: (media) => [media],
 }]);
 
 const loginTemplate = new RequestTemplate([{
@@ -142,6 +165,12 @@ const modifyAccountTemplate = new RequestTemplate([{
         }
     ],
     sanitise: (dob) => new Date(`${dob}Z`),
+}, {
+    in_name: 'picture',
+    out_name: 'media',
+    required: false,
+    conditions: [IsImage],
+    sanitise: (media) => [media],
 }]);
 
 const viewAccountListingTemplate = new RequestTemplate([{
@@ -229,7 +258,10 @@ const createListingTemplate = new RequestTemplate([{
 }, {
     in_name: 'media',
     required: false,
-    // TODO: add support for media. Issue #32
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
 }]);
 
 const modifyListingTemplate = new RequestTemplate([{
@@ -262,6 +294,13 @@ const modifyListingTemplate = new RequestTemplate([{
     in_name: 'condition',
     required: false,
     conditions: [IsCondition],
+}, {
+    in_name: 'media',
+    required: false,
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
 }]);
 
 const closeListingTemplate = new RequestTemplate([{
@@ -313,6 +352,13 @@ const createMessageTemplate = new RequestTemplate([{
     in_name: 'textContent',
     required: true,
     conditions: [IsNonEmptyString],
+}, {
+    in_name: 'media',
+    required: false,
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
 }]);
 
 const listConversationTemplate = new RequestTemplate([{
