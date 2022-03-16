@@ -1,4 +1,4 @@
-const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, InvalidArgumentError, FailedUploadError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, FailedUploadError } = require("./errors");
 
 class Pipeline {
     constructor(db, logger=console, emailTransporter=null, mediaHandler=null) {
@@ -12,6 +12,7 @@ class Pipeline {
         this.Store = this.Store.bind(this);
         this.APIRespond = this.APIRespond.bind(this);
         this.PushRespond = this.PushRespond.bind(this);
+        this.MediaHandle = this.MediaHandle.bind(this);
     }
 
     /**
@@ -172,32 +173,18 @@ class Pipeline {
         });
     }
 
-    MediaHandle(mediaObjects, allowVideo=false) {
+    MediaHandle(mediaObjects) {
         return new Promise((resolve, reject) => {
-            const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/=]+$/;
+            if (mediaObjects.length === 0) resolve([]);
+            const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
             let out = Array.apply(null, Array(mediaObjects.length));
             let err = null;
             mediaObjects.forEach((item, index) => {
                 if (err) throw err; // if one upload broke, stop trying to upload more
 
-                let matches = Array.from(item.matchAll(mimetypepattern));
-                let resourceType;
-                if (matches.length !== 3) {
-                    // the string didn't match the regex
-                    err = new InvalidArgumentError('Image was not a valid image');
-                    reject(err);
-                    throw err;
-                }
-
-                if (matches[1] === 'image') {
-                    resourceType = 'image';
-                } else if (matches[1] === 'video' && allowVideo) {
-                    resourceType = 'video';
-                } else {
-                    err = new InvalidArgumentError('Upload file type not supported');
-                    reject(err);
-                    throw err;
-                }
+                let matches = Array.from(item.matchAll(mimetypepattern))[0];
+                // matches = [entire string, mime supertype, mime subtype]
+                let resourceType = matches[1];
 
                 this.mediaHandler.upload(item, {resource_type: resourceType}, (error, result) => {
                     if (error) {

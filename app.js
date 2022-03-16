@@ -1,11 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const pipes = require('./pipeline');
 
 class App {
     constructor(db, logger, emailTransporter, mediaHandler) {
         let app = express();
-        app.use(bodyParser.json());
+        app.use(express.json({limit: '50mb'}));
         // NOTE: NA here refers to notImplementedPipelines, which differentiates from NA (noAuth) in SecurityValidate
         const NA = new pipes.NotImplementedPipeline(db, logger); // for unimplemented endpoints
         const NF = new pipes.UnknownEndpointPipeline(db, logger);

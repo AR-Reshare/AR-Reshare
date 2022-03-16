@@ -69,7 +69,7 @@ jest.mock('../../schemas/request-schemas', () => {
 jest.mock('../../schemas/sql-templates', () => {
     return {
         'create-test': {
-            name: 'testSSQLSchema',
+            name: 'testSQLSchema',
         },
     };
 });

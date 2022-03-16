@@ -32,15 +32,6 @@ class GeneralPipe extends Pipeline {
             }
         }
 
-        this.media = null;
-        if ('media' in options) {
-            if (options['media'] === 'image' || options['media'] === 'video' || options['media'] === false) {
-                this.media = options['media'];
-            } else {
-                throw new PipelineInitialisationError('Invalid option for media');
-            }
-        }
-
         this.securitySchema = SecuritySchemaDict[this.actionType];
         if (this.securitySchema === undefined) {
             throw new MissingTemplateError(`Unable to find security schema for ${this.actionType}`);
@@ -97,11 +88,11 @@ class GeneralPipe extends Pipeline {
             validated_out = validated;
 
             // media handling
-            if (!this.media) return false;
-            else return this.MediaHandle(validated_out['media'], this.media === 'video');
+            if ('media' in validated_out) return this.MediaHandle(validated_out['media']);
+            else return [];
         }).then(urls => {
             // add urls to the validated object
-            if (urls) {
+            if (urls.length !== 0) {
                 validated_out['url'] = urls.map(item => item.url);
                 validated_out['mimetype'] = urls.map(item => item.mimetype);
             }

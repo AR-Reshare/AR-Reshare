@@ -31,9 +31,18 @@ const CreateAccountTemplate = new SQLTemplate({
             (inputObject) => inputObject['address']['postcode'],
             {from_query: ['create_account', 'userid']},
         ]
+    },
+    insert_pfp: {
+        text: 'INSERT INTO Media (MimeType, URL, UserID) VALUES ($1, $2, $3) RETURNING MediaID',
+        condition: (inputObject) => ('url' in inputObject),
+        values: [
+            {from_input: 'mimetype'},
+            {from_input: 'url'},
+            {from_query: ['create_account', 'userid']},
+        ],
     }
-}, ['create_account', 'store_address'], {
-    drop_from_results: ['store_address'],
+}, ['create_account', 'store_address', 'insert_pfp'], {
+    drop_from_results: ['store_address', 'insert_pfp'],
     error_on_empty_response: true,
 });
 
@@ -340,7 +349,24 @@ const CreateMessageTemplate = new SQLTemplate({
             {from_input: 'textContent'},
         ],
     },
-}, ['create_message'], {error_on_empty_response: true});
+    insert_media: {
+        text: 'INSERT INTO Media (MimeType, URL, Index, MessageID) VALUES ($1, $2, $3, $4) RETURNING MediaID',
+        condition: (inputObject) => ('url' in inputObject),
+        times: (inputObject) => (inputObject['url'].length),
+        values: [
+            {from_input: 'mimetype'},
+            {from_input: 'url'},
+            (_, queryList) => {
+                if (queryList.includes('insert_media')) {
+                    return queryList.length - queryList.indexOf('insert_media');
+                } else {
+                    return 0;
+                }
+            },
+            {from_query: ['create_message', 'messageid']},
+        ],
+    }
+}, ['create_message', 'insert_media'], {drop_from_results: ['insert_media'], error_on_empty_response: true});
 
 const ListConversationTemplate = new SQLTemplate({
     get_conversations: {
