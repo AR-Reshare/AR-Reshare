@@ -1,9 +1,11 @@
 const App = require('./app');
 const Database = require('./classes/database');
 const cloudinary = require('cloudinary').v2;
-const mediaConfig = require('./secrets/mediaconnection.json');
 
-cloudinary.config(mediaConfig);
+// unecessary - heroku can only use environment variables
+
+// const mediaConfig = require('./secrets/mediaconnection.json');
+// cloudinary.config(mediaConfig);
 
 const db = new Database({
    connectionString: process.env.DATABASE_URL,
