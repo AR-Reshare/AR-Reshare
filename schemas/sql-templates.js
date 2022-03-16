@@ -120,7 +120,7 @@ const ModifyAccountTemplate = new SQLTemplate({
         ]
     },
     change_pfp: {
-        text: 'INSERT INTO Media (MimeType, URL, UserID) VALUES ($2, $3, $1) ON CONFLICT (Index, UserID) DO UPDATE SET MimeType = EXCLUDED.MimeType, URL = EXCLUDED.URL RETURNING MediaID',
+        text: 'INSERT INTO Media (MimeType, URL, UserID) VALUES ($2, $3, $1) ON CONFLICT (UserID) DO UPDATE SET MimeType = EXCLUDED.MimeType, URL = EXCLUDED.URL RETURNING MediaID',
         condition: (inputObject) => ('mimetype' in inputObject),
         values: [
             {from_input: 'accountID'},
@@ -390,13 +390,11 @@ const CreateMessageTemplate = new SQLTemplate({
         ],
     },
     insert_media: {
-        text: 'INSERT INTO Media (MimeType, URL, Index, MessageID) VALUES ($1, $2, $3, $4) RETURNING MediaID',
+        text: 'INSERT INTO Media (MimeType, URL, MessageID) VALUES ($1, $2, $3) RETURNING MediaID',
         condition: (inputObject) => ('url' in inputObject),
-        times: (inputObject) => (inputObject['url'].length),
         values: [
             {from_input: 'mimetype'},
             {from_input: 'url'},
-            {from_input: 'media_index'},
             {from_query: ['create_message', 'messageid']},
         ],
     }
@@ -422,7 +420,7 @@ const ViewConversationTemplate = new SQLTemplate({
         ],
     },
     get_messages: {
-        text: 'SELECT SenderID AS "senderID", SentTime AS "sentTime", ContentText AS "textContent" FROM Message WHERE ConversationID = $1 ORDER BY SentTime DESC OFFSET $2 LIMIT $3',
+        text: 'SELECT SenderID AS "senderID", SentTime AS "sentTime", ContentText AS "textContent", Mimetype AS "mediaContentMimetype", URL AS "mediaContent" FROM Message LEFT JOIN Media ON Media.MessageID = Message.MessageID WHERE ConversationID = $1 ORDER BY SentTime DESC OFFSET $2 LIMIT $3',
         values: [
             {from_query: ['get_conversation', 'conversationID']},
             {from_input: 'startResults'},

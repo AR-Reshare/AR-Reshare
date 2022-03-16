@@ -103,12 +103,10 @@ CREATE TABLE Media (
     MimeType mimetype NOT NULL,
     URL varchar NOT NULL,
     Index int2 NOT NULL DEFAULT 0,
-    UserID int4 REFERENCES Account ON DELETE CASCADE,
+    UserID int4 UNIQUE REFERENCES Account ON DELETE CASCADE,
     ListingID int4 REFERENCES Listing ON DELETE CASCADE,
-    MessageID int4 REFERENCES Message ON DELETE CASCADE,
-    UNIQUE (Index, UserID),
+    MessageID int4 UNIQUE REFERENCES Message ON DELETE CASCADE,
     UNIQUE (Index, ListingID),
-    UNIQUE (Index, MessageID),
     CHECK ((UserID IS NOT NULL AND ListingID IS NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NOT NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NULL AND MessageID IS NOT NULL))

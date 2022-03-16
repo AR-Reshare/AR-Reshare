@@ -90,7 +90,21 @@ describe('System Test 8 - /listings/search', () => {
         return request(app.app)
             .get(`/listings/search?maxResults=${data.maxResults}&startResults=${data.startResults}&categoryID=${data.categoryID}`)
             .expect(200)
-            .expect(res => {if(res.body['listings'].length !== 3) throw new Error()});
+            .expect(res => {if(res.body['listings'].length !== 3) throw new Error()})
+            .expect(res => {
+                expect(res.body['listings'][0]).toMatchObject({
+                    listingID: 6,
+                    title: 'Cup', // I was getting a bit bored of writing test cases by this point
+                    description: 'For drinking',
+                    condition: 'poor',
+                    categoryID: 2,
+                    country: 'UK',
+                    region: 'Durham',
+                    postcode: 'AB1 2CD',
+                    mimetype: 'image/jpeg',
+                    url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg',
+                });
+            });
     });
     
     test('Class 8: region not valid', () => {

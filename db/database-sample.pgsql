@@ -97,3 +97,11 @@ INSERT INTO Media (MimeType, URL, UserID) VALUES ('image/png', 'https://res.clou
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 27);
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 1, 27);
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 2, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 1);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 1);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 0, 6);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 1, 6);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 12);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 12);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 25);
+INSERT INTO Media (MimeType, URL, MessageID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 4);

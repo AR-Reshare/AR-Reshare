@@ -334,7 +334,7 @@ describe('System Test 6 - /listing/modify', () => {
         let token = validToken;
         let data = {
             listingID: 27,
-            media: [readFileSync('tests/data/b64_img.txt').toString(), readFileSync('tests/data/b64_img.txt').toString()],
+            media: [readFileSync('tests/data/b64_img.txt').toString(), readFileSync('tests/data/b64_lil_img.txt').toString()],
         };
 
         return request(app.app)

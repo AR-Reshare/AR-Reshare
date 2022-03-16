@@ -206,8 +206,8 @@ describe('System Test 10c - /conversation/view', () => {
                 expect(res.body).toMatchObject({
                     listingID: 25,
                     title: 'Widgets',
-                    mimetype: null,
-                    url: null,
+                    mimetype: 'image/jpeg',
+                    url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg',
                     receiverID: 1,
                     receiverName: 'Testy McTestface',
                     contributorID: 2,
@@ -219,6 +219,8 @@ describe('System Test 10c - /conversation/view', () => {
                 expect(res.body.messages[2]).toMatchObject({
                     senderID: 1,
                     textContent: 'Give me your stuff',
+                    mediaContentMimetype: 'image/png',
+                    mediaContent: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png',
                 });
             });
     });
