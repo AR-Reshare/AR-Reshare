@@ -2,7 +2,7 @@ const {spawn} = require('child_process'); // execute command
 const {type} = require('os'); // check OS type
 const {randomString} = require('secure-random-password');
 const {writeFileSync, readFileSync} = require('fs');
-
+const path = require('path');
 // Detect OS
 function getOS() {
     const os_dict = {
@@ -63,9 +63,10 @@ function removeDB(os) {
 // Update credentials
 function removeCreds(os) {
     let conn_data;
+    let dbConnectionPath = `secrets${path.sep}dbconnection.json`;
 
     try {
-        conn_data = JSON.parse(readFileSync('connection.json'));
+        conn_data = JSON.parse(readFileSync(dbConnectionPath));
     } catch (err) {
         conn_data = {};
     }
@@ -73,9 +74,9 @@ function removeCreds(os) {
     delete conn_data['test'];
 
     try {
-        writeFileSync('connection.json', JSON.stringify(conn_data));
+        writeFileSync(dbConnectionPath, JSON.stringify(conn_data));
     } catch (err) {
-        console.error('Unable to write to credentials file.')
+        console.error('Unable to write to credentials file.');
         process.exit(1);
     }
 

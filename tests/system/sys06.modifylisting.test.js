@@ -1,13 +1,24 @@
+/*
+* @jest-environment node
+*/
+
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
+const cloudinary = require('cloudinary').v2;
+const mediaConfig = require('../../secrets/mediaconnection.json');
+
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
+const { readFileSync } = require('fs');
 
 const request = require('supertest');
 
+cloudinary.config(mediaConfig);
+
 const db = new Database(credentials['test']);
 const logger = console;
-const app = new App(db, logger);
+const mediaHandler = cloudinary.uploader;
+const app = new App(db, logger, null, mediaHandler);
 let validToken;
 
 beforeAll(() => {
@@ -296,6 +307,34 @@ describe('System Test 6 - /listing/modify', () => {
             location: 4,
             condition: 'good',
             categoryID: 3,
+        };
+
+        return request(app.app)
+            .patch('/listing/modify')
+            .set('Authorization', token)
+            .send(data)
+            .expect(200);
+    });
+
+    test('Class 21: Invalid media', () => {
+        let token = validToken;
+        let data = {
+            listingID: 27,
+            media: ['data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB'],
+        };
+
+        return request(app.app)
+            .patch('/listing/modify')
+            .set('Authorization', token)
+            .send(data)
+            .expect(422);
+    });
+    
+    test('Class 22: Valid media', () => {
+        let token = validToken;
+        let data = {
+            listingID: 27,
+            media: [readFileSync('tests/data/b64_img.txt').toString(), readFileSync('tests/data/b64_lil_img.txt').toString()],
         };
 
         return request(app.app)

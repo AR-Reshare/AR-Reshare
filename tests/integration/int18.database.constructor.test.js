@@ -1,6 +1,6 @@
 const Database = require('../../classes/database');
 const { DatabaseConnectionError } = require('../../classes/errors');
-const creds = require('../../connection.json');
+const creds = require('../../secrets/dbconnection.json');
 
 describe('Integration Test 18 - Database constructor', () => {
     test('Class 1: valid credentials', () => {

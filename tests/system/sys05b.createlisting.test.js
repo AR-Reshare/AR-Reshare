@@ -1,13 +1,24 @@
+/*
+* @jest-environment node
+*/
+
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
+const cloudinary = require('cloudinary').v2;
+const mediaConfig = require('../../secrets/mediaconnection.json');
+
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
+const { readFileSync } = require('fs');
 
 const request = require('supertest');
 
+cloudinary.config(mediaConfig);
+
 const db = new Database(credentials['test']);
 const logger = console;
-const app = new App(db, logger);
+const mediaHandler = cloudinary.uploader;
+const app = new App(db, logger, null, mediaHandler);
 let validToken;
 
 beforeAll(() => {
@@ -227,4 +238,40 @@ describe('System Test 5b - /listing/create', () => {
     });
 
     // Class 19 is a superclass
+
+    test('Class 20: Invalid media', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            categoryID: 1,
+            condition: 'good',
+            media: ['data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB']
+        };
+
+        return request(app.app)
+            .put('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(422);
+    });
+    
+    test('Class 21: Valid media', () => {
+        let token = validToken;
+        let data = {
+            title: 'Old Stuff',
+            description: 'A big box of old stuff',
+            location: 1,
+            categoryID: 1,
+            condition: 'good',
+            media: [readFileSync('tests/data/b64_img.txt').toString()]
+        };
+
+        return request(app.app)
+            .put('/listing/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(201);
+    });
 });

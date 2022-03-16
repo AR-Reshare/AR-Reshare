@@ -1,6 +1,6 @@
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
 
 const request = require('supertest');

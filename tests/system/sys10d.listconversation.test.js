@@ -1,6 +1,6 @@
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
 
 const request = require('supertest');
@@ -114,8 +114,8 @@ describe('System Test 10d - /conversations', () => {
                     title: '8-sided die',
                     receiverID: 1,
                     receiverName: 'Testy McTestface',
-                    mimetype: null,
-                    url: null,
+                    mimetype: 'image/png',
+                    url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png',
                     contributorID: 2,
                     contributorName: 'Kevin McTestface'
                 });
