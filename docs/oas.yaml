@@ -3,17 +3,22 @@ openapi: 3.1.0
 
 info:
   title: AR Reshare Application
+  license:
+    url: https://example.com
+    name: License to be decided by client
   summary: A donation marketplace with augmented reality features
   description: This document describes how the front-end and back-end segments will communicate with each other
   contact:
     name: Davide Correia
     email: rlrt51@durham.ac.uk
-  version: 0.1.0
-  servers:
-  - url: \#
-    description: The url will be filled out as we push through development
-  security:
-    bearerAuth:
+  version: 0.2.0
+
+servers:
+- url: \#
+  description: The url will be filled out as we push through development
+
+security:
+  - bearerAuth:
     - \/account\/[\w\/]+
     - \/conversation\/[\w\/]+
     - \/conversations
