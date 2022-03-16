@@ -229,6 +229,13 @@ class UniqueConstraintError extends QueryExecutionError {
     }
 }
 
+class FailedUploadError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'FailedUploadError';
+    }
+}
+
 module.exports = {
     EmailConfigurationReadError,
     PipelineInitialisationError,
@@ -261,5 +268,6 @@ module.exports = {
     QueryExecutionError,
     ForeignKeyError,
     UniqueConstraintError,
+    FailedUploadError,
     // ...
 };

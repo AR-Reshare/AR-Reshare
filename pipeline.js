@@ -65,6 +65,7 @@ class GeneralPipe extends Pipeline {
 
     Execute(req, res) {
         let user_accountID = null;
+        let validated_out = null;
         let result_final = null;
         let error_final = null;
         let inputObject;
@@ -84,8 +85,21 @@ class GeneralPipe extends Pipeline {
             if (accountID) inputObject['accountID'] = accountID;
             return this.DataValidate(this.requestTemplate, inputObject);
         }).then(validated => {
+            validated_out = validated;
+
+            // media handling
+            if ('media' in validated_out) return this.MediaHandle(validated_out['media']);
+            else return [];
+        }).then(urls => {
+            // add urls to the validated object
+            if (urls.length !== 0) {
+                validated_out['url'] = urls.map(item => item.url);
+                validated_out['mimetype'] = urls.map(item => item.mimetype);
+                validated_out['media_index'] = urls.map(item => item.index);
+            }
+
             // database operations
-            return this.Store(this.sqlTemplate, validated);
+            return this.Store(this.sqlTemplate, validated_out);
         }).then(results => {
             // send notifications as needed
             if (this.notify) {
