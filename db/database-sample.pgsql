@@ -33,8 +33,8 @@ INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, G
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Bristol', 'BR15 7OL', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Location', 'PL ACE', 1);
 
-INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Misc', 'FFFFFFFF', 'Remember to do the things');
-INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Searchtest', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
+INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Misc', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/samples/cloudinary-icon.png', 'FFFFFFFF', 'Remember to do the things');
+INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Searchtest', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387117/samples/sheep.jpg', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
 INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('New Category', 'BBBBBBBB', 'This category is for testing changing of categories');
 
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (1, 'Things', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP, 3);
