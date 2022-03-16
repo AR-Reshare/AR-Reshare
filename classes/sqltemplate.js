@@ -1,5 +1,5 @@
 const isCallable = require('is-callable');
-const {QueryTemplateError, QueryConstructionError, EmptyResponseError, EmptyQueryError, QueryExecutionError} = require('./errors');
+const {QueryTemplateError, QueryConstructionError, EmptyResponseError, EmptyQueryError} = require('./errors');
 
 const getAllIndexes = (arr, elem) => {
     let indexes = [];

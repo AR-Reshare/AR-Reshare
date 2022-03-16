@@ -61,7 +61,7 @@ function createDB(os, password) {
         }
     });
 
-    psqlInit.on('error', (err) => {
+    psqlInit.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });

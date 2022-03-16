@@ -1,4 +1,4 @@
-const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, FailedUploadError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, FailedUploadError } = require('./errors');
 
 class Pipeline {
     constructor(db, logger=console, emailTransporter=null, mediaHandler=null) {

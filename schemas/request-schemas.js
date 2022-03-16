@@ -1,6 +1,6 @@
-const RequestTemplate = require("../classes/requesttemplate");
+const RequestTemplate = require('../classes/requesttemplate');
 const bcrypt = require('bcrypt');
-const { UnprocessableArgumentError } = require("../classes/errors");
+const { UnprocessableArgumentError } = require('../classes/errors');
 
 // combination of lowercase, uppercase, numbers, and special characters
 // change the numbers to require more of each
@@ -8,14 +8,14 @@ const PassPattern = /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[
 
 const IsNonEmptyString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String) && aString.length > 0;
-}
+};
 
-const getAge = (dob) => Math.floor((new Date() - dob.getTime()) / 3.15576e+10)
+const getAge = (dob) => Math.floor((new Date() - dob.getTime()) / 3.15576e+10);
 
 const IsPosInt = (anInt) => {
     let num = Number.parseFloat(anInt);
     return Number.isInteger(num) && num >= 0;
-}
+};
 
 const IsDate = (aString) => {
     if (!IsNonEmptyString(aString)) return false;
@@ -24,7 +24,7 @@ const IsDate = (aString) => {
     let date = new Date(`${split[0]}-${split[1]}-${split[2]}Z`);
     if (isNaN(date)) return false;
     return true;
-}
+};
 
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
@@ -34,8 +34,8 @@ const IsLocation = (anObject) => {
             && IsNonEmptyString(anObject['region'])
             && 'postcode' in anObject
             && IsNonEmptyString(anObject['postcode'])
-            );
-}
+    );
+};
 
 const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
 
@@ -45,7 +45,7 @@ const IsImage = (aString) => {
     if (matches.length !== 1 || matches[0].length !== 3) return false;
     if (matches[0][1] === 'image') return true;
     else throw new UnprocessableArgumentError('Media must be an image');
-}
+};
 
 const IsImageOrVideo = (aString) => {
     const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
@@ -53,7 +53,7 @@ const IsImageOrVideo = (aString) => {
     if (matches.length !== 1 || matches[0].length !== 3) return false;
     if (matches[0][1] === 'image' || matches[0][1] === 'video') return true;
     throw new UnprocessableArgumentError('Media must be an image or video');
-}
+};
 
 const emptyReq = new RequestTemplate([]);
 

@@ -36,7 +36,7 @@ const DefaultErrorMap = {
 
 const isString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String);
-}
+};
 
 class ResponseTemplate {
 

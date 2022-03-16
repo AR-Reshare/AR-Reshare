@@ -61,7 +61,7 @@ function createDB(os, password) {
         }
     });
 
-    psqlInit.on('error', (err) => {
+    psqlInit.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });
@@ -86,7 +86,7 @@ function populateDB(os, password) {
         }
     });
 
-    psqlPopulate.on('error', (err) => {
+    psqlPopulate.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });

@@ -1,4 +1,4 @@
-const ResponseTemplate = require("../classes/responsetemplate");
+const ResponseTemplate = require('../classes/responsetemplate');
 
 const listingDetails = new ResponseTemplate([{
     out_name: 'listingID',
