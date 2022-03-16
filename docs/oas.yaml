@@ -527,9 +527,10 @@ paths:
 
 
 ########################### SECURITY SCHEME OBJECT ##############################
-securitySchemes:
-  bearerAuth:
-    type: http
-    scheme: bearer
-    bearerFormat: JWT
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
