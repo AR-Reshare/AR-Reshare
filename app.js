@@ -13,7 +13,7 @@ class App {
         const RegenerateToken = NA;
         const RequestReset = NA;
         const ExecuteReset = NA;
-        const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger); // media (per item, icons)
+        const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger); // TODO media (per item, icons)
         const CreateAccount = new pipes.CreateEntityPipeline('account', {}, db, logger, emailTransporter, mediaHandler); // (in question - see issue #25)
         const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger);
         const Login = new pipes.LoginPipeline(db, logger);
@@ -24,7 +24,7 @@ class App {
         const SaveListing = NA; // CreateEntity
         const ForgetListing = NA; // CloseEntity
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
-        const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger); // media[]
+        const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger);
         const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger);
         const CreateListing = new pipes.CreateEntityPipeline('listing', {}, db, logger, null, mediaHandler);
         const ModifyListing = new pipes.ModifyEntityPipeline('listing', {}, db, logger, null, mediaHandler);
@@ -32,8 +32,8 @@ class App {
         const CreateConversation = new pipes.CreateEntityPipeline('conversation', {}, db, logger);
         const CloseConversation = new pipes.CloseEntityPipeline('conversation', {}, db, logger);
         const CreateMessage = new pipes.CreateEntityPipeline('message', {}, db, logger, null, mediaHandler);
-        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger); // media (per item)
-        const ViewConversation = new pipes.ViewEntityPipeline('conversation', {}, db, logger); // media (per item)
+        const ListConversation = new pipes.SearchEntityPipeline('conversation', {}, db, logger);
+        const ViewConversation = new pipes.ViewEntityPipeline('conversation', {}, db, logger);
 
         // serve the docs directory statically, so the index page becomes the API docs
         app.use(express.static('docs'));
