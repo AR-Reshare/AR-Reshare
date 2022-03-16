@@ -65,7 +65,7 @@ class PushNotifHelper {
 
 }
 
-
+// TOOD: Add fixes to the EmailRespond component
 
 // NOTE: THis class needs to handle
 // 1. Taking templates and replacing information there with the user-specific data 
@@ -101,15 +101,15 @@ class PushNotifTemplates {
     };
 
     static arguments = {
-        'Message-Send': ['senderName', 'senderMessage'],
-        'Message-Close': ['senderName'],
-        'Message-Start': ['senderName'],
+        'MessageSend': ['senderName', 'senderMessage'],
+        'MessageClose': ['senderName'],
+        'MessageStart': ['senderName'],
     };
 
     static templates = {
-        'Message-Send': PushNotifTemplates.messageSend,
-        'Message-Close': PushNotifTemplates.messageClose,
-        'Message-Start': PushNotifTemplates.messageStart,
+        'MessageSend': PushNotifTemplates.messageSend,
+        'MessageClose': PushNotifTemplates.messageClose,
+        'MessageStart': PushNotifTemplates.messageStart,
     };
     
 }
@@ -119,7 +119,7 @@ class PushNotifTemplates {
 // TODO: Make sure to make a subclass
 class PushNotif {
     constructor(templateType){
-        let supportedTemplateTypes = ['Message-Send', 'Message-Start', 'Message-Close'];
+        let supportedTemplateTypes = ['MessageSend', 'MessageStart', 'MessageClose'];
         if (!templateType){
             throw new TemplateError('No TemplateType was provided');
         } else if (!supportedTemplateTypes.includes(templateType)){
@@ -139,23 +139,24 @@ class PushNotif {
             message.notification.title = message.notification.title.replace(`\${${arg}}`, replacementObject[arg]);
             message.notification.body = message.notification.body.replace(`\${${arg}}`, replacementObject[arg]);
         }
-        return content;
+        return message;
     };
 
     async replacementObjectValidate(replacementObject){
         // existance check and type check
         if (!replacementObject){
             throw new AbsentArgumentError();
-        } else if (replacementObject.length != this.templateArguments.length){
+        } else if (Object.keys(replacementObject).length != this.templateArguments.length){
+            console.log(replacementObject);
             throw new InvalidArgumentError();
         }
-
-        for (arg in replacementObject){
+        for (let arg in replacementObject){
             if (!this.templateArguments.includes(arg)) {
                 throw new InvalidArgumentError();
             } else if(replacementObject[arg] === undefined){
                 throw new AbsentArgumentError();
-            } else if (!replacementObject[arg] instanceof String){
+            } else if (!(typeof replacementObject[arg] === 'string')){
+                console.log('here');
                 throw new InvalidArgumentError();
             }
         }
@@ -165,7 +166,7 @@ class PushNotif {
 
     async sendPushNotif(fcmApp, registrationToken, message){
         // No need to add exponential backoff as this is handled by fcm-admin package
-        fcmApp.message().sendToDevice(registrationToken, message)
+        fcmApp.messaging().sendToDevice(registrationToken, message)
         .then((response) => {
             // Response is a message ID string.
             console.log('Successfully sent message:', response);
