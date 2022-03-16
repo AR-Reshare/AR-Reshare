@@ -41,7 +41,7 @@ CREATE TABLE Address (
 CREATE TABLE Category (
     CategoryID serial4 PRIMARY KEY,
     CategoryName varchar NOT NULL,
-    Icon bytea,
+    Icon varchar, -- URL of icon image
     Colour char(8) NOT NULL, -- HEX code RGBA
     Prompt varchar,
     ParentCategory int4 REFERENCES Category ON DELETE SET NULL
