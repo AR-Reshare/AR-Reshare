@@ -4,9 +4,9 @@
 
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 const cloudinary = require('cloudinary').v2;
-const mediaConfig = require('../../configs/mediaConfig.json');
+const mediaConfig = require('../../secrets/mediaconnection.json');
 
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
 const { readFileSync } = require('fs');

@@ -104,5 +104,4 @@ dist
 .tern-port
 
 # Sensitive files
-connection.json
-private.key
+secrets/

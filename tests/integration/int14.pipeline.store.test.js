@@ -2,7 +2,7 @@ const Pipeline = require('../../classes/pipeline');
 const Database = require('../../classes/database');
 const SQLTemplate = require('../../classes/sqltemplate');
 const { QueryConstructionError, QueryExecutionError, EmptyResponseError } = require('../../classes/errors');
-const creds = require('../../connection.json')['test'];
+const creds = require('../../secrets/dbconnection.json')['test'];
 
 let pipe, db;
 

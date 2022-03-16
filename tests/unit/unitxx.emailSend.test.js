@@ -1,5 +1,5 @@
 const {EmailRespond, EmailTemplateDefinitions, EmailTransporter} = require('../../classes/email.js');
-const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailCredentialsReadError} = require('../../classes/errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError} = require('../../classes/errors.js');
 
 // There are three integrations we want to test
 // Account Creation

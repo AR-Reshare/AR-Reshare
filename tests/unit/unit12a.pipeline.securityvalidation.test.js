@@ -36,6 +36,7 @@
 // TODO: Check whether all 5 authenticationTYpes are defined in the security-schemas.js
 
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
 const { readFileSync } = require('fs');
@@ -65,10 +66,12 @@ jest.mock('../../classes/database', () => {
 });
 
 let db, pipe, key;
+let jwtkeyPath = `secrets${path.sep}jwtsymmetric.key`;
+
 beforeAll(() => {
     db = new Database();
     pipe = new Pipeline(db);
-    key = readFileSync('private.key');
+    key = readFileSync(jwtkeyPath);
 });
 
 beforeEach(() => {

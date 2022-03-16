@@ -1,8 +1,8 @@
 const App = require('./app');
 const Database = require('./classes/database');
-const dbCredentials = require('./connection.json');
+const dbCredentials = require('./secrets/dbconnection.json');
 const cloudinary = require('cloudinary').v2;
-const mediaConfig = require('./configs/mediaConfig.json');
+const mediaConfig = require('./secrets/mediaconnection.json');
 
 cloudinary.config(mediaConfig);
 

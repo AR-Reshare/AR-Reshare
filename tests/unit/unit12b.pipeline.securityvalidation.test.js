@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
 const { AuthenticationHandler } = require('../../classes/securityvalidation.js');
@@ -28,10 +29,12 @@ jest.mock('../../classes/database', () => {
 });
 
 let db, pipe, key, query;
+let jwtkeyPath = `secrets${path.sep}jwtsymmetric.key`;
+
 beforeAll(() => {
     db = new Database();
     pipe = new Pipeline(db);
-    key = readFileSync('private.key');
+    key = readFileSync(jwtkeyPath);
     query = {};
 });
 
