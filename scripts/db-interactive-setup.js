@@ -3,6 +3,7 @@ const {type} = require('os'); // check OS type
 const rl = require('readline-sync'); // https://www.npmjs.com/package/readline-sync for user input
 const {randomString} = require('secure-random-password');
 const {writeFileSync, readFileSync} = require('fs');
+const path = require('path');
 
 /**
  * This script will create the database, plus a password for it, and optionally populate it with sample data
@@ -158,11 +159,12 @@ function createDB(os, password) {
 // Store connection data in connection.json
 function storeConn(os, password) {
     console.log('Storing connection credentials...');
+    let dbConnectionPath = `secrets${path.sep}dbconnection.json`;
 
     let conn_data;
 
     try {
-        conn_data = JSON.parse(readFileSync('connection.json'));
+        conn_data = JSON.parse(readFileSync(dbConnectionPath));
     } catch (err) {
         conn_data = {};
     }
@@ -179,7 +181,7 @@ function storeConn(os, password) {
     };
 
     try {
-        writeFileSync('connection.json', JSON.stringify(conn_data));
+        writeFileSync(dbConnectionPath, JSON.stringify(conn_data));
     } catch (err) {
         console.error('Unable to write to credentials file.')
         process.exit(1);
