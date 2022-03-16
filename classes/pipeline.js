@@ -1,9 +1,10 @@
-const { QueryExecutionError, ForeignKeyError, UniqueConstraintError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, InvalidArgumentError, FailedUploadError } = require("./errors");
 
 class Pipeline {
-    constructor(db, logger=console, emailTransporter=null) {
+    constructor(db, logger=console, emailTransporter=null, mediaHandler=null) {
         this.db = db; // expected to implement simpleQuery and complexQuery
         this.emailTransporter = emailTransporter;
+        this.mediaHandler = mediaHandler;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
         this.SecurityValidate = this.SecurityValidate.bind(this);
@@ -168,6 +169,48 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             // a notification should be sent to each of the target accounts and
             resolve();
+        });
+    }
+
+    MediaHandle(mediaObjects, allowVideo=false) {
+        return new Promise((resolve, reject) => {
+            const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/=]+$/;
+            let out = Array.apply(null, Array(mediaObjects.length));
+            let err = null;
+            mediaObjects.forEach((item, index) => {
+                if (err) throw err; // if one upload broke, stop trying to upload more
+
+                let matches = Array.from(item.matchAll(mimetypepattern));
+                let resourceType;
+                if (matches.length !== 3) {
+                    // the string didn't match the regex
+                    err = new InvalidArgumentError('Image was not a valid image');
+                    reject(err);
+                    throw err;
+                }
+
+                if (matches[1] === 'image') {
+                    resourceType = 'image';
+                } else if (matches[1] === 'video' && allowVideo) {
+                    resourceType = 'video';
+                } else {
+                    err = new InvalidArgumentError('Upload file type not supported');
+                    reject(err);
+                    throw err;
+                }
+
+                this.mediaHandler.upload(item, {resource_type: resourceType}, (error, result) => {
+                    if (error) {
+                        err = new FailedUploadError('Unable to upload media');
+                        reject(err);
+                    }
+                    out[index] = {
+                        url: result.secure_url,
+                        mimetype: `${matches[1]}/${matches[2]}`,
+                    };
+                    if (out.every(item => 'url' in item)) resolve(out);
+                });
+            });
         });
     }
 }

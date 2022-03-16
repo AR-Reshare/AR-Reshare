@@ -32,6 +32,15 @@ class GeneralPipe extends Pipeline {
             }
         }
 
+        this.media = null;
+        if ('media' in options) {
+            if (options['media'] === 'image' || options['media'] === 'video' || options['media'] === false) {
+                this.media = options['media'];
+            } else {
+                throw new PipelineInitialisationError('Invalid option for media');
+            }
+        }
+
         this.securitySchema = SecuritySchemaDict[this.actionType];
         if (this.securitySchema === undefined) {
             throw new MissingTemplateError(`Unable to find security schema for ${this.actionType}`);
@@ -65,6 +74,7 @@ class GeneralPipe extends Pipeline {
 
     Execute(req, res) {
         let user_accountID = null;
+        let validated_out = null;
         let result_final = null;
         let error_final = null;
         let inputObject;
@@ -84,8 +94,20 @@ class GeneralPipe extends Pipeline {
             if (accountID) inputObject['accountID'] = accountID;
             return this.DataValidate(this.requestTemplate, inputObject);
         }).then(validated => {
+            validated_out = validated;
+
+            // media handling
+            if (!this.media) return false;
+            else return this.MediaHandle(validated_out['media'], this.media === 'video');
+        }).then(urls => {
+            // add urls to the validated object
+            if (urls) {
+                validated_out['url'] = urls.map(item => item.url);
+                validated_out['mimetype'] = urls.map(item => item.mimetype);
+            }
+
             // database operations
-            return this.Store(this.sqlTemplate, validated);
+            return this.Store(this.sqlTemplate, validated_out);
         }).then(results => {
             // send notifications as needed
             if (this.notify) {
