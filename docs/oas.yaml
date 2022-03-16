@@ -32,6 +32,7 @@ paths:
   /:
     get:
       operationId: getHomePage
+      summary: Returns the API specification page
       description: Returns the API specification page
       responses:
         '200':
@@ -40,6 +41,7 @@ paths:
   /token/regeneration:
     post:
       operationId: getRegeneratedToken
+      summary: Regenerates a new token based off of a currently valid token (that is about to expire)
       description: Regenerates a new token based off of a currently valid token (that is about to expire)
       responses:
         '501':
@@ -52,6 +54,7 @@ paths:
   /passwordResetRequest:
     post:
       operationId: requestPasswordReset
+      summary: Sends a password reset email to the corresponding email if it exists
       description: Sends a password reset email to the corresponding email if it exists
       responses:
         '501':
@@ -67,6 +70,7 @@ paths:
   /passwordResetExecute:
     post:
       operationId: executePasswordReset
+      summary: Executes the password reset if the tokens are valid
       description: Executes the password reset if the tokens are valid
       responses:
         '501':
@@ -81,6 +85,7 @@ paths:
   /categories/list:
     get:
       operationId: getCategoryDescriptors
+      summary: Retrieves the currently available categories
       description: Retrieves the currently available categories
       responses:
         '200':
@@ -91,6 +96,7 @@ paths:
   /account/create:
     put:
       operationId: createAccount
+      summary: Creates an account with request arguments
       description: Creates an account with request arguments
       responses:
         '201': # Succesfully created
@@ -111,6 +117,7 @@ paths:
   /account/close:
     patch: # not delete
       operationId: closeAccount
+      summary: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       description: Closes the current account (some info is required by law to be retained). The 'current' account is the one the user is logged in as."
       responses:
         '200': # Success
@@ -134,6 +141,7 @@ paths:
   /account/login:
     post:
       operationId: loginAccount
+      summary: Login in to the requested account using request arguments
       description: Login in to the requested account using request arguments
       responses:
         '200': # Success
@@ -154,6 +162,7 @@ paths:
   /account/modify:
     patch:
       operationId: modifyAccount
+      summary: Modifies the details of the current account
       description: Modifies the details of the current account
       responses:
         '200': # Success
@@ -174,6 +183,7 @@ paths:
   /account/listing/view:
     get:
       operationId: getAccountListingByID
+      summary: Returns the listing which matches the value of the parameter "listingID"
       description: Returns the listing which matches the value of the parameter "listingID"
       responses:
         '200': # Success
@@ -191,6 +201,7 @@ paths:
   /account/listings/search:
     get:
       operationId: searchAccountListings
+      summary: Returns the listings that match the criteria provided by the requests parameter
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
         '501':
@@ -212,6 +223,7 @@ paths:
   /account/saved-listings/search:
     get:
       operationId: searchSavedListings
+      summary: Returns the user's saved listings
       description: Returns the user's saved listings
       responses:
         '501':
@@ -235,6 +247,7 @@ paths:
   /account/saved-listings/create:
     post:
       operationId: createSavedListing
+      summary: Saves a listing
       description: Saves a listing
       responses:
         '501':
@@ -257,6 +270,7 @@ paths:
   /account/saved-listings/delete:
     post:
       operationId: deleteSavedListing
+      summary: deletes a listing from the saved-listing
       description: deletes a listing from the saved-listing
       responses:
         '501':
@@ -286,6 +300,7 @@ paths:
   /account/addresses/list:
     get:
       operationId: getAccountAddresses
+      summary: Returns the user's previously used/saved addresses
       description: Returns the user's previously used/saved addresses
       responses:
         '200':
@@ -312,6 +327,7 @@ paths:
   /listing/view:
     get:
       operationId: getListingByID
+      summary: Returns the listing which matches the value of the parameter "listingId"
       description: Returns the listing which matches the value of the parameter "listingId"
       responses:
         '200': # Success
@@ -329,6 +345,7 @@ paths:
   /listings/search:
     get:
       operationId: searchListings
+      summary: Returns the listings that match the criteria provided by the requests parameter
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
         '200': # Success
@@ -346,6 +363,7 @@ paths:
   /listing/create:
     put:
       operationId: createListing
+      summary: Creates a new listing
       description: Creates a new listing
       responses: 
         '201': # Successfully Created
@@ -363,6 +381,7 @@ paths:
   /listing/modify:
     patch:
       operationId: modifyListing
+      summary: Modifies the listings
       description: Modifies the listings
       responses:
         '200': # Success
@@ -386,6 +405,7 @@ paths:
   /listing/close:
     patch:
       operationId: closeListing
+      summary: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       description: Closes a listing (i.e. is no longer available to the public, but the user is still able to see it)
       responses:
         '200': # Success
@@ -423,6 +443,7 @@ paths:
   /conversation/create:
     put:
       operationId: createConversation
+      summary: Initiates a converstaion with the seller based on a unique listingID
       description: Initiates a converstaion with the seller based on a unique listingID
       responses:
         '201': # Successfully Created
@@ -446,6 +467,7 @@ paths:
   /conversation/close:
     patch:
       operationId: closeConversation
+      summary: Closes a converstaion with the seller based on a unique conversationID
       description: Closes a converstaion with the seller based on a unique conversationID
       responses:
         '200': # Success
@@ -466,6 +488,7 @@ paths:
   /conversation/message:
     put:
       operationId: sendConversationMessage
+      summary: Sends a message to a conversation via it's conversationID
       description: Sends a message to a conversation via it's conversationID
       responses:
         '200': # Success
@@ -489,6 +512,7 @@ paths:
   /conversations:
     get:
       operationId: getConversationDescriptors
+      summary: Returns descriptors of conversations that the user still has open
       description: Returns descriptors of conversations that the user still has open
       responses:
         '200': # Success
@@ -510,6 +534,7 @@ paths:
   /conversation/view:
     get:
       operationId: getConversationByID
+      summary: Returns the conversation of a given conversationID
       description: Returns the conversation of a given conversationID
       responses:
         '200': # Success
