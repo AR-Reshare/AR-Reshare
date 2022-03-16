@@ -106,7 +106,9 @@ CREATE TABLE Media (
     UserID int4 REFERENCES Account ON DELETE CASCADE,
     ListingID int4 REFERENCES Listing ON DELETE CASCADE,
     MessageID int4 REFERENCES Message ON DELETE CASCADE,
-    UNIQUE (Index, UserID, ListingID, MessageID),
+    UNIQUE (Index, UserID),
+    UNIQUE (Index, ListingID),
+    UNIQUE (Index, MessageID),
     CHECK ((UserID IS NOT NULL AND ListingID IS NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NOT NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NULL AND MessageID IS NOT NULL))

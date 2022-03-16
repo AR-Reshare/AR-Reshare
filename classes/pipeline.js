@@ -194,8 +194,9 @@ class Pipeline {
                     out[index] = {
                         url: result.secure_url,
                         mimetype: `${matches[1]}/${matches[2]}`,
+                        index: index,
                     };
-                    if (out.every(item => 'url' in item)) resolve(out);
+                    if (out.every(item => item !== undefined)) resolve(out);
                 });
             });
         });

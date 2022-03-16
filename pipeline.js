@@ -95,6 +95,7 @@ class GeneralPipe extends Pipeline {
             if (urls.length !== 0) {
                 validated_out['url'] = urls.map(item => item.url);
                 validated_out['mimetype'] = urls.map(item => item.mimetype);
+                validated_out['media_index'] = urls.map(item => item.index);
             }
 
             // database operations

@@ -119,10 +119,19 @@ const ModifyAccountTemplate = new SQLTemplate({
             {from_input: 'dob'},
         ]
     },
-}, ['change_name', 'change_email', 'change_password', 'change_dob'], {
+    change_pfp: {
+        text: 'INSERT INTO Media (MimeType, URL, UserID) VALUES ($2, $3, $1) ON CONFLICT (Index, UserID) DO UPDATE SET MimeType = EXCLUDED.MimeType, URL = EXCLUDED.URL RETURNING MediaID',
+        condition: (inputObject) => ('mimetype' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'mimetype'},
+            {from_input: 'url'},
+        ]
+    },
+}, ['change_name', 'change_email', 'change_password', 'change_dob', 'change_pfp'], {
     error_on_empty_transaction: true,
     error_on_empty_response: true,
-})
+});
 
 const ViewAccountListingTemplate = new SQLTemplate({
     get_listing: {
@@ -230,9 +239,19 @@ const CreateListingTemplate = new SQLTemplate({
             {from_input: 'categoryID'},
         ],
     },
-    // TODO add media support
-}, ['create_address', 'create_listing'], {
-    drop_from_results: ['create_address'],
+    insert_media: {
+        text: 'INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ($1, $2, $3, $4) RETURNING MediaID',
+        condition: (inputObject) => ('url' in inputObject),
+        times: (inputObject) => (inputObject['url'].length),
+        values: [
+            {from_input: 'mimetype'},
+            {from_input: 'url'},
+            {from_input: 'media_index'},
+            {from_query: ['create_listing', 'listingid']},
+        ],
+    }
+}, ['create_address', 'create_listing', 'insert_media'], {
+    drop_from_results: ['create_address', 'insert_media'],
     error_on_empty_response: true,
 });
 
@@ -298,7 +317,28 @@ const ModifyListingTemplate = new SQLTemplate({
             {from_input: 'condition'},
         ]
     },
-}, ['create_address', 'change_title', 'change_description', 'change_location', 'change_category', 'change_condition'], {
+    change_media: {
+        text: 'INSERT INTO Media (MimeType, URL, Index, ListingID) SELECT $3, $4, $5, $2 FROM Listing WHERE ContributorID = $1 AND ListingID = $2 AND ClosedDate IS NULL ON CONFLICT (Index, ListingID) DO UPDATE SET MimeType = EXCLUDED.MimeType, URL = EXCLUDED.URL RETURNING MediaID',
+        condition: (inputObject) => ('url' in inputObject),
+        times: (inputObject) => (inputObject['url'].length),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            {from_input: 'mimetype'},
+            {from_input: 'url'},
+            {from_input: 'media_index'},
+        ],
+    },
+    drop_extra_media: {
+        text: 'DELETE FROM Media WHERE ListingID = $2 AND (SELECT EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ContributorID = $1 AND ClosedDate IS NULL)) AND Index >= $3',
+        condition: (inputObject) => ('url' in inputObject),
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+            (inputObject) => (inputObject['url'].length),
+        ]
+    }
+}, ['create_address', 'change_title', 'change_description', 'change_location', 'change_category', 'change_condition', 'change_media', 'drop_extra_media'], {
     error_on_empty_transaction: true,
     error_on_empty_response: true,
 });
@@ -356,13 +396,7 @@ const CreateMessageTemplate = new SQLTemplate({
         values: [
             {from_input: 'mimetype'},
             {from_input: 'url'},
-            (_, queryList) => {
-                if (queryList.includes('insert_media')) {
-                    return queryList.length - queryList.indexOf('insert_media');
-                } else {
-                    return 0;
-                }
-            },
+            {from_input: 'media_index'},
             {from_query: ['create_message', 'messageid']},
         ],
     }

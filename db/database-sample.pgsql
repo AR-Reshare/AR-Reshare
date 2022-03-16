@@ -25,6 +25,8 @@ INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'chang
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme11@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme12@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme13@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme14@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme15@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 
 INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ('UK', 'Durham', 'AB1 2CD', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, GH', 'asdfgh', 2);
@@ -90,3 +92,8 @@ INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 11, 'No')
 INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 12, 'Greetings earthling');
 INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (2, 12, 'No thank you');
 INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 12, 'Understandable, have a nice day');
+
+INSERT INTO Media (MimeType, URL, UserID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 24);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 1, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 2, 27);
