@@ -27,8 +27,8 @@ The sensitive information required by our application is listed below:
   - Generated when running npm setup scripts
   - The config is stored in secrets/dbconnection.json
 - DB Hashing
-  - Salt - TODO
-  - Pepper - TODO
+  - Salt - The bcrypt algorithm appends the uniquely generated salt on the passHash in the posgres Table ACCOUNT
+  - Pepper - Size of potential peppers handled by bcrypt npm package
 
 ##### Secrets that the admin/user needs to setup
 
