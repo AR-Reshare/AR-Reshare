@@ -1,6 +1,6 @@
 const Database = require('../../classes/database');
 const { QueryExecutionError } = require('../../classes/errors');
-const creds = require('../../connection.json')['test'];
+const creds = require('../../secrets/dbconnection.json')['test'];
 
 let db;
 
