@@ -84,6 +84,6 @@ components:
       name: region
       in: query
       description: The region where a listing pickup is specified
-      required: optional
+      required: false
       schema:
         $ref: 'schemas.yaml#/components/schemas/region'

@@ -21,9 +21,6 @@
 
 components:
   schemas:
-
-
-
     ################ USER SCHEMAS ############################   
     user:
       type: object
@@ -78,9 +75,6 @@ components:
       - media ## this will encompass videos, photos and what other
       - creationDate
       - modificationDate # Ignoring archived date, and last modified
-      optional:
-      - receiverID
-      - closedDate
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -192,8 +186,8 @@ components:
       - condition
       - media ## this will encompass videos, photos and what other
       oneOf:
-      - location
-      - addressID
+      - $ref: '#/components/schemas/address' # The name of the attribute is "location"
+      - $ref: '#/components/schemas/id' # The name of this attribute is "addressID"
       properties:
         description:
           $ref: '#/components/schemas/description'
@@ -212,8 +206,6 @@ components:
       type: object
       required:
         - listingID
-      optional:
-        - receiverID
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -234,13 +226,6 @@ components:
     
     listing-modifiedDetails:
       type: object
-      optional:
-      - title
-      - description
-      - location
-      - categoryID
-      # - media
-      - condition
       properties:
         title:
           $ref: '#/components/schemas/title'
@@ -289,8 +274,6 @@ components:
       - email
       - password
       - dob # DoB (keeping lowecase for consistency on naming)
-      optional:
-      - address
       properties:
         name:
           $ref: '#/components/schemas/name'
@@ -343,11 +326,6 @@ components:
 
     account-modifiedDetails:
       type: object
-      optional:
-      - name
-      - email
-      - dob
-      - password
       properties:
         name:
           $ref: '#/components/schemas/name'
@@ -486,9 +464,6 @@ components:
     # TODO: This schema's structure is very likely to be changed in the near future
     mediaContent:
       type: object
-      optional:
-      - media
-      - description
       properties:
         media:
           $ref: '#/components/schemas/media-resource'
@@ -523,10 +498,33 @@ components:
       type: string
       format: url
 
+    post-response-success:
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          $ref: '#/components/schemas/boolean'
 
+    post-response-error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/error-message'
+
+    post-response:
+      type: string
 
 
     ############################## LOW-LEVEL COMPONENTS ###############################
+    error-message:
+      type: string
+
+    boolean:
+      type: boolean
+
     country:
       type: string
 
