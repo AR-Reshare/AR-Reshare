@@ -345,10 +345,10 @@ paths:
       responses: 
         '201': # Successfully Created
           description: The listing has been succesfully created
-          $ref: '#responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '401': # Unauthorized
           description: The user did not send an authentication token, or the authentication token does not match a valid account
-          $ref: '#responses.yaml#/components/responses/post'
+          $ref: 'responses.yaml#/components/responses/post'
         '403': # Forbidden
           description: The user is not allowed to create a listing
           $ref: 'responses.yaml#/components/responses/post'
