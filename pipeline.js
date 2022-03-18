@@ -168,17 +168,17 @@ class LoginPipeline extends Pipeline {
 
         this.requestTemplate = RequestTemplateDict['login'];
         if (this.requestTemplate === undefined) {
-            throw new MissingTemplateError(`Unable to find request template for login`);
+            throw new MissingTemplateError('Unable to find request template for login');
         }
 
         this.sqlTemplate = SQLTemplateDict['login'];
         if (this.sqlTemplate === undefined) {
-            throw new MissingTemplateError(`Unable to find SQL template for login`);
+            throw new MissingTemplateError('Unable to find SQL template for login');
         }
 
         this.responseTemplate = ResponseTemplateDict['login'];
         if (this.responseTemplate === undefined) {
-            throw new MissingTemplateError(`Unable to find response template for login`);
+            throw new MissingTemplateError('Unable to find response template for login');
         }
         
         // no Push Notifications for now, might want to consider implementing them

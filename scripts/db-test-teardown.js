@@ -1,6 +1,5 @@
 const {spawn} = require('child_process'); // execute command
 const {type} = require('os'); // check OS type
-const {randomString} = require('secure-random-password');
 const {writeFileSync, readFileSync} = require('fs');
 const path = require('path');
 // Detect OS
@@ -54,7 +53,7 @@ function removeDB(os) {
         }
     });
 
-    psqlInit.on('error', (err) => {
+    psqlInit.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });

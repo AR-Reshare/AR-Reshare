@@ -21,7 +21,7 @@ const mediaHandler = cloudinary.uploader;
 const app = new App(db, logger, emailTransporter, mediaHandler);
 
 db.testConnection().then(() => {
-   app.listen(process.env.PORT, () => {
-      console.log(`Listening on port 8080`);
-   });
+    app.listen(process.env.PORT, () => {
+        console.log(`Listening on port 8080`);
+    });
 }).catch(console.error);
