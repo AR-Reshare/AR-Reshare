@@ -61,6 +61,90 @@ class PushNotifHelper {
         });
     }
 
+    static async addRegistrationToken(userID, registrationToken){
+        return db.simpleQuery();
+        // TODO: Create this function
+    }
+
+    static async modifyRegistrationToken(userID, registrationToken){
+        return db.simpleQuery();
+        // TODO: Create this function
+    }
+
+    static async removeRegistrationToken(userID){
+        // NOTE: Remove Registration Token should be a special case of modify which 
+        // modifies a token to null
+        return db.simpleQuery();
+        // TODO: Create this function
+    }
+
+    // NOTE: For now we only allow one instance of registration token for each userID
+    static async accountLogin(userID, registrationToken){
+        return await async PushNotifHelper.modifyRegistrationToken
+    }
+
+
+    // We have a set of UserID to Registration TOkens in the PushNotifications table
+    // We can have one userID to many registration tokens
+    // since UserID is unique, we will use it (or a derivative of it) as our device-group name
+
+    
+
+
+    // Operation: Account-Login
+
+    // --> get all tokens associated with the user
+    // --> remove the tokens that are >= 30 days
+    // --> get the corresponding userID's device-group notification-key
+    // --> remove the tokens from the FCM via a post/get request
+
+    // if the user has no registration tokens (at all)
+    //   --> we add it to the push notification table
+    //   --> we create a new device group on FCM
+    //   --> Using the returned notification-group-key, we save it to that table
+        
+    // elif the registration token exists
+    //   --> we do nothing
+
+    // elif the registration token does not exist
+    //  --> we add it to the push notification database with the userID
+    //  --> we need to add this to the device group on FCM
+
+
+    // NOTE: There needs to be a new table that holds the
+    // notification_name to notification_key
+    // notification_name could be userID or a unique derivative
+    // userID (it is a good idea to sometimes split on a per-platform basis)
+
+
+
+    
+    // Operation: Operations that trigger sending push notifs to other users
+
+    // if the user has no notification_name (at all)
+    //   --> we quietly exit this component
+    // if the user has a notification_name
+    //   --> we use the set of registration tokens to push a notification to
+    //   ==> (This is because node fcm-admin doesn't have sendToDeviceGroup)
+    //   ==> And we'd have to use the HTTPv1 api directly
+    //   --> for each token, we check for errors, check for stale
+    //   --> and perform the nececssary deletions (and update the token)
+    //   --> This includes deleting the tokens from the device group on FCM
+    
+
+    // NOTE: There are two options:
+    // 1. We do not use HTTPv1 API
+    //  --> + This reduces the time spent on dev
+    //  --> + We reduce bandwith resources of sending requests back and forth
+    //  ==> NOTE: We aren't actually using the device groups 
+    //  --> + We do not require to manage a table for Notification_keys/names
+    //  ==> NOTE: This way we would get all tokens associated with a userID 
+    //  ==> and perform a sendToDevices(registrationTokenList, ...) or something
+
+    // 2. We do use the HTTPv1 API
+    //  --> + Provides a logically more "official" method of grouping devices
+    //  --> + We have access to device group functionality in the future
+    //  ==> But it is unlikely that we'd take advantage of it
 
 
 }
@@ -197,6 +281,7 @@ class PushNotif {
 
     };
 }
+
 
 
 
