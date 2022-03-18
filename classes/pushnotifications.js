@@ -40,12 +40,9 @@ var fs = require('fs/promises');
 const {TemplateError, InvalidArgumentError, AbsentArgumentError, PrivateKeyReadError} = require('./errors.js');
 
 class PushNotifHelper {
-    constructor(){
-        //pass
-    }
-
     static serviceAccountKeyPath = `secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
-    
+    static tokenExpirationLength = 30; // This value is in terms of days
+
     static async initializeApp() {
         let serviceAccount;
         let out;
@@ -61,35 +58,53 @@ class PushNotifHelper {
         });
     }
 
-    static async addRegistrationToken(userID, registrationToken){
+    static async updateRegistrationTokenTimestamp(db, userID, registrationToken){
+        // NOTE: We update the registration token with the current timestamp
         return db.simpleQuery();
+    };
+
+    static async addRegistrationToken(db, userID, registrationToken){
         // TODO: Create this function
+        return db.simpleQuery();
     }
 
-    static async modifyRegistrationToken(userID, registrationToken){
-        return db.simpleQuery();
+    static async modifyRegistrationToken(db, userID, registrationToken){
         // TODO: Create this function
+        return db.simpleQuery();
     }
 
-    static async removeRegistrationToken(userID){
-        // NOTE: Remove Registration Token should be a special case of modify which 
-        // modifies a token to null
-        return db.simpleQuery();
+    static async removeRegistrationToken(db, userID, registrationTOken){
         // TODO: Create this function
+        return db.simpleQuery();
     }
 
-    // NOTE: For now we only allow one instance of registration token for each userID
+    static async removeExpiredTokens(userID){
+        // TODO: Create this function
+        return db.simpleQuery();
+    };
+
     static async accountLogin(userID, registrationToken){
-        return await async PushNotifHelper.modifyRegistrationToken
+        let aliveTokens = await PushNotifHelper.removeExpiredTokens(userID);
+        // if the token isn't registered, then we register it
+        if (!aliveTokens.includes(registrationToken)){
+            await PushNotifHelper.addRegistrationToken(userID, registrationToken);
+        } else { // otherwise it is registered and so we update the timestamp
+            PushNotifHelper.updateTimestamp(userID, registrationToken);
+        }
+
     }
+
+    static async getDeviceGroupTokens(userID){
+        let deviceGroupTokens;
+        return db.simpleQuery();
+    }
+
+    // NOTE!! The below have some inconsistencies
 
 
     // We have a set of UserID to Registration TOkens in the PushNotifications table
     // We can have one userID to many registration tokens
     // since UserID is unique, we will use it (or a derivative of it) as our device-group name
-
-    
-
 
     // Operation: Account-Login
 
@@ -248,9 +263,13 @@ class PushNotif {
         return true;
     }
 
-    async sendPushNotif(fcmApp, registrationToken, message){
+    // TODO: We need to link PushNotif helper functions to maybe modify the database
+    // TODO: We need to ensure proper error handling here
+    async sendPushNotif(fcmApp, userID, message){
+        // Since we working with groups of devices, we need to get the set of those tokens
+        let deviceGroupTokens = await PushNotifHelper.getDeviceGroupTokens(userID);
         // No need to add exponential backoff as this is handled by fcm-admin package
-        fcmApp.messaging().sendToDevice(registrationToken, message)
+        fcmApp.messaging().sendToDevice(deviceGroupTokens, message)
         .then((response) => {
             // Response is a message ID string.
             console.log('Successfully sent message:', response);
@@ -271,13 +290,13 @@ class PushNotif {
 
     };
 
-    async process(fcmApp, registrationToken, inputObject){
+    async process(fcmApp, userID, inputObject){
         // throws an error if the inputObject is invalid
         await this.replacementObjectValidate(inputObject);
         // replaces the templates using the validated input object
         let message = await this.templateReplace(inputObject);
         // sends the pushnotification using the fcm app instance
-        this.sendPushNotif(fcmApp, registrationToken, message);
+        this.sendPushNotif(fcmApp, userID, message);
 
     };
 }
