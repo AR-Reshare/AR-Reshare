@@ -37,7 +37,7 @@
 var admin = require('firebase-admin');
 var path = require('path');
 var fs = require('fs/promises');
-const {TemplateError, InvalidArgumentError, AbsentArgumentError, PrivateKeyReadError} = require('./errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError, PrivateKeyReadError, QueryExecutionError} = require('./errors.js');
 
 class PushNotifHelper {
     static serviceAccountKeyPath = `secrets${path.sep}ar-reshare-76ae2-firebase-adminsdk-k2pgc-a5c689d3db.json`;
@@ -60,43 +60,76 @@ class PushNotifHelper {
 
     static async updateRegistrationTokenTimestamp(db, userID, registrationToken){
         // NOTE: We update the registration token with the current timestamp
-        return db.simpleQuery();
+        const timestamp = new Date().toISOString().slice(0,10);
+        const args = [registrationToken, timestamp, userID];
+        const queryTemplate = 'REPLACE INTO PushToken (DeviceToken, Time, UserID) VALUES ($1, $2, $3)';
+        return db.simpleQuery(queryTemplate, args).then(res => {
+            // res should be an integer containing the number of modified rows
+            if (res == 1){
+                return true; // a single insert has been performed (i.e. the token didn't exist)
+            } else if (res == 2){
+                return true; // a deletion and insertion has been performed (i.e. the token has been replaced with new timestamp)
+            } else {
+                throw new QueryExecutionError();
+            }
+        });
     };
 
-    static async addRegistrationToken(db, userID, registrationToken){
-        // TODO: Create this function
-        return db.simpleQuery();
+    static async removeRegistrationTokens(db, userID, registrationTokens){
+        if (registrationTokens.length == 0){
+            throw new InvalidArgumentError();
+        }
+        registrationTokens = `('${registrationTokens.join(`', '`)}')`;
+        const args = [userID, registrationTokens];
+        const queryTemplate = 'DELETE FROM PushToken WHERE UserID = $1 AND DeviceToken IN $2';
+        return db.simpleQuery(queryTemplate, args).then(res => {
+            //res should be an integer containing the number of deleted rows
+            if (res == 1){
+                return true;
+            } else {
+                throw new QueryExecutionError();
+            }
+        });
     }
 
-    static async modifyRegistrationToken(db, userID, registrationToken){
+    static async removeUserExpiredTokens(userID){
         // TODO: Create this function
-        return db.simpleQuery();
-    }
-
-    static async removeRegistrationToken(db, userID, registrationTOken){
-        // TODO: Create this function
-        return db.simpleQuery();
-    }
-
-    static async removeExpiredTokens(userID){
-        // TODO: Create this function
-        return db.simpleQuery();
+        const args = [userID, PushNotifHelper.tokenExpirationLength];
+        const queryTemplate = 'DELETE FROM PushToken WHERE UserID = $1 AND Time < DATE_SUB(NOW(), INTERVAL $2 day);'
+        return db.simpleQuery(queryTemplate, args).then(res => {
+            // res should be an integer containg the number of deleted rows
+            if (res >= 0){
+                return true;
+            } else {
+                throw new QueryExecutionError();
+            }
+        });
     };
 
     static async accountLogin(userID, registrationToken){
-        let aliveTokens = await PushNotifHelper.removeExpiredTokens(userID);
-        // if the token isn't registered, then we register it
-        if (!aliveTokens.includes(registrationToken)){
-            await PushNotifHelper.addRegistrationToken(userID, registrationToken);
-        } else { // otherwise it is registered and so we update the timestamp
-            PushNotifHelper.updateTimestamp(userID, registrationToken);
-        }
-
+        // We remove any tokens in the local database that are > 30 days (upon login)
+        await PushNotifHelper.removeUserExpiredTokens(userID);
+        // If the registration token is not there, then we add it, otherwise we update its timestamp
+        await PushNotifHelper.updateRegistrationToken(userID, registrationToken);
+        // If successful we return true
+        return true;
     }
 
     static async getDeviceGroupTokens(userID){
-        let deviceGroupTokens;
-        return db.simpleQuery();
+        let deviceGroupTokens = [];
+        const args = [userID];
+        const queryTemplate = 'SELECT DeviceToken WHERE UserID = $1';
+        return db.simpleQuery(queryTemplate, args).then(res => {
+            // res should be a list of rows e.g. [{registrationToken: ...}, {registrationToken:...}]
+            if (res.length >= 0){
+                for(let i = 0; i < res.length; i++){
+                    deviceGroupTokens.push(res[i]['DeviceToken']);
+                }
+                return deviceGroupTokens;
+            } else {
+                throw new QueryExecutionError();
+            }
+        });
     }
 
     // NOTE!! The below have some inconsistencies
@@ -188,14 +221,14 @@ class PushNotifTemplates {
     static messageClose = {
         notification: {
             title: '${senderName} has closed the conversation',
-            // body: ''
+            // body: '' // Body not needed
           }       
     };
 
     static messageCreate = {
         notification: {
             title: '${senderName} has started a conversation',
-            // body: ''
+            // body: '' // Body not needed
           }
     };
 
