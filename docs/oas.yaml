@@ -14,7 +14,7 @@ info:
   version: 0.2.0
 
 servers:
-- url: \#
+- url: /
   description: The url will be filled out as we push through development
 
 security:
