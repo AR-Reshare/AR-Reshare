@@ -224,32 +224,17 @@ components:
       type: object
       required:
       - listingID
-      - modifiedDetails
+      anyOf:
+      - $ref: '#/components/schemas/title' ## title
+      - $ref: '#/components/schemas/condition' ## condition
+      - $ref: '#/components/schemas/description' ## description
+      - $ref: '#/components/schemas/address' ## location
+      - $ref: '#/components/schemas/id' ## categoryID
+      # - $ref: '#/components/schemas/media-id-list' ## deletedMedia
+      # - $ref: '#/components/schemas/media-content-list' ## uploadedMedia
       properties:
-        variable-modification:
-          $ref: '#/components/schemas/listing-modified-details'
         listingID:
           $ref: '#/components/schemas/id'
-
-
-    ## NOTE: No media manipulation for the moment
-    listing-modified-details:
-      type: object
-      properties:
-        title:
-          $ref: '#/components/schemas/title'
-        condition:
-          $ref: '#/components/schemas/condition'
-        description:
-          $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
-        categoryID:
-          $ref: '#/components/schemas/id'
-        # deletedMedia:
-        #   $ref: '#/components/schemas/id-list'
-        # uploadedMedia:
-        #   $ref: '#/components/schemas/media-content-list'
 
 
     category-descriptor:
@@ -333,23 +318,12 @@ components:
       required:
       # accountID not neccessary since we should be able to retrieve the accountId from a valid and verified JWT token
       - password
-      - modifiedDetails
+      anyOf:
+      - $ref: '#/components/schemas/name'  ## 'name'
+      - $ref: '#/components/schemas/email' ## 'email'
+      - $ref: '#/components/schemas/date'  ## 'dob'
+      - $ref: '#/components/schemas/password'  ## 'newPassword'
       properties:
-        password:
-          $ref: '#/components/schemas/password'
-        variable-modification:
-          $ref: '#/components/schemas/account-modified-details'
-
-
-    account-modified-details:
-      type: object
-      properties:
-        name:
-          $ref: '#/components/schemas/name'
-        email:
-          $ref: '#/components/schemas/email'
-        dob:
-          $ref: '#/components/schemas/date'
         password:
           $ref: '#/components/schemas/password'
 
