@@ -147,35 +147,35 @@ class PushNotifHelper {
 class PushNotifTemplates {
     static messageSend = {
         notification: {
-            title: '${senderName} sent you a message',
-            body: '${senderName} said \'${senderMessage}\''
+            title: '${SenderName} sent you a message',
+            body: '${SenderName} said \'${SenderMessage}\''
           }
     };
 
     static messageClose = {
         notification: {
-            title: '${senderName} has closed the conversation',
+            title: '${SenderName} has closed the conversation',
             // body: '' // Body not needed
           }       
     };
 
-    static messageCreate = {
+    static messageStart = {
         notification: {
-            title: '${senderName} has started a conversation',
+            title: '${SenderName} has started a conversation',
             // body: '' // Body not needed
           }
     };
 
     static arguments = {
-        'MessageSend': ['senderName', 'senderMessage'],
-        'MessageClose': ['senderName'],
-        'MessageStart': ['senderName'],
+        'Message-Send': ['SenderName', 'SenderMessage'],
+        'Message-Close': ['SenderName'],
+        'Message-Start': ['SenderName'],
     };
 
     static templates = {
-        'MessageSend': PushNotifTemplates.messageSend,
-        'MessageClose': PushNotifTemplates.messageClose,
-        'MessageStart': PushNotifTemplates.messageStart,
+        'Message-Send': PushNotifTemplates.messageSend,
+        'Message-Close': PushNotifTemplates.messageClose,
+        'Message-Start': PushNotifTemplates.messageStart,
     };
     
 }
@@ -185,7 +185,7 @@ class PushNotifTemplates {
 // TODO: Make sure to make a subclass
 class PushNotif {
     constructor(templateType){
-        let supportedTemplateTypes = ['MessageSend', 'MessageStart', 'MessageClose'];
+        let supportedTemplateTypes = ['Message-Send', 'Message-Start', 'Message-Close'];
         if (!templateType){
             throw new TemplateError('No TemplateType was provided');
         } else if (!supportedTemplateTypes.includes(templateType)){
@@ -202,8 +202,12 @@ class PushNotif {
         // TODO: Quite inefficient -- If you have time modify later
         let message = this.templateDict;
         for (const arg of this.templateArguments){
-            message.notification.title = message.notification.title.replace(`\${${arg}}`, replacementObject[arg]);
-            message.notification.body = message.notification.body.replace(`\${${arg}}`, replacementObject[arg]);
+            if (message.notification.title)
+                message.notification.title = message.notification.title.replace(`\${${arg}}`, replacementObject[arg]);
+            
+            if (message.notification.body)
+                message.notification.body = message.notification.body.replace(`\${${arg}}`, replacementObject[arg]);
+            
         }
         return message;
     };

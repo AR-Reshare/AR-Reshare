@@ -25,24 +25,24 @@ describe('Unit Test XX - PushNotif Class Construction', () => {
         }
     });
 
-    test('Valid TemplateType (MessageStart)', () => {
-        let templateType = 'MessageStart';
+    test('Valid TemplateType (Message-Start)', () => {
+        let templateType = 'Message-Start';
         let PushNotifTemplate = new PushNotif(templateType);
         expect(PushNotifTemplate.templateType).toEqual(templateType);
         expect(PushNotifTemplate.templateArguments).toEqual(PushNotifTemplates.arguments[templateType]);
         expect(PushNotifTemplate.templateDict).toEqual(PushNotifTemplates.templates[templateType]);
     });
 
-    test('Valid TemplateType (MessageSend)', () => {
-        let templateType = 'MessageSend';
+    test('Valid TemplateType (Message-Send)', () => {
+        let templateType = 'Message-Send';
         let PushNotifTemplate = new PushNotif(templateType);
         expect(PushNotifTemplate.templateType).toEqual(templateType);
         expect(PushNotifTemplate.templateArguments).toEqual(PushNotifTemplates.arguments[templateType]);
         expect(PushNotifTemplate.templateDict).toEqual(PushNotifTemplates.templates[templateType]);
     });
 
-    test('Valid TemplateType (MessageClose)', () => {
-        let templateType = 'MessageClose';
+    test('Valid TemplateType (Message-Close)', () => {
+        let templateType = 'Message-Close';
         let PushNotifTemplate = new PushNotif(templateType);
         expect(PushNotifTemplate.templateType).toEqual(templateType);
         expect(PushNotifTemplate.templateArguments).toEqual(PushNotifTemplates.arguments[templateType]);
@@ -60,7 +60,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-    templateType = 'MessageSend';
+    templateType = 'Message-Send';
     pushNotifTemplate = new PushNotif(templateType);
 });
 
@@ -76,8 +76,8 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
 
     test('Overexceeded replacement argument length', () => {
         let inputObject = {
-            senderName: 'Sam Sepiol',
-            senderMessage: 'Hi, I\'m interested about the laptop for sale',
+            SenderName: 'Sam Sepiol',
+            SenderMessage: 'Hi, I\'m interested about the laptop for sale',
             exceededVariable: 'This shouldn\'t be processed'
         };
         let registrationToken = null;
@@ -90,7 +90,7 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
     
     test('Insufficient replacement argument length', () => {
         let inputObject = {
-            senderName: 'Sam Sepiol'
+            SenderName: 'Sam Sepiol'
         };
 
         let registrationToken = null;
@@ -103,7 +103,7 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
 
     test('Correct replacement argument length + included invalid attribute', () => {
         let inputObject = {
-            senderName: 'Sam Sepiol',
+            SenderName: 'Sam Sepiol',
             randomAttribute: 'randomElement'
         };
 
@@ -130,8 +130,8 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
     
     test('Correct replacement argument length + Correct attributes + Incorrect value type', () => {
         let inputObject = {
-            senderName: 5,
-            senderMessage: 'randomElement'
+            SenderName: 5,
+            SenderMessage: 'randomElement'
         };
 
         let registrationToken = null;
@@ -144,7 +144,7 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
 
     test('Correct replacement argument length + Correct attributes + Incorrect values\' types', () => {
         let inputObject = {
-            senderName: null,
+            SenderName: null,
             randomAttribute2: 5
         };
 
@@ -157,8 +157,8 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
 
     test('Valid replacementObject', () => {
         let inputObject = {
-            senderName: 'Sam Sepiol',
-            senderMessage: 'Test message'
+            SenderName: 'Sam Sepiol',
+            SenderMessage: 'Test message'
         };
 
         let out = pushNotifTemplate.replacementObjectValidate(inputObject);
@@ -166,3 +166,48 @@ describe('Unit Test XX - PushNotif Class (template replacement validate)', () =>
     });
 
 });
+
+// TODO: Add tests here
+
+// TODO: We need to create temporary templates for the the provided scenarios
+describe('Unit Test XX - PushNotif Class (template replacement execute)', () => {
+    test('Template Replacement Success (Message-Send)', async () => {
+        let senderName = 'Sam Sepiol';
+        let senderMessage = 'Hello I\'m interested in your laptop';
+        let templateType = 'Message-Send';
+        let replacementObject = {
+            SenderName: senderName,
+            SenderMessage: senderMessage
+        };
+
+        let emailTemplate = new PushNotif(templateType);
+        let content = await emailTemplate.templateReplace(replacementObject);
+        expect(content['notification']['title']).toEqual(`${senderName} sent you a message`);
+        expect(content['notification']['body']).toEqual(`${senderName} said \'${senderMessage}\'`);
+    });
+
+    test('Template Replacement Success (Message-Start)', async () => {
+        let templateType = 'Message-Start';
+        let senderName = 'Sam Sepiol';
+        let replacementObject = {
+            SenderName: senderName,
+        };
+
+        let emailTemplate = new PushNotif(templateType);
+        let content = await emailTemplate.templateReplace(replacementObject);
+        expect(content['notification']['title']).toEqual(`${senderName} has started a conversation`);
+    });
+
+    test('Template Replacement Success (Message-Close)', async () => { 
+        let templateType = 'Message-Close';
+        let senderName = 'Sam Sepiol';
+        let replacementObject = {
+            SenderName: senderName,
+        };
+
+        let emailTemplate = new PushNotif(templateType);
+        let content = await emailTemplate.templateReplace(replacementObject);
+        expect(content['notification']['title']).toEqual(`${senderName} has closed the conversation`);
+    });
+});
+
