@@ -130,7 +130,28 @@ The method will look up the appropriate status code based on the `err` argument 
 
 The method returns a promise object which should always resolve. When it does so, it will resolve with an object containing properties `statusCode` and `result`, which contain the status and object, respectively, which were transmitted. If `result` is null, then no object was transmitted.
 
-### PushRespond
+### PushRespond (Under Development)
+Takes a single input `templateType` to instantiate, which must be a string of of one of the operations that the EmailRespond component supports - currently the supported operations are `Message-Create`, `Message-Send`, `Message-Close`.
+
+| parameter | type | 
+| ----------|------|
+| `templateType` | string enum [`Message-Create`, `Message-Send`, `Message-Close`], required | If an unsupported or null template type is provided then a `TemplateError` is thrown. |
+
+With the insantiated PushRespond object, the object's main method is called `process(...)` which takes the following list of parameters:
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `fcmApp` | FCM App Object, required | A successfully configured object that authenticates push notification requests via its interface |
+| `userID` | string, required | A userID string |
+| `inputObject` | object[string, string], required | An object with key:value such that the key is a placeholder to be replaced in the push notification template, and the value is the value that replaces the placeholder. The acceptable keys and values is dependent on static definitions in the `EmailTemplateDefinition`. |
+
+| error | description |
+|-------|-------------|
+| `InvalidArgumentError` | One of the arguments or one of the attributes of the `inputObject` is of an invalid type / unsupported value |
+| `AbsentArgumentError` | One of the arguments or one of the attributes of the `inputObject` that is required is absent |
+| `PushDeliveryError` | The push message was not delivered successfully to the FCM backend service |
+
+NOTE: `PushDeliveryError` is not yet implemented as this component is currently under development
 
 ### EmailRespond
 Takes a single input `templateType` to instantiate, which must be a string of of one of the operations that the EmailRespond component supports - currently the supported operations are `Account-Modify`, `Account-Create`, `Password-Reset`.
@@ -153,9 +174,9 @@ There are certain errors that may be thrown while calling the object's method `p
 |-------|-------------|
 | `InvalidArgumentError` | One of the arguments or one of the attributes of the `inputObject` is of an invalid type / unsupported value |
 | `AbsentArgumentError` | One of the arguments or one of the attributes of the `inputObject` that is required is absent |
-| `EmailDeliveryError` | The email was not delivered to the SMTP Service setup |
+| `EmailDeliveryError` | The email was not delivered successfully to the SMTP Service setup |
 
-NOTE: The last error is being added as additional error handling
+NOTE: `EmailDeliveryError` will be implemented, as it is currently a TODO to implement additionaly error handling
 
 ## Database (classes/database.js)
 The Database class can be used to interact with the database by passing queries. It is recommended that these queries be built first by an SQLTemplate, but that is not necessary.
