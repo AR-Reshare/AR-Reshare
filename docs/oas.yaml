@@ -13,9 +13,11 @@ info:
     email: rlrt51@durham.ac.uk
   version: 0.2.0
 
+
 servers:
 - url: /
   description: The url will be filled out as we push through development
+
 
 security:
   - bearerAuth:
@@ -27,7 +29,6 @@ security:
     - \/listing\/close
 
 
-
 paths:
   /:
     get:
@@ -37,7 +38,8 @@ paths:
       responses:
         '200':
           description: The page is succesfully returned
-          
+
+
   /token/regeneration:
     post:
       operationId: requestRegeneratedToken
@@ -50,6 +52,7 @@ paths:
         #   $ref: 'responses.yaml#/components/responses/token-regeneration'
         # '400':
         #   description: A valid old token wasn't provided in the header of the HTTP request
+
 
   /passwordResetRequest:
     post:
@@ -65,7 +68,8 @@ paths:
       #     description: The email provided was of an invalid format
       # requestBody:
       #   $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-request'
-  
+
+
   ## I was considering splitting this up into two but want to reduce the number of endpoints
   /passwordResetExecute:
     post:
@@ -82,6 +86,7 @@ paths:
       # requestBody:
       #   $ref: 'requestBodies.yaml#/components/requestBodies/password-reset-execute'
 
+
   /categories/list:
     get:
       operationId: getCategoryDescriptors
@@ -91,6 +96,7 @@ paths:
         '200':
           description: The categories list was successfully retrieved
           $ref: 'responses.yaml#/components/responses/category-descriptors'
+
 
   ################################### ACCOUNT PATH ITEM OBJECTS ########################################
   /account/create:
@@ -113,7 +119,8 @@ paths:
           $ref: 'responses.yaml#/components/responses/account-create'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-signup'
-               
+
+
   /account/close:
     patch: # not delete
       operationId: closeAccount
@@ -137,7 +144,8 @@ paths:
           $ref: 'responses.yaml#/components/responses/account-close'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-close'
-  
+
+
   /account/login:
     post:
       operationId: loginAccount
@@ -158,7 +166,8 @@ paths:
           $ref: 'responses.yaml#/components/responses/account-login'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-login'
-     
+
+
   /account/modify:
     patch:
       operationId: modifyAccount
@@ -180,6 +189,7 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/account-modify'
 
+
   /account/listing/view:
     get:
       operationId: getAccountListingByID
@@ -197,6 +207,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/listing-private'
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/listingID'
+
 
   /account/listings/search:
     get:
@@ -219,6 +230,7 @@ paths:
       #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
         ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
 
+
   ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
   /account/saved-listings/search:
     get:
@@ -240,6 +252,7 @@ paths:
       #   - $ref: 'parameters.yaml#/components/parameters/startResults'
       #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
       #   - $ref: 'parameters.yaml#/components/parameters/region'
+
 
   ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
   ## that is saved is public) -- otherwise adversary has access to archived listings
@@ -266,6 +279,7 @@ paths:
       #     $ref: 'responses.yaml#/components/responses/post'
       # parameters:
       #   - $ref: 'parameters.yaml#/components/parameters/listingID'
+
 
   /account/saved-listings/delete:
     post:
@@ -342,6 +356,7 @@ paths:
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/listingID'
 
+
   /listings/search:
     get:
       operationId: searchListings
@@ -359,7 +374,8 @@ paths:
         - $ref: 'parameters.yaml#/components/parameters/startResults'
         - $ref: 'parameters.yaml#/components/parameters/categoryId'
         - $ref: 'parameters.yaml#/components/parameters/region'
-   
+
+
   /listing/create:
     put:
       operationId: createListing
@@ -377,6 +393,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-create'
+
 
   /listing/modify:
     patch:
@@ -401,6 +418,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-modify'
+
 
   /listing/close:
     patch:
@@ -428,6 +446,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/listing-close'
+
 
 
   ####################################### CONVERSATION ###################################
@@ -463,7 +482,8 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
-  
+
+
   /conversation/close:
     patch:
       operationId: closeConversation
@@ -484,6 +504,7 @@ paths:
           $ref: 'responses.yaml#/components/responses/post'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-close'
+
 
   /conversation/message:
     put:
@@ -509,6 +530,7 @@ paths:
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-message'
 
+
   /conversations:
     get:
       operationId: getConversationDescriptors
@@ -530,6 +552,7 @@ paths:
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/startResults'
         - $ref: 'parameters.yaml#/components/parameters/maxResults'
+
 
   /conversation/view:
     get:

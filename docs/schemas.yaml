@@ -61,8 +61,6 @@ components:
         $ref: '#/components/schemas/user-view'
 
 
-
-
     ############### LISTING SCHEMAS #########################
     listing-own:
       type: object
@@ -229,13 +227,13 @@ components:
       - modifiedDetails
       properties:
         variable-modification:
-          $ref: '#/components/schemas/listing-modifiedDetails'
+          $ref: '#/components/schemas/listing-modified-details'
         listingID:
           $ref: '#/components/schemas/id'
 
 
     ## NOTE: No media manipulation for the moment
-    listing-modifiedDetails:
+    listing-modified-details:
       type: object
       properties:
         title:
@@ -304,7 +302,8 @@ components:
         name: Sam Sepiol
         email: sspeiol@protonmail.org
         dob: '1986-09-17'
-        
+
+
     account-login:
       type: object
       required:
@@ -319,6 +318,7 @@ components:
         registrationToken:
           $ref: '#/components/schemas/id'
 
+
     account-close:
       type: object
       required:
@@ -326,6 +326,7 @@ components:
       properties:
         password:
           $ref: '#/components/schemas/password'
+
 
     account-modify:
       type: object
@@ -337,9 +338,10 @@ components:
         password:
           $ref: '#/components/schemas/password'
         variable-modification:
-          $ref: '#/components/schemas/account-modifiedDetails'
+          $ref: '#/components/schemas/account-modified-details'
 
-    account-modifiedDetails:
+
+    account-modified-details:
       type: object
       properties:
         name:
@@ -351,10 +353,12 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
+
     account-address-list:
       type: array
       items:
         $ref: '#/components/schemas/account-address'
+
 
     account-address:
       type: object
@@ -366,6 +370,7 @@ components:
           $ref: '#/components/schemas/id'
         address:
           $ref: '#/components/schemas/address'
+
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
     ## when viewing future data
@@ -392,6 +397,7 @@ components:
         email:
           $ref: '#/components/schemas/email'
     
+
     password-reset-execute:
       type: object
       required:
@@ -402,7 +408,7 @@ components:
         email:
           $ref: '#/components/schemas/email'
         resetToken:
-          $ref: '#/components/schemas/resetToken'
+          $ref: '#/components/schemas/reset-token'
         password:
           $ref: '#/components/schemas/password'
           
@@ -423,6 +429,7 @@ components:
         receiver:
           $ref: '#/components/schemas/user'
 
+
     conversation:
       type: object
       required:
@@ -439,6 +446,7 @@ components:
           items:
             $ref: '#/components/schemas/conversation-message'
 
+
     conversation-message:
       type: object
       required:
@@ -446,13 +454,14 @@ components:
       - receiverID
       - conversationID
       anyOf:
-      - $ref: '#/components/schemas/media-content' ## single media uploads only
-      - $ref: '#/components/schemas/textContent'
+      - $ref: '#/components/schemas/media-content' ## attribute ("media") -- (single media uploads only)
+      - $ref: '#/components/schemas/text-content' ## attribute ("textContent")
       properties:
         receiverID:
           $ref: '#/components/schemas/id'
         conversationID:
           $ref: '#/components/schemas/id'
+
 
     conversation-create:
       type: object
@@ -462,6 +471,7 @@ components:
         listingID:
           $ref: 'schemas.yaml#/components/schemas/id'
   
+
     conversation-close:
       type: object
       required:
@@ -472,8 +482,7 @@ components:
 
 
     ########################### LOWER LEVEL SCHEMAS ####################################
-
-    textContent:
+    text-content:
       type: string
 
 
@@ -492,11 +501,13 @@ components:
         postcode:
           $ref: '#/components/schemas/postcode'
 
+
     ## This is used for uploads
     media-content-list: # i.e media = ["url1", "url2", ...]
       type: array
       items:
       - $ref: '#/components/schemas/media-content'
+
 
     ## This is used to load from the client app
     media-url-list:
@@ -542,76 +553,96 @@ components:
     error-message:
       type: string
 
+
     boolean:
       type: boolean
+
 
     country:
       type: string
 
+
     ##NOTE:  This is no longer used since not everyone lives in a city
     # city:
     #   type: string
+
 
     ## This is replaceing the city attribute in address-related schemas
     region:
       type: string
       # current proposal is that the value should be enum of counties
 
+
     postcode:
       type: string
 
+
     street:
       type: string
+
 
     ## we'll define formats for these types below soon (e.g. sizes and other attributes)
     id:
       type: integer
 
+
     name:
       type: string
 
+
     description:
       type: string
+
 
     photo:
       type: string
       format: url
     
+
     title:
       type: string
+
 
     date:
       type: string
       format: ISO Date (8601) # can be changed
 
+
     datetime:
       type: string
       format: ISO Datetime (8601) # can be changed
+
 
     password:
       type: string
       format: password
 
-    resetToken:
+
+    reset-token:
       type: string
-      ## TODO: Update the type/format when completeing the design of passwordReset
+      ## TODO: Update the type/format when completeing the design of password-reset
+
 
     email:
       type: string
       format: email
     
+
     category:
       type: string
       format: enum
+
 
     condition:
       type: string
       format: enum
 
+
     path:
       type: string
       format: path
     
+
     color:
       type: string
       format: hex

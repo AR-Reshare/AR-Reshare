@@ -1,6 +1,5 @@
 components:
   responses:
-
     #NOTE: Error message is subject to change soon
     post:
       description: The response to a post request
@@ -20,14 +19,15 @@ components:
 
 
     ################### ACCOUNT RESPONSES #####################
-
     account-close:
       description: The account was requested to be closed
       $ref: '#/components/responses/post'
 
+
     account-create:
       description: The account was requested to be created
       $ref: '#/components/responses/post'
+
 
     # TODO: I believe authentication information can be removed from here and put into a seperate security component
     account-login:
@@ -37,9 +37,11 @@ components:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
 
+
     account-modify:
       description: Returns whether an account detail was modified successfully
       $ref: '#/components/responses/post'
+
 
     account-address-list:
       description: Returns a set of addresses
@@ -48,11 +50,13 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-address-list'
 
+
     token-regeneration:
       description: The new token has been successfully generated
       headers:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
+
 
     category-descriptors:
       description: A list of the currently available category descriptors
@@ -60,6 +64,7 @@ components:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/category-descriptors'
+
 
     ####################### COMMS RESPONSES #######################
     conversation-descriptors:
@@ -76,6 +81,7 @@ components:
                 items:
                   $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
 
+
     conversation-create:
       description: Returns the conversation-descriptor if successful
       content:
@@ -89,7 +95,8 @@ components:
                 $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
               success:
                 type: boolean
-     
+
+
     conversation-view:
       description: Returns the conversation of a given conversationID
       content:
@@ -97,9 +104,11 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/conversation'
 
+
     conversation-close:
       description: Returns whether the conversation was closed successfully
       $ref: '#/components/responses/post'
+
 
     conversation-message:
       description: Returns whether a message was successfully delivered
@@ -114,19 +123,22 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-private'
 
+
     listings-public:
       description: Returns a set of listings
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-public'
-    
+
+
     listings-descriptor:
       description: Returns a set of listings
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-descriptor'
+
 
     listing-private:
       description: Returns a listing
@@ -135,12 +147,14 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-own'
 
+
     listing-public:
       description: Returns a listing
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-view'
+
 
     listing-descriptor:
       description: Returns a listing
