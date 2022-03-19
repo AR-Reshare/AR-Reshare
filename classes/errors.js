@@ -245,6 +245,7 @@ class FailedUploadError extends Error {
 }
 
 module.exports = {
+    EmailDeliveryError,
     EmailConfigurationReadError,
     PipelineInitialisationError,
     MissingTemplateError,

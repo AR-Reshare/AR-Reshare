@@ -1,4 +1,4 @@
-const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailConfigurationReadError} = require('./errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailConfigurationReadError, EmailDeliveryError} = require('./errors.js');
 const fs = require('fs/promises');
 const path = require('path');
 const nodemailer = require('nodemailer');
