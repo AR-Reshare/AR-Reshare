@@ -17,7 +17,7 @@ const nodemailer = require('nodemailer');
 // 2. Pass the emailTemplate with the input object to the function EmailRespond
 // 3. This function EmailRespond will 
 
-
+// TODO: Move this to the schemas folder
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class EmailTemplateDefinitions {
     static htmltemplates = {
@@ -41,6 +41,8 @@ class EmailTemplateDefinitions {
 
 class EmailTransporter {
     static emailConfigLocation = `secrets${path.sep}emailconnection.conf`;
+    static sourceEmailAddress = 'donotreply@arreshare.com';
+    static sourceName = 'AR-Reshare';
 
     static async getConfig(){
         let out, config;
@@ -65,7 +67,7 @@ class EmailTransporter {
                 secure: false, // true for 465, false for other ports
                 auth: {
                     user: testAccount.user, // generated ethereal user
-                    pass: testAccount.password, // generated ethereal password
+                    pass: testAccount.pass, // generated ethereal password
                 },
             };
         } else {
@@ -120,20 +122,24 @@ class EmailRespond {
                 throw new InvalidArgumentError();
             }
         }
-
-
         return true;
     }
 
     // TODO: We may need to add more arguments if required by the username
-    async sendEmail(emailTransporter, userEmail, textcontent, htmlcontent){
-        emailTransporter.sendMail({
-            from: '"AR-Reshare" <donotreply@example.com>', // sender address
+    // TODO: Add a callback function here to handle exceptions
+    async sendEmail(transport, userEmail, textcontent, htmlcontent){
+        return transport.sendMail({
+            from: `"${EmailTransporter.sourceName}" <${EmailTransporter.sourceEmailAddress}>`, // sender address
             to: userEmail, // list of receivers
             subject: this.templateType, // Subject line
             text: textcontent,
             html: htmlcontent, // html body
-          });
+        }).catch(err => {
+            // NOTE: For some reason I cannot find good definitions of errors
+            // According to github issues, nodemailer doesn't have this because the error definitions keep on changing
+            // Therefore we are going to throw a generic error
+            throw new EmailDeliveryError();
+        });
     }
 
 
@@ -150,6 +156,7 @@ class EmailRespond {
         this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
     }
 }
+
 
 module.exports = {
     EmailRespond,
