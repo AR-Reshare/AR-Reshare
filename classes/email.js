@@ -130,12 +130,34 @@ class EmailRespond {
     // TODO: We may need to add more arguments if required by the username
     // TODO: Add a callback function here to handle exceptions
     async sendEmail(transport, userEmail, textcontent, htmlcontent){
+        if (!textcontent){
+            throw new AbsentArgumentError('There is no \'textcontent\' provided');
+        } else if (!htmlcontent){
+            throw new AbsentArgumentError('There is no \'htmlcontent\' provided');
+        } else if (!userEmail){
+            throw new AbsentArgumentError('There is no \'userEmail\' provided');
+        } else if (!transport){
+            throw new AbsentArgumentError('There is no \'transport\' provided');
+        }
+
+        if (!((textcontent && (typeof textcontent === 'string')) && (htmlcontent && (typeof htmlcontent === 'string')))){
+            throw new InvalidArgumentError('One of the content attributes is not of type \'string\'');
+        } else if (!typeof userEmail === 'string'){
+            // TODO: Add email validation here
+            throw new InvalidArgumentError('The email address is not valid');
+        } else if (!(typeof transport.sendMail === 'function')){
+            throw new InvalidArgumentError('The transport object has no method \'sendMail\'');
+        }
+
         return transport.sendMail({
             from: `"${EmailTransporter.sourceName}" <${EmailTransporter.sourceEmailAddress}>`, // sender address
             to: userEmail, // list of receivers
             subject: this.templateType, // Subject line
             text: textcontent,
             html: htmlcontent, // html body
+        }).then(res => {
+            // NOTE: res should be an object containing feedback about the "email message request"
+            return res;
         }).catch(err => {
             // NOTE: For some reason I cannot find good definitions of errors
             // According to github issues, nodemailer doesn't have this because the error definitions keep on changing
@@ -152,7 +174,6 @@ class EmailRespond {
 
         // We then get the emailTemplate string and replace certain strings using the valid inputObject
         let [textcontent, htmlcontent] = await this.templateReplace(inputObject);
-        
         // Finally, we use the emailTransport to execute the request
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
         this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
