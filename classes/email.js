@@ -17,6 +17,8 @@ const nodemailer = require('nodemailer');
 // 2. Pass the emailTemplate with the input object to the function EmailRespond
 // 3. This function EmailRespond will 
 
+// TODO: Add email validation
+
 // TODO: Move this to the schemas folder
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class EmailTemplateDefinitions {
@@ -108,18 +110,18 @@ class EmailRespond {
     async replacementObjectValidate(replacementObject){
         // existance check and type check
         if (!replacementObject){
-            throw new AbsentArgumentError();
-        } else if (replacementObject.length != this.templateArguments.length){
-            throw new InvalidArgumentError();
+            throw new AbsentArgumentError('The replacement object cannot be null');
+        } else if (Object.keys(replacementObject).length != this.templateArguments.length){
+            throw new InvalidArgumentError('The replacement object has an incorrect number of keys');
         }
 
-        for (arg in replacementObject){
+        for (let arg in replacementObject){
             if (!this.templateArguments.includes(arg)) {
-                throw new InvalidArgumentError();
+                throw new InvalidArgumentError(`The replacement object should not have the following: ${arg}`);
             } else if(replacementObject[arg] === undefined){
-                throw new AbsentArgumentError();
-            } else if (!replacementObject[arg] instanceof String){
-                throw new InvalidArgumentError();
+                throw new AbsentArgumentError(`The replacement object's attribute ${arg} should not be null`);
+            } else if (!(typeof replacementObject[arg] === 'string')){
+                throw new InvalidArgumentError(`The replacement object's attribute ${arg} should be of type 'string'`);
             }
         }
         return true;
