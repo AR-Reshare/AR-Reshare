@@ -34,7 +34,8 @@ components:
         name:
           $ref: '#/components/schemas/name'
         profilePics:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
+
 
     user-view:
       type: object
@@ -52,6 +53,7 @@ components:
           $ref: '#/components/schemas/email'
         profilePicture:
           $ref: '#/components/schemas/photo'
+
 
     user-search:
       type: array
@@ -91,7 +93,7 @@ components:
         condition:
           $ref: '#/components/schemas/condition'
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
         creationDate:
           $ref: '#/components/schemas/date'
         modificationDate:
@@ -100,6 +102,7 @@ components:
           $ref: '#/components/schemas/date'
         receiverID:
           $ref: '#/components/schemas/id'
+
 
     listing-view:
       type: object
@@ -135,7 +138,8 @@ components:
         modificationDate:
           $ref: '#/components/schemas/date'
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
+
 
     listing-descriptor:
       type: object
@@ -154,7 +158,7 @@ components:
         location:
           $ref: '#/components/schemas/address'
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
         condition:
           $ref: '#/components/schemas/condition'
         categoryID:
@@ -162,20 +166,24 @@ components:
         title:
           $ref: '#/components/schemas/title'
 
+
     listings-private:
       type: array
       items:
         $ref: '#/components/schemas/listing-own'
-        
+
+
     listings-public:
       type: array
       items:
         $ref: '#/components/schemas/listing-view'
 
+
     listings-descriptor:
       type: array
       items:
         $ref: '#/components/schemas/listing-descriptor'
+
 
     listing-create:
       type: object
@@ -196,11 +204,12 @@ components:
         categoryID:
           $ref: '#/components/schemas/id'
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-content-list'
         condition:
           $ref: '#/components/schemas/condition'
         title:
           $ref: '#/components/schemas/title'
+
 
     listing-close:
       type: object
@@ -223,7 +232,9 @@ components:
           $ref: '#/components/schemas/listing-modifiedDetails'
         listingID:
           $ref: '#/components/schemas/id'
-    
+
+
+    ## NOTE: No media manipulation for the moment
     listing-modifiedDetails:
       type: object
       properties:
@@ -237,8 +248,11 @@ components:
           $ref: '#/components/schemas/address'
         categoryID:
           $ref: '#/components/schemas/id'
-        # media:
-        #   $ref: '#/components/schemas/media'
+        # deletedMedia:
+        #   $ref: '#/components/schemas/id-list'
+        # uploadedMedia:
+        #   $ref: '#/components/schemas/media-content-list'
+
 
     category-descriptor:
       type: object
@@ -259,6 +273,7 @@ components:
           $ref: '#/components/schemas/photo'
         color:
           $ref: '#/components/schemas/color'
+
 
     category-descriptors:
       type: array
@@ -430,18 +445,15 @@ components:
       # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
       - receiverID
       - conversationID
-      # - mediaContent
-      - textContent
+      anyOf:
+      - $ref: '#/components/schemas/media-content' ## single media uploads only
+      - $ref: '#/components/schemas/textContent'
       properties:
         receiverID:
           $ref: '#/components/schemas/id'
         conversationID:
           $ref: '#/components/schemas/id'
-        # mediaContent:
-        #   $ref: '#/components/schemas/mediaContent'
-        textContent:
-          $ref: '#/components/schemas/textContent'
-     
+
     conversation-create:
       type: object
       required:
@@ -460,15 +472,6 @@ components:
 
 
     ########################### LOWER LEVEL SCHEMAS ####################################
-
-    # TODO: This schema's structure is very likely to be changed in the near future
-    mediaContent:
-      type: object
-      properties:
-        media:
-          $ref: '#/components/schemas/media-resource'
-        description:
-          $ref: '#/components/schemas/description'
 
     textContent:
       type: string
@@ -489,14 +492,29 @@ components:
         postcode:
           $ref: '#/components/schemas/postcode'
 
-    media: # i.e media = ["url1", "url2", ...]
+    ## This is used for uploads
+    media-content-list: # i.e media = ["url1", "url2", ...]
       type: array
       items:
-      - $ref: '#/components/schemas/mediaContent'
+      - $ref: '#/components/schemas/media-content'
 
-    media-resource:
+    ## This is used to load from the client app
+    media-url-list:
+      type: array
+      items:
+      - $ref: '#/components/schemas/media-url'
+
+
+    media-url:
       type: string
       format: url
+
+
+    media-content:
+      type: string
+      format: data URI scheme
+      ## data:[<media type>][;base64],<data>
+
 
     post-response-success:
       type: object
@@ -506,6 +524,7 @@ components:
         success:
           $ref: '#/components/schemas/boolean'
 
+
     post-response-error:
       type: object
       required:
@@ -513,6 +532,7 @@ components:
       properties:
         error:
           $ref: '#/components/schemas/error-message'
+
 
     post-response:
       type: string
@@ -545,7 +565,7 @@ components:
 
     ## we'll define formats for these types below soon (e.g. sizes and other attributes)
     id:
-      type: string
+      type: integer
 
     name:
       type: string
