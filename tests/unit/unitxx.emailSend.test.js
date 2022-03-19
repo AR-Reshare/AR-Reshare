@@ -6,13 +6,7 @@ const {TemplateError, InvalidArgumentError, AbsentArgumentError} = require('../.
 // Account Modification
 // Password Reset
 
-// For now we are focusing on unit tests
-
-// emailRespond class
-// 1. constructor tests
-// --> templateType (valid)
-// --> templateType (invalid)
-
+// TODO: ADD Email validation checks and tests
 
 
 describe('Unit Test XX - emailResond Class Construction', () => {
@@ -78,12 +72,11 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
     test('Missing replacementObject', () => {
         let inputObject = null;
 
-        let expectedError = new AbsentArgumentError();
-
-        expect(async () => {
-          let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-          expect(out).toEqual(expectedError);
-        });
+        let expectedError = new AbsentArgumentError('The replacement object cannot be null');
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Overexceeded replacement argument length', () => {
@@ -93,12 +86,11 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
             additionalAttribute: 'random-stuff'
         };
 
-        let expectedError = new InvalidArgumentError();
-
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
+        let expectedError = new InvalidArgumentError('The replacement object has an incorrect number of keys');
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Insufficient replacement argument length', () => {
@@ -107,26 +99,25 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
             //Account-Create requires a userID attribute
         };
 
-        let expectedError = new InvalidArgumentError();
-
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
+        let expectedError = new InvalidArgumentError('The replacement object has an incorrect number of keys');
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Correct replacement argument length + included invalid attribute', () => {
         let inputObject = {
-            email: 'foo@example.com',
+            Email: 'foo@example.com',
             randomAttribute: 'randomElement'
         };
 
-        let expectedError = new InvalidArgumentError();
-
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
+        let arg = 'randomAttribute';
+        let expectedError = new InvalidArgumentError(`The replacement object should not have the following: ${arg}`);
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Correct replacement argument length + all invalid attribute', () => {
@@ -135,52 +126,54 @@ describe('Unit Test XX - emailResond Class (template replacement validate)', () 
             randomAttribute2: 'randomElement'
         };
 
-        let expectedError = new InvalidArgumentError();
+        let arg = 'randomAttribute1';
+        let expectedError = new InvalidArgumentError(`The replacement object should not have the following: ${arg}`);
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
+    });
 
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
+    test('Correct replacement argument length + Incorrect case attributes + Correct value type', () => {
+        let inputObject = {
+            email: 'foo@example.com',
+            userID: '432154315'
+        };
+
+        let arg = 'email'; // NOTE: emailTemplate is case sensitive, it requires uppercase first letter
+        let expectedError = new InvalidArgumentError(`The replacement object should not have the following: ${arg}`);
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Correct replacement argument length + Correct attributes + Incorrect value type', () => {
         let inputObject = {
-            randomAttribute1: 'foo@example.com',
-            randomAttribute2: 'randomElement'
+            Email: 'foo@example.com',
+            UserID: 432154315
         };
 
-        let expectedError = new InvalidArgumentError();
-
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
+        let arg = 'UserID';
+        let expectedError = new InvalidArgumentError(`The replacement object's attribute ${arg} should be of type 'string'`);
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
     test('Correct replacement argument length + Correct attributes + Incorrect values\' types', () => {
         let inputObject = {
-            randomAttribute1: 'foo@example.com',
-            randomAttribute2: 'randomElement'
+            Email: 5,
+            UserID: 432154315
         };
 
-        let expectedError = new InvalidArgumentError();
-
-        expect(async () => {
-            let out = await emailTemplate.process(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(expectedError);
-        });
-    });
-
-    test('Valid replacementObject', () => {
-        let inputObject = {
-            randomAttribute1: 'foo@example.com',
-            randomAttribute2: 'randomElement'
-        };
-
-        expect(async () => {
-            let out = await emailTemplate.replacementObjectValidate(emailTransport, emailaddress, inputObject);
-            expect(out).toEqual(true);
-        });
+        let arg = 'Email'; // NOTE: We take the first error and throw it, this is why UserID is not in the error eventhough its meant to be a string
+        let expectedError = new InvalidArgumentError(`The replacement object's attribute ${arg} should be of type 'string'`);
+        let int = emailTemplate.process(emailTransport, emailaddress, inputObject);
+        let unit = emailTemplate.replacementObjectValidate(inputObject);
+        expect(int).rejects.toEqual(expectedError);
+        expect(unit).rejects.toEqual(expectedError);
     });
 
 });
