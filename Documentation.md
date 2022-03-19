@@ -132,6 +132,31 @@ The method returns a promise object which should always resolve. When it does so
 
 ### PushRespond
 
+### EmailRespond
+Takes a single input `templateType` to instantiate, which must be a string of of one of the operations that the EmailRespond component supports - currently the supported operations are `Account-Modify`, `Account-Create`, `Password-Reset`.
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `templateType` | string enum [`Account-Modify`, `Account-Create`, `Password-Reset`], required | If an unsupported or null template type is provided then a `TemplateError` is thrown. |
+
+With the insantiated EmailRespond object, the object's main method is called `process(...)` which takes the following list of parameters:
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `emailTransporter` | nodemailer SMTP Transport, required |  A successfully configured emailTransport that should be retreived from pipeline attributes |
+| `email` | string, required | The email address of the target user |
+| `inputObject` | object[string, string], required | An object with key:value such that the key is a placeholder to be replaced in the email template, and the value is the value that replaces the placeholder. The acceptable keys and values is dependent on static definitions in the `EmailTemplateDefinition`. |
+
+There are certain errors that may be thrown while calling the object's method `process(...)`
+
+| error | description |
+|-------|-------------|
+| `InvalidArgumentError` | One of the arguments or one of the attributes of the `inputObject` is of an invalid type / unsupported value |
+| `AbsentArgumentError` | One of the arguments or one of the attributes of the `inputObject` that is required is absent |
+| `EmailDeliveryError` | The email was not delivered to the SMTP Service setup |
+
+NOTE: The last error is being added as additional error handling
+
 ## Database (classes/database.js)
 The Database class can be used to interact with the database by passing queries. It is recommended that these queries be built first by an SQLTemplate, but that is not necessary.
 
