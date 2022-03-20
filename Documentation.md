@@ -25,6 +25,7 @@ The `CreateEntityPipeline`, `ModifyEntityPipeline`, `CloseEntityPipeline`, `View
 `NotImplementedPipeline` and `UnknownEndpointPipeline` also inherit directly from `Pipeline`. These discard the request and respond immediately with status codes 501 (Not Implemented) and 404 (Not Found), respectively.
 
 ## Pipeline Base (classes/pipeline.js)
+Exports a `Pipeline` class, which takes in its constructor the arguments: `db`, a Database object representing the postgres database instance to connect to; `logger` (default `console`), which represents the object to log messages to; `emailTransporter` (default `null`), an object representing the external email service; and `mediaHandler` (default `null`), an object representing the external media handling service.
 
 ### Pipeline.SecurityValidate
 Takes three inputs, `securitySchema`, `token` and `query`. `token` is the token to validate, and `query` is the object, possibly containing a password, that goes with it. `securitySchema` must be an instance of `SecuritySchema`, as defined in classes/securityvalidation.js
