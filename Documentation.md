@@ -201,6 +201,19 @@ There are certain errors that may be thrown while calling the object's method `p
 
 NOTE: `EmailDeliveryError` will be implemented, as it is currently a TODO to implement additionaly error handling
 
+### MediaHandle
+Takes a single input `mediaObjects` which contains a list of strings, where each string represents a piece of media in the form:
+```
+data:<mime type>/<mime subtype>;base64,<base64-encoded file data>
+```
+e.g.
+```
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAACFCAYAAACXBiBFAAAAAXNSR0IArs4c6Q...
+```
+The media handler takes all of the strings, which are assumed to have been validated, and uploads them to the external media handling solution through their API. Currently, this media handling solution is Cloudinary, and their API documentation is available [here](https://cloudinary.com/documentation/node_image_and_video_upload#server_side_upload).
+
+The method returns a Promise. In the event that any upload fails, it immediately aborts and rejects with a `FailedUploadError`. If all uploads succeed, it resolves with a list of objects, containing for each piece of media the mimetype, index (in the original list), and url (that it was uploaded to).
+
 ## Database (classes/database.js)
 The Database class can be used to interact with the database by passing queries. It is recommended that these queries be built first by an SQLTemplate, but that is not necessary.
 
