@@ -1,6 +1,28 @@
 ## Router (app.js)
+Exports a class representing the application. The constructor takes four arguments: `db`, the Database object representing the database to use; `logger`, the object to use for logging requests; `emailTransporter`, the object representing the email service; and `mediaHandler`, the object representing the media upload service. The class contains several pipeline objects which are bound to endpoints as per the API specification.
+
+The class has a single method, `listen`, which takes a port number and callback function. It binds the app service to the given port, and then executes the callback.
 
 ## Pipelines (pipeline.js)
+Exports a collection of pipeline classes. Most pipelines inherit from `GenericPipe`, a child of `Pipeline` (see below), which takes in its constructor the following arguments:
+
+| argument | type | description |
+|----------|------|-------------|
+| operation | string | The operation type to perform, such as `"create"` or `"search"` |
+| defaultMethod | string | The location that the request parameters can be found by default. Either `"query"` or `"body"` |
+| entityType | string | The type of entity to perform the operation on, such as `"account"` or `"listing"`. Can also be a pseudo-entity, such as `"accountListing"` |
+| options | object | Options to apply to the pipeline, including `"notify"` (who to send push notifications to, either `false`, `"self"`, or `"affected"`) and `"method"` (to override the `defaultMethod` of the pipeline) |
+| ...args | objects | Objects to pass to the base `Pipeline` class' constructor |
+
+The method then fetches schemas for its components at the dictionary keys `` `${operation}-${entityType}` ``.
+
+The class has all of the class methods of `Pipeline`, plus an `Execute` method which takes Request and Response objects and performs the pipeline's operations on them.
+
+The `CreateEntityPipeline`, `ModifyEntityPipeline`, `CloseEntityPipeline`, `ViewEntityPipeline`, and `SearchEntityPipeline` classes extend this class, providing values for `operation` and `defaultMethod` so that only `entityType` and onwards need to be supplied to their constructors.
+
+`LoginPipeline` is also exported, but does not inherit from `GenericPipe`. It's constructor takes only the arguments needed for the `Pipeline` base constructor. It also includes an `Execute` method as described above.
+
+`NotImplementedPipeline` and `UnknownEndpointPipeline` also inherit directly from `Pipeline`. These discard the request and respond immediately with status codes 501 (Not Implemented) and 404 (Not Found), respectively.
 
 ## Pipeline Base (classes/pipeline.js)
 
