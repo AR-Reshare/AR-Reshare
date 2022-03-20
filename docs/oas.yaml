@@ -21,12 +21,7 @@ servers:
 
 security:
   - bearerAuth:
-    - \/account\/[\w\/]+
-    - \/conversation\/[\w\/]+
-    - \/conversations
-    - \/listing\/create
-    - \/listing\/modify
-    - \/listing\/close
+    - token
 
 
 paths:
@@ -35,6 +30,7 @@ paths:
       operationId: getHomePage
       summary: getHomePage
       description: Returns the API specification page
+      security: []
       responses:
         '200':
           description: The page is succesfully returned
@@ -59,6 +55,7 @@ paths:
       operationId: requestPasswordReset
       summary: requestPasswordReset
       description: Sends a password reset email to the corresponding email if it exists
+      security: []
       responses:
         '501':
           description: This action is not yet supported
@@ -92,6 +89,7 @@ paths:
       operationId: getCategoryDescriptors
       summary: getCategoryDescriptors
       description: Retrieves the currently available categories
+      security: []
       responses:
         '200':
           description: The categories list was successfully retrieved
@@ -104,6 +102,7 @@ paths:
       operationId: createAccount
       summary: createAccount
       description: Creates an account with request arguments
+      security: []
       responses:
         '201': # Succesfully created
           description: The account has been created successfully
@@ -151,6 +150,7 @@ paths:
       operationId: loginAccount
       summary: loginAccount
       description: Login in to the requested account using request arguments
+      security: []
       responses:
         '200': # Success
           description: Logs into the requested account
@@ -343,6 +343,7 @@ paths:
       operationId: getListingByID
       summary: getListingByID
       description: Returns the listing which matches the value of the parameter "listingId"
+      security: []
       responses:
         '200': # Success
           description: The listing exists and it is returned
@@ -362,6 +363,7 @@ paths:
       operationId: searchListings
       summary: searchListings
       description: Returns the listings that match the criteria provided by the requests parameter
+      security: [] # TODO make this authentication optional
       responses:
         '200': # Success
           description: Returns all available listings with the parameters required
