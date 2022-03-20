@@ -1,10 +1,6 @@
 const SQLTemplate = require('../classes/sqltemplate');
 
-/**
- * Some things to bear in mind when creating these:
- *  1. Create queries should always return in their final row the IDs of the accounts who are affected by this change
- *  2. Postgres automatically converts to lower case, if you want to preserve case use AS "caseSensitiveVersion"
- */
+/******************************************** START OF SCHEMAS ********************************************/
 
 const ListCategoryTemplate = new SQLTemplate({
     get_categories: {
@@ -429,6 +425,11 @@ const ViewConversationTemplate = new SQLTemplate({
     },
 }, ['get_conversation', 'get_messages'], {error_on_empty_response: true});
 
+/********************************************* END OF SCHEMAS *********************************************/
+
+/**
+ * Schema dictionary
+ */
 const sqlTemplatesDict = {
     'search-category': ListCategoryTemplate,
     'create-account': CreateAccountTemplate,
