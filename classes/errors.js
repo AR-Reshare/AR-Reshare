@@ -1,6 +1,14 @@
 /* This will define the custom error classes to use throughout the project
 */
 
+class EmailDeliveryError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'EmailDeliveryError';
+    }
+}
+
+
 class EmailConfigurationReadError extends Error {
     constructor(message) {
         super(message);
@@ -222,7 +230,22 @@ class ForeignKeyError extends QueryExecutionError {
     }
 }
 
+class UniqueConstraintError extends QueryExecutionError {
+    constructor(message) {
+        super(message);
+        this.name = 'UniqueConstraintError';
+    }
+}
+
+class FailedUploadError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'FailedUploadError';
+    }
+}
+
 module.exports = {
+    EmailDeliveryError,
     EmailConfigurationReadError,
     PipelineInitialisationError,
     MissingTemplateError,
@@ -253,5 +276,7 @@ module.exports = {
     BackreferenceError,
     QueryExecutionError,
     ForeignKeyError,
+    UniqueConstraintError,
+    FailedUploadError,
     // ...
 };

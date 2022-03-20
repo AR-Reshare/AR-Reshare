@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
+const path = require('path');
 const Database = require('../../classes/database');
 const Pipeline = require('../../classes/pipeline.js');
 const { AuthenticationHandler } = require('../../classes/securityvalidation.js');
 const { AbsentArgumentError, InvalidTokenError, ExpiredTokenError } = require('../../classes/errors.js');
 const { expect } = require('@jest/globals');
+const { readFileSync } = require('fs');
 
 // Based on unit14.pipeline.store.test.js
 const mockDBInner = jest.fn();
@@ -27,10 +29,12 @@ jest.mock('../../classes/database', () => {
 });
 
 let db, pipe, key, query;
+let jwtkeyPath = `secrets${path.sep}jwtsymmetric.key`;
+
 beforeAll(() => {
     db = new Database();
     pipe = new Pipeline(db);
-    key = 'testsecretkeybase';
+    key = readFileSync(jwtkeyPath);
     query = {};
 });
 

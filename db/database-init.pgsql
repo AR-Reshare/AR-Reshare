@@ -41,7 +41,7 @@ CREATE TABLE Address (
 CREATE TABLE Category (
     CategoryID serial4 PRIMARY KEY,
     CategoryName varchar NOT NULL,
-    Icon bytea,
+    Icon varchar, -- URL of icon image
     Colour char(8) NOT NULL, -- HEX code RGBA
     Prompt varchar,
     ParentCategory int4 REFERENCES Category ON DELETE SET NULL
@@ -72,7 +72,8 @@ CREATE TABLE Conversation (
     ReceiverID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ListingID int4 NOT NULL REFERENCES Listing ON DELETE CASCADE,
     CreationDate timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ClosedDate timestamp
+    ClosedDate timestamp,
+    UNIQUE (ReceiverID, ListingID)
 );
 
 CREATE TABLE Message (
@@ -80,7 +81,6 @@ CREATE TABLE Message (
     SenderID int4 NOT NULL REFERENCES Account ON DELETE CASCADE,
     ConversationID int4 NOT NULL REFERENCES Conversation ON DELETE CASCADE,
     SentTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ReadTime timestamp,
     ContentText varchar NOT NULL
 );
 
@@ -103,10 +103,10 @@ CREATE TABLE Media (
     MimeType mimetype NOT NULL,
     URL varchar NOT NULL,
     Index int2 NOT NULL DEFAULT 0,
-    UserID int4 REFERENCES Account ON DELETE CASCADE,
+    UserID int4 UNIQUE REFERENCES Account ON DELETE CASCADE,
     ListingID int4 REFERENCES Listing ON DELETE CASCADE,
-    MessageID int4 REFERENCES Message ON DELETE CASCADE,
-    UNIQUE (Index, UserID, ListingID, MessageID),
+    MessageID int4 UNIQUE REFERENCES Message ON DELETE CASCADE,
+    UNIQUE (Index, ListingID),
     CHECK ((UserID IS NOT NULL AND ListingID IS NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NOT NULL AND MessageID IS NULL) OR
            (UserID IS NULL AND ListingID IS NULL AND MessageID IS NOT NULL))

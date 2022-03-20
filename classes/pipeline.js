@@ -1,9 +1,10 @@
-const { QueryExecutionError, ForeignKeyError } = require("./errors");
+const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, FailedUploadError } = require('./errors');
 
 class Pipeline {
-    constructor(db, logger=console, emailTransporter=null) {
+    constructor(db, logger=console, emailTransporter=null, mediaHandler=null) {
         this.db = db; // expected to implement simpleQuery and complexQuery
         this.emailTransporter = emailTransporter;
+        this.mediaHandler = mediaHandler;
         this.logger = logger; // expected to implement .log, .error, and .warn
 
         this.SecurityValidate = this.SecurityValidate.bind(this);
@@ -11,6 +12,7 @@ class Pipeline {
         this.Store = this.Store.bind(this);
         this.APIRespond = this.APIRespond.bind(this);
         this.PushRespond = this.PushRespond.bind(this);
+        this.MediaHandle = this.MediaHandle.bind(this);
     }
 
     /**
@@ -88,6 +90,8 @@ class Pipeline {
                 } else {
                     if (err.code === '23503' || err.message.includes('owner_agrees')) {
                         reject(new ForeignKeyError(err.message));
+                    } else if (err.code === '23505') {
+                        reject(new UniqueConstraintError(err.message));
                     } else {
                         reject(err);
                     }
@@ -166,6 +170,35 @@ class Pipeline {
         return new Promise((resolve, reject) => {
             // a notification should be sent to each of the target accounts and
             resolve();
+        });
+    }
+
+    MediaHandle(mediaObjects) {
+        return new Promise((resolve, reject) => {
+            if (mediaObjects.length === 0) resolve([]);
+            const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
+            let out = Array.apply(null, Array(mediaObjects.length));
+            let err = null;
+            mediaObjects.forEach((item, index) => {
+                if (err) throw err; // if one upload broke, stop trying to upload more
+
+                let matches = Array.from(item.matchAll(mimetypepattern))[0];
+                // matches = [entire string, mime supertype, mime subtype]
+                let resourceType = matches[1];
+
+                this.mediaHandler.upload(item, {resource_type: resourceType}, (error, result) => {
+                    if (error) {
+                        err = new FailedUploadError('Unable to upload media');
+                        reject(err);
+                    }
+                    out[index] = {
+                        url: result.secure_url,
+                        mimetype: `${matches[1]}/${matches[2]}`,
+                        index: index,
+                    };
+                    if (out.every(item => item !== undefined)) resolve(out);
+                });
+            });
         });
     }
 }

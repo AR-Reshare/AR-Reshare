@@ -7,10 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "postinstall": "node scripts/db-interactive-setup.js",
+    "postinstall": "node scripts/db-interactive-setup.js && node scripts/gen-private.js",
     "setup": "node scripts/db-setup.js",
     "teardown": "node scripts/db-teardown.js",
-    "pretest": "node scripts/db-test-setup.js",
+    "pretest": "node scripts/db-test-setup.js && node scripts/gen-private.js",
     "test": "echo \"\nRunning Unit Tests\n\" && jest unit && echo \"\nRunning Integration Tests\n\" && jest int && echo \"\nRunning System Tests\n\" && jest sys",
     "posttest": "node scripts/db-test-teardown.js",
     "start": "node index.js"
@@ -33,6 +33,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
+    "cloudinary": "^1.28.1",
     "express": "^4.17.2",
     "express-validator": "^6.14.0",
     "is-callable": "^1.2.4",

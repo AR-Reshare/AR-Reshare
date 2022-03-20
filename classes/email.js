@@ -1,4 +1,4 @@
-const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailConfigurationReadError} = require('./errors.js');
+const {TemplateError, InvalidArgumentError, AbsentArgumentError, EmailConfigurationReadError, EmailDeliveryError} = require('./errors.js');
 const fs = require('fs/promises');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -17,7 +17,9 @@ const nodemailer = require('nodemailer');
 // 2. Pass the emailTemplate with the input object to the function EmailRespond
 // 3. This function EmailRespond will 
 
+// TODO: Add email validation
 
+// TODO: Move this to the schemas folder
 // TODO: We need to provide a template -- (This should be handled by the Bristol Team, but we should create a placeholder for now)
 class EmailTemplateDefinitions {
     static htmltemplates = {
@@ -40,7 +42,9 @@ class EmailTemplateDefinitions {
 }
 
 class EmailTransporter {
-    static emailConfigLocation = `classes${path.sep}emailConfig.conf`;
+    static emailConfigLocation = `secrets${path.sep}emailconnection.conf`;
+    static sourceEmailAddress = 'donotreply@arreshare.com';
+    static sourceName = 'AR-Reshare';
 
     static async getConfig(){
         let out, config;
@@ -65,7 +69,7 @@ class EmailTransporter {
                 secure: false, // true for 465, false for other ports
                 auth: {
                     user: testAccount.user, // generated ethereal user
-                    pass: testAccount.password, // generated ethereal password
+                    pass: testAccount.pass, // generated ethereal password
                 },
             };
         } else {
@@ -106,34 +110,60 @@ class EmailRespond {
     async replacementObjectValidate(replacementObject){
         // existance check and type check
         if (!replacementObject){
-            throw new AbsentArgumentError();
-        } else if (replacementObject.length != this.templateArguments.length){
-            throw new InvalidArgumentError();
+            throw new AbsentArgumentError('The replacement object cannot be null');
+        } else if (Object.keys(replacementObject).length != this.templateArguments.length){
+            throw new InvalidArgumentError('The replacement object has an incorrect number of keys');
         }
 
-        for (arg in replacementObject){
+        for (let arg in replacementObject){
             if (!this.templateArguments.includes(arg)) {
-                throw new InvalidArgumentError();
+                throw new InvalidArgumentError(`The replacement object should not have the following: ${arg}`);
             } else if(replacementObject[arg] === undefined){
-                throw new AbsentArgumentError();
-            } else if (!replacementObject[arg] instanceof String){
-                throw new InvalidArgumentError();
+                throw new AbsentArgumentError(`The replacement object's attribute ${arg} should not be null`);
+            } else if (!(typeof replacementObject[arg] === 'string')){
+                throw new InvalidArgumentError(`The replacement object's attribute ${arg} should be of type 'string'`);
             }
         }
-
-
         return true;
     }
 
     // TODO: We may need to add more arguments if required by the username
-    async sendEmail(emailTransporter, userEmail, textcontent, htmlcontent){
-        emailTransporter.sendMail({
-            from: '"AR-Reshare" <donotreply@example.com>', // sender address
+    // TODO: Add a callback function here to handle exceptions
+    async sendEmail(transport, userEmail, textcontent, htmlcontent){
+        if (!textcontent){
+            throw new AbsentArgumentError('There is no \'textcontent\' provided');
+        } else if (!htmlcontent){
+            throw new AbsentArgumentError('There is no \'htmlcontent\' provided');
+        } else if (!userEmail){
+            throw new AbsentArgumentError('There is no \'userEmail\' provided');
+        } else if (!transport){
+            throw new AbsentArgumentError('There is no \'transport\' provided');
+        }
+
+        if (!((textcontent && (typeof textcontent === 'string')) && (htmlcontent && (typeof htmlcontent === 'string')))){
+            throw new InvalidArgumentError('One of the content attributes is not of type \'string\'');
+        } else if (!typeof userEmail === 'string'){
+            // TODO: Add email validation here
+            throw new InvalidArgumentError('The email address is not valid');
+        } else if (!(typeof transport.sendMail === 'function')){
+            throw new InvalidArgumentError('The transport object has no method \'sendMail\'');
+        }
+
+        return transport.sendMail({
+            from: `"${EmailTransporter.sourceName}" <${EmailTransporter.sourceEmailAddress}>`, // sender address
             to: userEmail, // list of receivers
             subject: this.templateType, // Subject line
             text: textcontent,
             html: htmlcontent, // html body
-          });
+        }).then(res => {
+            // NOTE: res should be an object containing feedback about the "email message request"
+            return res;
+        }).catch(err => {
+            // NOTE: For some reason I cannot find good definitions of errors
+            // According to github issues, nodemailer doesn't have this because the error definitions keep on changing
+            // Therefore we are going to throw a generic error
+            throw new EmailDeliveryError();
+        });
     }
 
 
@@ -144,12 +174,12 @@ class EmailRespond {
 
         // We then get the emailTemplate string and replace certain strings using the valid inputObject
         let [textcontent, htmlcontent] = await this.templateReplace(inputObject);
-        
         // Finally, we use the emailTransport to execute the request
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
         this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
     }
 }
+
 
 module.exports = {
     EmailRespond,

@@ -1,6 +1,6 @@
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 
 const request = require('supertest');
 
@@ -17,8 +17,16 @@ describe('System Test 5a - /categories/list', () => {
         return request(app.app)
             .get('/categories/list')
             .expect(200)
-            .expect(/categories/)
-            .expect(/"Misc"/)
-            .expect(/prompt/);
+            .expect(res => {
+                expect(res.body).toHaveProperty('categories');
+                expect(res.body['categories'][0]).toMatchObject({
+                    categoryID: 1,
+                    categoryName: 'Misc',
+                    icon: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/samples/cloudinary-icon.png',
+                    colour: 'FFFFFFFF',
+                    prompt: 'Remember to do the things',
+                    parentCategoryID: null,
+                });
+            });
     });
 });

@@ -2,7 +2,7 @@ const {spawn} = require('child_process'); // execute command
 const {type} = require('os'); // check OS type
 const {randomString} = require('secure-random-password');
 const {writeFileSync, readFileSync} = require('fs');
-
+const path = require('path');
 // Detect OS
 function getOS() {
     const os_dict = {
@@ -61,7 +61,7 @@ function createDB(os, password) {
         }
     });
 
-    psqlInit.on('error', (err) => {
+    psqlInit.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });
@@ -86,7 +86,7 @@ function populateDB(os, password) {
         }
     });
 
-    psqlPopulate.on('error', (err) => {
+    psqlPopulate.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });
@@ -95,9 +95,10 @@ function populateDB(os, password) {
 // Update credentials
 function saveCreds(os, password) {
     let conn_data;
+    let dbConnectionPath = `secrets${path.sep}dbconnection.json`;
 
     try {
-        conn_data = JSON.parse(readFileSync('connection.json'));
+        conn_data = JSON.parse(readFileSync(dbConnectionPath));
     } catch (err) {
         conn_data = {};
     }
@@ -114,9 +115,9 @@ function saveCreds(os, password) {
     };
 
     try {
-        writeFileSync('connection.json', JSON.stringify(conn_data));
+        writeFileSync(dbConnectionPath, JSON.stringify(conn_data));
     } catch (err) {
-        console.error('Unable to write to credentials file.')
+        console.error('Unable to write to credentials file.');
         process.exit(1);
     }
 

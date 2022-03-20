@@ -3,6 +3,7 @@ const {type} = require('os'); // check OS type
 const rl = require('readline-sync'); // https://www.npmjs.com/package/readline-sync for user input
 const {randomString} = require('secure-random-password');
 const {writeFileSync, readFileSync} = require('fs');
+const path = require('path');
 
 /**
  * This script will create the database, plus a password for it, and optionally populate it with sample data
@@ -84,7 +85,7 @@ function checkPostgres(os) {
         }
     });
 
-    psqlCheck.on('error', (err) => {
+    psqlCheck.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });
@@ -105,10 +106,10 @@ function activatePostgres(os, cb) {
         }
     });
 
-    psqlActivate.on('error', (err) => {
+    psqlActivate.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
-    })
+    });
 }
 
 // Prompt for password (or auto-generate)
@@ -135,7 +136,7 @@ function createDB(os, password) {
     console.log('Creating database...');
 
     let psqlInit = spawn('sudo',
-        ['-u', 'postgres', 'psql', '-f', 'db/database-init.pgsql', '-v', `account=arresharedb`, '-v', `password='${password}'`],
+        ['-u', 'postgres', 'psql', '-f', 'db/database-init.pgsql', '-v', 'account=arresharedb', '-v', `password='${password}'`],
         {stdio: [process.stdin, process.stdout, process.stderr]}
     );
 
@@ -149,7 +150,7 @@ function createDB(os, password) {
         }
     });
 
-    psqlInit.on('error', (err) => {
+    psqlInit.on('error', () => {
         console.error('Failed to start subprocess');
         process.exit(1);
     });
@@ -158,30 +159,31 @@ function createDB(os, password) {
 // Store connection data in connection.json
 function storeConn(os, password) {
     console.log('Storing connection credentials...');
+    let dbConnectionPath = `secrets${path.sep}dbconnection.json`;
 
     let conn_data;
 
     try {
-        conn_data = JSON.parse(readFileSync('connection.json'));
+        conn_data = JSON.parse(readFileSync(dbConnectionPath));
     } catch (err) {
         conn_data = {};
     }
 
     if ('db' in conn_data) {
-        console.log(`Database already detected in credentials file. Overwriting...`);
+        console.log('Database already detected in credentials file. Overwriting...');
     }
 
     conn_data['db'] = {
-        user: `arresharedb`,
+        user: 'arresharedb',
         host: 'localhost',
-        database: `arresharedb`,
+        database: 'arresharedb',
         password: password,
     };
 
     try {
-        writeFileSync('connection.json', JSON.stringify(conn_data));
+        writeFileSync(dbConnectionPath, JSON.stringify(conn_data));
     } catch (err) {
-        console.error('Unable to write to credentials file.')
+        console.error('Unable to write to credentials file.');
         process.exit(1);
     }
 
@@ -194,7 +196,7 @@ function createSample(os, password) {
         console.log('Creating sample data...');
 
         let psqlSample = spawn('sudo',
-            ['-u', 'postgres', 'psql', '-f', 'db/database-sample.pgsql', '-v', `account=arresharedb`],
+            ['-u', 'postgres', 'psql', '-f', 'db/database-sample.pgsql', '-v', 'account=arresharedb'],
             {stdio: [process.stdin, process.stdout, process.stderr]}
         );
 
@@ -208,10 +210,10 @@ function createSample(os, password) {
             }
         });
 
-        psqlSample.on('error', (err) => {
+        psqlSample.on('error', () => {
             console.error('Failed to start subprocess');
             process.exit(1);
-        })
+        });
     } else {
         confirmComplete();
     }

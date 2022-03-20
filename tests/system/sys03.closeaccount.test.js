@@ -1,6 +1,6 @@
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
 
 const request = require('supertest');
@@ -21,7 +21,7 @@ describe('System Test 3 - /account/close', () => {
         };
 
         return request(app.app)
-            .post('/account/close')
+            .patch('/account/close')
             .send(data)
             .expect(401);
     });
@@ -34,7 +34,7 @@ describe('System Test 3 - /account/close', () => {
         };
 
         return request(app.app)
-            .post('/account/close')
+            .patch('/account/close')
             .set('Authorization', token)
             .send(data)
             .expect(401);
@@ -46,7 +46,7 @@ describe('System Test 3 - /account/close', () => {
 
         return AuthenticationHandler.createNewToken(db, 'killme3@gmail.com', 'Password123').then(token => {
             return request(app.app)
-                .post('/account/close')
+                .patch('/account/close')
                 .set('Authorization', token)
                 .send(data)
                 .expect(401);
@@ -60,7 +60,7 @@ describe('System Test 3 - /account/close', () => {
                 password: 'wrong',
             };
             return request(app.app)
-                .post('/account/close')
+                .patch('/account/close')
                 .set('Authorization', token)
                 .send(data)
                 .expect(401);
@@ -74,7 +74,7 @@ describe('System Test 3 - /account/close', () => {
                 password: 'Password123',
             };
             return request(app.app)
-                .post('/account/close')
+                .patch('/account/close')
                 .set('Authorization', token)
                 .send(data)
                 .expect(200);

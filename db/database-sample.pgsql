@@ -12,13 +12,30 @@ INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Delete Me', 'killm
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Delete Me', 'killme3@gmail.com', '$2a$12$5avLoaWvXbRk5k1/yK8kheCMEj9XAwGaiTZAR5r0/gDwd5FnWCVFa', '1990-03-03');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Delete Me', 'killme4@gmail.com', '$2a$12$5avLoaWvXbRk5k1/yK8kheCMEj9XAwGaiTZAR5r0/gDwd5FnWCVFa', '1990-03-03');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Delete Me', 'killme5@gmail.com', '$2a$12$5avLoaWvXbRk5k1/yK8kheCMEj9XAwGaiTZAR5r0/gDwd5FnWCVFa', '1990-03-03');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme1@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme2@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme3@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme4@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme5@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme6@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme7@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme8@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme9@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme10@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme11@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme12@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme13@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme14@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme15@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 
 INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ('UK', 'Durham', 'AB1 2CD', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, GH', 'asdfgh', 2);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Bristol', 'BR15 7OL', 1);
+INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Location', 'PL ACE', 1);
 
-INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Misc', 'FFFFFFFF', 'Remember to do the things');
-INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Searchtest', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
+INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Misc', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/samples/cloudinary-icon.png', 'FFFFFFFF', 'Remember to do the things');
+INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Searchtest', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387117/samples/sheep.jpg', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
+INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('New Category', 'BBBBBBBB', 'This category is for testing changing of categories');
 
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (1, 'Things', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP, 3);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'Some things', 'poor', 2, 1);
@@ -37,3 +54,54 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '20-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '60-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, '100-sided die', 'Black and red swirly pattern', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 2', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Thing 1', 'From cat in the hat', 'like new', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Thing 1', 'From cat in the hat', 'like new', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'For testing the conversations', 'good', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Widgets', 'For testing the conversations', 'good', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'Things', 'For testing the conversations', 'good', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'A thing', 'Some stuff', 'good', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
+
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
+INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 24, CURRENT_TIMESTAMP);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (3, 2);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 5);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 18);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 19);
+INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 20, CURRENT_TIMESTAMP);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (3, 21);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 22);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 23);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 25);
+INSERT INTO Conversation (ReceiverID, ListingID) VALUES (2, 26);
+
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 2, 'Hello');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (2, 2, 'Hi');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 2, 'How are you doing');
+
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 11, 'Give me your stuff');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (2, 11, 'Get out of my house');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 11, 'No');
+
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 12, 'Greetings earthling');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (2, 12, 'No thank you');
+INSERT INTO Message (SenderID, ConversationID, ContentText) VALUES (1, 12, 'Understandable, have a nice day');
+
+INSERT INTO Media (MimeType, URL, UserID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 24);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 1, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 2, 27);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 1);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 1);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 0, 6);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 1, 6);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 0, 12);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 12);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 25);
+INSERT INTO Media (MimeType, URL, MessageID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 4);

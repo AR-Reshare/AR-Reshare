@@ -20,134 +20,119 @@ afterAll(() => {
     db.end();
 });
 
-describe('System Test 7 - /listing/close', () => {
+describe('System Test 10 - /conversation/create', () => {
     test('Class 1: No token', () => {
         let data = {
-            listingID: 10,
+            listingID: 2,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
             .send(data)
             .expect(401);
     });
 
-    test('Class 2: An invalid token', () => {
-        let token = 'ABCDE';
+    test('Class 2: No valid token', () => {
+        let token = 'AAAAAA';
         let data = {
-            listingID: 11,
+            listingID: 2,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
             .expect(401);
     });
-    
+
     test('Class 3: No listingID', () => {
         let token = validToken;
         let data = {
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(400);
+    });
+
+    test('Class 4: Invalid listingID', () => {
+        let token = validToken;
+        let data = {
+            listingID: -1,
+        };
+
+        return request(app.app)
+            .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
             .expect(400);
     });
     
-    test('Class 4: Listing does not exist', () => {
+    test('Class 5: ID does not match a listing', () => {
         let token = validToken;
         let data = {
             listingID: 5000,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
             .expect(404);
     });
     
-    test('Class 5: Listing belongs to a different account', () => {
+    test('Class 6: ID matches a closed listing', () => {
+        let token = validToken;
+        let data = {
+            listingID: 3,
+        };
+
+        return request(app.app)
+            .put('/conversation/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(404);
+    });
+    
+    test('Class 7: ID matches a listing this user already has a conversation about', () => {
         let token = validToken;
         let data = {
             listingID: 12,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(409);
+    });
+    
+    test('Class 8: ID matches a listing this user created', () => {
+        let token = validToken;
+        let data = {
+            listingID: 1,
+        };
+
+        return request(app.app)
+            .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
             .expect(404);
     });
     
-    test('Class 6: Listing is already closed', () => {
+    test('Class 9: ID matches a valid listing', () => {
         let token = validToken;
         let data = {
-            listingID: 13,
+            listingID: 2,
         };
 
         return request(app.app)
-            .patch('/listing/close')
+            .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
-            .expect(404);
-    });
-    
-    test('Class 7: Valid close request', () => {
-        let token = validToken;
-        let data = {
-            listingID: 14,
-        };
-
-        return request(app.app)
-            .patch('/listing/close')
-            .set('Authorization', token)
-            .send(data)
-            .expect(200);
-    });
-    
-    test('Class 8: Receiver is self', () => {
-        let token = validToken;
-        let data = {
-            listingID: 15,
-            receiverID: 1,
-        };
-
-        return request(app.app)
-            .patch('/listing/close')
-            .set('Authorization', token)
-            .send(data)
-            .expect(400);
-    });
-    
-    test('Class 9: Receiver does not exist', () => {
-        let token = validToken;
-        let data = {
-            listingID: 16,
-            receiverID: 1000,
-        };
-
-        return request(app.app)
-            .patch('/listing/close')
-            .set('Authorization', token)
-            .send(data)
-            .expect(404);
-    });
-    
-    test('Class 10: Receiver is valid', () => {
-        let token = validToken;
-        let data = {
-            listingID: 17,
-            receiverID: 2,
-        };
-
-        return request(app.app)
-            .patch('/listing/close')
-            .set('Authorization', token)
-            .send(data)
-            .expect(200);
+            .expect(201)
+            .expect(/success/);
     });
 });

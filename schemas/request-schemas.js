@@ -1,5 +1,6 @@
-const RequestTemplate = require("../classes/requesttemplate");
+const RequestTemplate = require('../classes/requesttemplate');
 const bcrypt = require('bcrypt');
+const { UnprocessableArgumentError } = require('../classes/errors');
 
 // combination of lowercase, uppercase, numbers, and special characters
 // change the numbers to require more of each
@@ -7,14 +8,23 @@ const PassPattern = /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[
 
 const IsNonEmptyString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String) && aString.length > 0;
-}
+};
 
-const getAge = (dob) => Math.floor((new Date() - dob.getTime()) / 3.15576e+10)
+const getAge = (dob) => Math.floor((new Date() - dob.getTime()) / 3.15576e+10);
 
 const IsPosInt = (anInt) => {
     let num = Number.parseFloat(anInt);
     return Number.isInteger(num) && num >= 0;
-}
+};
+
+const IsDate = (aString) => {
+    if (!IsNonEmptyString(aString)) return false;
+    let split = aString.split('-');
+    if (!split.length === 3) return false;
+    let date = new Date(`${split[0]}-${split[1]}-${split[2]}Z`);
+    if (isNaN(date)) return false;
+    return true;
+};
 
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
@@ -24,10 +34,26 @@ const IsLocation = (anObject) => {
             && IsNonEmptyString(anObject['region'])
             && 'postcode' in anObject
             && IsNonEmptyString(anObject['postcode'])
-            );
-}
+    );
+};
 
 const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
+
+const IsImage = (aString) => {
+    const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
+    let matches = Array.from(aString.matchAll(mimetypepattern));
+    if (matches.length !== 1 || matches[0].length !== 3) return false;
+    if (matches[0][1] === 'image') return true;
+    else throw new UnprocessableArgumentError('Media must be an image');
+};
+
+const IsImageOrVideo = (aString) => {
+    const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
+    let matches = Array.from(aString.matchAll(mimetypepattern));
+    if (matches.length !== 1 || matches[0].length !== 3) return false;
+    if (matches[0][1] === 'image' || matches[0][1] === 'video') return true;
+    throw new UnprocessableArgumentError('Media must be an image or video');
+};
 
 const emptyReq = new RequestTemplate([]);
 
@@ -64,10 +90,10 @@ const createAccountTemplate = new RequestTemplate([{
     in_name: 'dob',
     required: true,
     conditions: [
+        IsDate,
         (dob) => {
             let date = new Date(`${dob}Z`);
-            if (isNaN(date)) return false;
-            else if (getAge(date) < 13) throw new Error('Not old enough');
+            if (getAge(date) < 13) throw new Error('Not old enough');
             else return true;
         }
     ],
@@ -76,6 +102,12 @@ const createAccountTemplate = new RequestTemplate([{
     in_name: 'address',
     required: false,
     conditions: [IsLocation],
+}, {
+    in_name: 'picture',
+    out_name: 'media',
+    required: false,
+    conditions: [IsImage],
+    sanitise: (media) => [media],
 }]);
 
 const loginTemplate = new RequestTemplate([{
@@ -94,6 +126,53 @@ const loginTemplate = new RequestTemplate([{
     required: false,
 }]);
 
+const modifyAccountTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'name',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'email',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (email) => (email.length >= 3 && email.includes('@')),
+    ],
+}, {
+    in_name: 'newPassword',
+    out_name: 'passhash',
+    required: false,
+    conditions: [
+        IsNonEmptyString,
+        (password) => {
+            if (PassPattern.test(password)) return true;
+            else throw new Error('Password not strong enough'); // trigger 422
+        },
+    ],
+    sanitise: (password) => bcrypt.hashSync(password, 12),
+}, {
+    in_name: 'dob',
+    required: false,
+    conditions: [
+        IsDate,
+        (dob) => {
+            let date = new Date(`${dob}Z`);
+            if (getAge(date) < 13) throw new Error('Not old enough');
+            else return true;
+        }
+    ],
+    sanitise: (dob) => new Date(`${dob}Z`),
+}, {
+    in_name: 'picture',
+    out_name: 'media',
+    required: false,
+    conditions: [IsImage],
+    sanitise: (media) => [media],
+}]);
+
 const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -102,7 +181,25 @@ const viewAccountListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
     required: true,
     conditions: [IsPosInt],
-}])
+}]);
+
+const searchAccountListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}]);
 
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
@@ -161,7 +258,49 @@ const createListingTemplate = new RequestTemplate([{
 }, {
     in_name: 'media',
     required: false,
-    // TODO: add support for media. Issue #32
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
+}]);
+
+const modifyListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'title',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'description',
+    required: false,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'location',
+    required: false,
+    conditions: [
+        (loc) => { return IsPosInt(loc) || IsLocation(loc); },
+    ],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'condition',
+    required: false,
+    conditions: [IsCondition],
+}, {
+    in_name: 'media',
+    required: false,
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
 }]);
 
 const closeListingTemplate = new RequestTemplate([{
@@ -181,6 +320,79 @@ const closeListingTemplate = new RequestTemplate([{
     ],
 }]);
 
+const createConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'listingID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const closeConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const createMessageTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'textContent',
+    required: true,
+    conditions: [IsNonEmptyString],
+}, {
+    in_name: 'media',
+    required: false,
+    conditions: [
+        Array.isArray,
+        (media) => (media.every(IsImageOrVideo)),
+    ]
+}]);
+
+const listConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
+const viewConversationTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'conversationID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
@@ -194,23 +406,23 @@ const RequestTemplateDefinitions = {
 
     'close-account': accountIDOnly,
     'login': loginTemplate,
-    'modify-account': null,
+    'modify-account': modifyAccountTemplate,
     'view-accountListing': viewAccountListingTemplate,
-    'search-accountListing': null,
+    'search-accountListing': searchAccountListingTemplate,
     'search-savedListing': null,
     'search-address': accountIDOnly,
 
     'view-listing': viewListingTemplate,
     'search-listing': searchListingTemplate,
     'create-listing': createListingTemplate,
-    'modify-listing': null,
+    'modify-listing': modifyListingTemplate,
     'close-listing': closeListingTemplate,
 
-    'create-conversation': null,
-    'close-conversation': null,
-    'create-message': null,
-    'search-conversation': null,
-    'view-conversation': null,
+    'create-conversation': createConversationTemplate,
+    'close-conversation': closeConversationTemplate,
+    'create-message': createMessageTemplate,
+    'search-conversation': listConversationTemplate,
+    'view-conversation': viewConversationTemplate,
 };
 
 module.exports = RequestTemplateDefinitions;

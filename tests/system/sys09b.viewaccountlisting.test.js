@@ -1,6 +1,6 @@
 const App = require('../../app');
 const Database = require('../../classes/database');
-const credentials = require('../../connection.json');
+const credentials = require('../../secrets/dbconnection.json');
 const { AuthenticationHandler } = require('../../classes/securityvalidation');
 
 const request = require('supertest');
@@ -85,7 +85,13 @@ describe('System Test 9 - /listing/view', () => {
                         postcode: 'AB1 2CD',
                     },
                     categoryID: 1,
-                    media: [], // TODO media test
+                    media: [{
+                        mimetype: 'image/png',
+                        url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png'
+                    }, {
+                        mimetype: 'image/jpeg',
+                        url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg',
+                    }],
                 });
                 expect(res.body).toHaveProperty('creationDate');
                 expect(res.body).toHaveProperty('modificationDate');
@@ -114,7 +120,7 @@ describe('System Test 9 - /listing/view', () => {
                         postcode: 'asdfgh',
                     },
                     categoryID: 1,
-                    media: [], // TODO media test
+                    media: [],
                 });
                 expect(res.body).toHaveProperty('creationDate');
                 expect(res.body).toHaveProperty('modificationDate');

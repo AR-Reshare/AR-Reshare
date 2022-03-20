@@ -31,11 +31,12 @@ const DefaultErrorMap = {
     'BackreferenceError': 500,
     'QueryExecutionError': 500,
     'ForeignKeyError': 404,
+    'UniqueConstraintError': 409,
 };
 
 const isString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String);
-}
+};
 
 class ResponseTemplate {
 

@@ -3,7 +3,7 @@
  * Pipeline.Store, and whatever other functions end up accessing the database, should do so by calling something in this file.
  */
 
-const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError, BackreferenceError, ForeignKeyError} = require('./errors');
+const {QueryError, DatabaseConnectionError, DBClientNotAvailableError, QueryConstructionError, QueryExecutionError, BackreferenceError} = require('./errors');
 const {Pool} = require('pg');
 const isCallable = require('is-callable');
 
@@ -71,7 +71,7 @@ class Database {
     testConnection () {
         return new Promise((resolve, reject) => {
             this.pool.query('SELECT NOW() AS now').then(() => {
-                resolve()
+                resolve();
             }).catch(() => {
                 reject(new DatabaseConnectionError('Unable to connect to Postgres instance'));
             });
