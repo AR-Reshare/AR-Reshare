@@ -17,7 +17,7 @@ sudo service postgresql start
 npm install
 ```
 
-3. Go to the [`configs/README.md`](configs/README.md) file and follow the instructions there to acquire credentials for backend services. All of these services are currently free to use.
+3. Go to the [`secrets/README.md`](secrets/README.md) file and follow the instructions there to acquire credentials for backend services. All of these services are currently free to use.
 
 4. To test the server code. This may also prompt for root password to set up the test database. Check the `scripts` directory to see exactly what this command will do:
 ```
