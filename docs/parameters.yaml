@@ -46,8 +46,7 @@ components:
       description: The id used to identify any listing
       required: true
       schema:
-        type: string
-        format: string
+        $ref: 'schemas.yaml#/components/schemas/id'
 
 
     ## To get available category descriptors use the category-descriptor-list endpoint
@@ -57,8 +56,7 @@ components:
       description: Describes the categoryId when selecting results,
       required: false
       schema:
-        type: string
-        format: string
+        $ref: 'schemas.yaml#/components/schemas/id'
 
 
     resetToken:
