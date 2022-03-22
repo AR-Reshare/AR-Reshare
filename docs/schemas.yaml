@@ -64,17 +64,6 @@ components:
     ############### LISTING SCHEMAS #########################
     listing-own:
       type: object
-      required: 
-      - listingID # the id of the listing
-      - contributorID # the id of the contributor
-      - title
-      - description
-      - location
-      - categoryID
-      - condition
-      - media ## this will encompass videos, photos and what other
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -84,8 +73,12 @@ components:
           $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
         categoryID:
           $ref: '#/components/schemas/id'
         condition:
@@ -94,7 +87,7 @@ components:
           $ref: '#/components/schemas/media-url-list'
         creationDate:
           $ref: '#/components/schemas/date'
-        modificationDate:
+        modificationDate: # Ignoring archived date, and last modified
           $ref: '#/components/schemas/date'
         closedDate:
           $ref: '#/components/schemas/date'
@@ -494,8 +487,19 @@ components:
     media-url-list:
       type: array
       items:
-      - $ref: '#/components/schemas/media-url'
+      - $ref: '#/components/schemas/media-out'
 
+    media-out:
+      type: object
+      properties:
+        url:
+          $ref: '#/components/schemas/media-url'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+
+    media-mimetype:
+      type: string
+      format: mimetype
 
     media-url:
       type: string
