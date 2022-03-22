@@ -20,7 +20,7 @@ servers:
 
 
 security:
-  - bearerAuth:
+  bearerAuth:
     - token
 
 
@@ -499,7 +499,9 @@ paths:
 components:
   securitySchemes:
     bearerAuth:
+      in: header
       type: http
+      description: We are using JWT tokens that are stored in "Authorization" headers in http requests
       scheme: bearer
       bearerFormat: JWT
 
