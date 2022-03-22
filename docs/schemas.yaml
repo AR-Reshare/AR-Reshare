@@ -482,16 +482,14 @@ components:
       type: object
       required:
       # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
-      - receiverID
       - conversationID
-      anyOf:
-      - $ref: '#/components/schemas/media-content' ## attribute ("media") -- (single media uploads only)
-      - $ref: '#/components/schemas/text-content' ## attribute ("textContent")
       properties:
-        receiverID:
-          $ref: '#/components/schemas/id'
         conversationID:
           $ref: '#/components/schemas/id'
+        textContent:
+          $ref: '#/components/schemas/text-content'
+        mediaContent:
+          $ref: '#/components/schemas/media-content'
 
 
     conversation-create:
