@@ -161,8 +161,6 @@ components:
         'application/json':
           schema:
             type: object
-            required:
-            - conversations
             properties:
               conversations:
                 type: array

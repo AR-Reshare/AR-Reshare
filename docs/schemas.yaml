@@ -448,17 +448,25 @@ components:
     # TODO: There may be media links such as user profile picture to be included here
     conversation-descriptor:
       type: object
-      required:
-      - conversationID
-      - receiver
-      - listing
       properties:
         conversationID:
           $ref: '#/components/schemas/id'
-        listing:
-          $ref: '#/components/schemas/listing-descriptor'
-        receiver:
-          $ref: '#/components/schemas/user'
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        receiverID:
+          $ref: '#/components/schemas/id'
+        receiverName:
+          $ref: '#/components/schemas/name'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        contributorName:
+          $ref: '#/components/schemas/name'
 
 
     conversation:
