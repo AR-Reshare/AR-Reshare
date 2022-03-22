@@ -270,7 +270,7 @@ components:
       - name
       - email
       - password
-      - dob # DoB (keeping lowecase for consistency on naming)
+      - dob 
       properties:
         name:
           $ref: '#/components/schemas/name'
@@ -278,13 +278,16 @@ components:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-        dob:
+        dob: # DoB (keeping lowecase for consistency on naming)
           $ref: '#/components/schemas/date'
         address:
           $ref: '#/components/schemas/address'
+        picture:
+          $ref: '#/components/schemas/media-content'
       example:
         name: Sam Sepiol
         email: sspeiol@protonmail.org
+        password: 'Pa$$w0rd'
         dob: '1986-09-17'
 
 
