@@ -43,7 +43,9 @@ const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, Unauthentic
 
 
 // TODO: Hand over definitions to the pipeline
-// TODO: Split up the account creation seperately
+
+// TODO: We have since provided authorization tasks to the `Store` component. Therefore, AA_TAP and AA_TO would be more aptly described as A_TAP and A_TO (just Authenticate instead of Authenticate and Authorise)
+// These could be considered the same within this component
 
 // Split up into (Token Creation and Token Generation) && (evnerything else)
 
@@ -93,6 +95,16 @@ class AuthenticationHandler extends SecurityValMethods{
     static async emailValidation(email){}
     static async passwordValidation(password){}
 
+    /**
+     * Performs the account login for the corresponding endpoint, and returns a newly created JWT token if successful. 
+     *
+     * NOTE: This handles requests that are of the type: `TC` (Token Creation)
+     * @async @static
+     * @param {object} db - An object that implements the `simpleQuery` and `complexQuery` methods
+     * @param {object} query - An object containing all the path and body parameters of the http request that is being serviced
+     * @param {object} inputToken - The value of the "Authorization Header" of the http request that is being serviced
+     * @returns {promise<string>} A promise that if resolved should return a JWsT string
+    **/
     static async accountLogin(db, query, inputToken=null){
         if (inputToken){
             throw new InvalidTokenError();
@@ -118,6 +130,15 @@ class AuthenticationHandler extends SecurityValMethods{
     }
 
     // Authentication Type: TokenRegeneration (TR)
+    /**
+     * Using a unexpired JWT token (that most likely is about to expire), the function creates a new token based of
+     * the jwt token that was provided
+     * 
+     * NOTE: This handles requests that are of the type: `TR` (Token Regeneration)
+     * @async @static
+     * @param {string} token - An encoded JWT token string
+     * @returns {promise<string>} A promise that when resolves returns the new JWT token string
+     */
     static async regenerateToken(token){
         // TODO: Provide checking that the decodedToken is valid
         const decodedToken = await SecurityValMethods.verifyToken(token);
@@ -182,7 +203,10 @@ class AuthenticationHandler extends SecurityValMethods{
 // 2. SecurityValidation's process() method is then called using the input object that it is validating
 // (1 + 2), are both called using the pipeline
 class SecuritySchema extends SecurityValMethods{
-    // constructor(params){
+    /**
+     * 
+     * @param {string} authMode 
+     */
     constructor(authMode) {
         super(); // SecurityValMethods provide static methods
         const supportedAuthTypes = ['NA', 'AA_TAP', 'AA_TO'];
@@ -201,6 +225,19 @@ class SecuritySchema extends SecurityValMethods{
     }
 
     // NOTE: This is the main function that will be called
+    /**
+     * Checks whether the user has the nececssary authentication to perform a request. 
+     * 
+     * NOTE1: Requests have been grouped up depending on their authentication
+     * requirements - NoAuth = 'NA', TokenCreation = 'TC', TokenRegeneration = 'TR', Authorize+Authenticate (Token Only) = 'AA_TO', 'Authorize + Authenticate (Token And Password)'
+     * 
+     * NOTE2: The 'NA', 'AA_TO', 'AA_TAP' type requests are processed by this `process()` functions while the others are handled by methods provided by the `AuthenticationHandler`
+     * @async @static
+     * @param {object} db - An object that implements the `simpleQuery` and `complexQuery` methods
+     * @param {object} query - An object containing all the path and body parameters of the http request that is being serviced
+     * @param {object} inputToken - The value of the "Authorization Header" of the http request that is being serviced
+     * @returns {promise<string>} A promise that if resolved should return a JWT token string
+    **/
     async process(db, token, query){
         // First we check whether the token is correct
         const decodedToken = await SecurityValMethods.verifyToken(token);
