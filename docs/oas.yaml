@@ -316,7 +316,7 @@ paths:
       security: [] # TODO make this authentication optional
       responses:
         '200': # Success
-          $ref: 'responses.yaml#/components/responses/listings-public'
+          $ref: 'responses.yaml#/components/responses/listings-descriptor'
         '400': # Bad Request
           $ref: 'responses.yaml#/components/responses/bad-request'
         '401':

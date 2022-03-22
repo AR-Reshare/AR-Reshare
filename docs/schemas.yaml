@@ -97,18 +97,6 @@ components:
 
     listing-view:
       type: object
-      # these are the required parameters
-      required:
-      - listingID # the id of the listing
-      - contributorID # the id of the contributor
-      - title
-      - description
-      - location
-      - categoryID
-      - condition
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - media ## this will encompass videos, photos and what other
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -118,18 +106,22 @@ components:
           $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
         categoryID:
           $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
-        creationDate:
-          $ref: '#/components/schemas/date'
-        modificationDate:
-          $ref: '#/components/schemas/date'
         media:
           $ref: '#/components/schemas/media-url-list'
+        creationDate:
+          $ref: '#/components/schemas/date'
+        modificationDate: # Ignoring archived date, and last modified
+          $ref: '#/components/schemas/date'
 
 
     listing-descriptor:

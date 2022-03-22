@@ -1,7 +1,7 @@
 components:
   parameters:
     maxResults:
-      name: max
+      name: maxResults
       in: query
       description: Returns <= max results
       required: true
@@ -11,7 +11,7 @@ components:
 
       
     startResults:
-      name: start
+      name: startResults
       in: query
       description: Returns results starting and including from the nth result
       required: true
