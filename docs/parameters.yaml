@@ -19,17 +19,6 @@ components:
         type: integer
         format: int32
 
-
-    endResults:
-      name: end
-      in: query
-      description: Returns results up to but not including the nth result
-      required: false
-      schema:
-        type: integer
-        format: int32
-
-
     queryString:
       name: q
       in: query

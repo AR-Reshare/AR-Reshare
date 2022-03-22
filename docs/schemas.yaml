@@ -520,8 +520,6 @@ components:
 
     post-response-success:
       type: object
-      required:
-      - success
       properties:
         success:
           $ref: '#/components/schemas/boolean'
@@ -529,8 +527,6 @@ components:
 
     post-response-error:
       type: object
-      required:
-      - error
       properties:
         error:
           $ref: '#/components/schemas/error-message'

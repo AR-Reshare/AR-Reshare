@@ -197,7 +197,6 @@ paths:
           $ref: 'responses.yaml#/components/responses/bad-request'
       parameters:
         - $ref: 'parameters.yaml#/components/parameters/maxResults'
-        - $ref: 'parameters.yaml#/components/parameters/endResults'
         - $ref: 'parameters.yaml#/components/parameters/startResults'
         - $ref: 'parameters.yaml#/components/parameters/categoryId'
         ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
@@ -218,7 +217,6 @@ paths:
       #     $ref: 'responses.yaml#/components/responses/bad-request'
       # parameters:
       #   - $ref: 'parameters.yaml#/components/parameters/maxResults'
-      #   - $ref: 'parameters.yaml#/components/parameters/endResults'
       #   - $ref: 'parameters.yaml#/components/parameters/startResults'
       #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
       #   - $ref: 'parameters.yaml#/components/parameters/region'

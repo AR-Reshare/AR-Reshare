@@ -1,12 +1,5 @@
 components:
   responses:
-    #NOTE: Error message is subject to change soon
-    post:
-      description: The response to a post request
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success' # THis attribute is named "success"
 
     ################### ERROR RESPONSES #######################
     bad-request:
