@@ -134,28 +134,27 @@ components:
 
     listing-descriptor:
       type: object
-      required:
-      - listingID
-      - contributorID
-      - title
-      - location
-      - categoryID
-      - media
       properties:
         listingID:
           $ref: '#/components/schemas/id'
-        contributorID:
-          $ref: '#/components/schemas/id'
-        location:
-          $ref: '#/components/schemas/address'
-        media:
-          $ref: '#/components/schemas/media-url-list'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
         condition:
           $ref: '#/components/schemas/condition'
         categoryID:
           $ref: '#/components/schemas/id'
-        title:
-          $ref: '#/components/schemas/title'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
 
 
     listings-private:
@@ -171,9 +170,12 @@ components:
 
 
     listings-descriptor:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing-descriptor'
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: '#/components/schemas/listing-descriptor'
 
 
     listing-create:

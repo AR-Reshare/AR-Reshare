@@ -262,7 +262,7 @@ components:
 
 
     listings-descriptor:
-      description: Returns a set of listings
+      description: Returns a number of listings which match the given filters
       content:
         'application/json':
           schema:
@@ -286,7 +286,7 @@ components:
 
 
     listing-descriptor:
-      description: Returns a listing
+      description: The listing exists and it is returned
       content:
         'application/json':
           schema:
