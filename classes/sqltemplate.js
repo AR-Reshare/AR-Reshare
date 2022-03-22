@@ -1,6 +1,12 @@
 const isCallable = require('is-callable');
 const {QueryTemplateError, QueryConstructionError, EmptyResponseError, EmptyQueryError} = require('./errors');
 
+/**
+ * Returns a list of all indexes of a list where a particular element can be found
+ * @param {Array} arr The array to search in
+ * @param {*} elem The element to search for
+ * @returns List of indexes of arr at which elem can be found
+ */
 const getAllIndexes = (arr, elem) => {
     let indexes = [];
     for (let i=0; i<arr.length; i++) {
@@ -238,6 +244,12 @@ class SQLTemplate {
         return [queryNames, queryList];
     }
 
+    /**
+     * Prepare the results of a transaction for further processing
+     * @param {Array<String>} queryNames List of the names of queries that were executed in the transaction
+     * @param {Array<Array<Object>>} result List of lists of rows returned from each query
+     * @returns Filtered list of result based on the dropFromResults option
+     */
     prepareResults(queryNames, result) {
         let out = result;
 

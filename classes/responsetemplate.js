@@ -46,15 +46,6 @@ class ResponseTemplate {
      * @param {Object} errorMap Dictionary mapping the names of errors, defined in classes/errors.js or elsewhere, to the appropriate HTTP status code to return. "null" should be mapped to a success code
      */
     constructor(params, errorMap={}) {
-        /**
-         * each param has:
-         * - out_name: the name the field will be given in the output
-         * exactly one of:
-         * - field: the name of a field in one row of one query. The value of that field is returned
-         * - rows_with_fields: a field, or array of fields. The value is an array of every row that has all of those fields
-         * - one_row_with_fields: as above, but the value is an object representing the first row that matches
-         */
-
         this.params = params.map(parameter => {
             let out = {};
             
@@ -138,10 +129,6 @@ class ResponseTemplate {
             return out;
         });
 
-        /**
-         * errorMap should be a dictionary mapping error classes to status codes
-         * null should map to a success code
-         */
         if (typeof errorMap !== 'object') {
             throw new TemplateError('errorMap is not an object');
         }

@@ -172,8 +172,6 @@ class AuthenticationHandler extends SecurityValMethods{
             else throw new InvalidCredentialsError();
         });
     }
-
-   
 }
 
 
@@ -262,7 +260,6 @@ class SecuritySchema extends SecurityValMethods{
         });
     }
 }
-
 
 module.exports = {
     SecuritySchema,

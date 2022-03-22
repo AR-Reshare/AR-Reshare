@@ -6,17 +6,37 @@ const { UnprocessableArgumentError } = require('../classes/errors');
 // change the numbers to require more of each
 const PassPattern = /^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$/;
 
+/**
+ * Checks whether a parameter is both a string and not the empty string
+ * @param {*} aString Paramater to check
+ * @returns Boolean
+ */
 const IsNonEmptyString = (aString) => {
     return (typeof aString === 'string' || aString instanceof String) && aString.length > 0;
 };
 
+/**
+ * Gets the age of a person, if the argument is their date of birth
+ * @param {Date} dob The person's date of birth
+ * @returns Age of the person
+ */
 const getAge = (dob) => Math.floor((new Date() - dob.getTime()) / 3.15576e+10);
 
+/**
+ * Checks whether a parameter is both an integer and a positive one (or possibly a string containing an integer)
+ * @param {*} anInt Parameter to check
+ * @returns Boolean
+ */
 const IsPosInt = (anInt) => {
     let num = Number.parseFloat(anInt);
     return Number.isInteger(num) && num >= 0;
 };
 
+/**
+ * Checks whether a parameter is a valid ISO8601 date (YYYY-MM-DD)
+ * @param {*} aString Parameter to check
+ * @returns Boolean
+ */
 const IsDate = (aString) => {
     if (!IsNonEmptyString(aString)) return false;
     let split = aString.split('-');
@@ -26,6 +46,11 @@ const IsDate = (aString) => {
     return true;
 };
 
+/**
+ * Checks wether a parameter is a valid Location
+ * @param {*} anObject Parameter to check
+ * @returns Boolean
+ */
 const IsLocation = (anObject) => {
     return (typeof anObject === 'object'
             && 'country' in anObject
@@ -37,9 +62,20 @@ const IsLocation = (anObject) => {
     );
 };
 
+/**
+ * Checks whether a parameter is a valid Condition
+ * @param {*} aString Parameter to check
+ * @returns Boolean
+ */
 const IsCondition = (aString) => ['poor', 'average', 'good', 'like new', 'new'].includes(aString);
 
+/**
+ * Checks whether a parameter is a valid data URI containing an image
+ * @param {*} aString Parameter to check
+ * @returns Boolean
+ */
 const IsImage = (aString) => {
+    if (!IsNonEmptyString(aString)) return false;
     const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
     let matches = Array.from(aString.matchAll(mimetypepattern));
     if (matches.length !== 1 || matches[0].length !== 3) return false;
@@ -47,7 +83,13 @@ const IsImage = (aString) => {
     else throw new UnprocessableArgumentError('Media must be an image');
 };
 
+/**
+ * Checks whether a parameter is a valid data URI containing an image or video
+ * @param {*} aString Parameter to check
+ * @returns Boolean
+ */
 const IsImageOrVideo = (aString) => {
+    if (!IsNonEmptyString(aString)) return false;
     const mimetypepattern = /^data:(\w+)\/(\w+);base64,[A-Za-z0-9/+]+=*$/g;
     let matches = Array.from(aString.matchAll(mimetypepattern));
     if (matches.length !== 1 || matches[0].length !== 3) return false;
@@ -55,13 +97,21 @@ const IsImageOrVideo = (aString) => {
     throw new UnprocessableArgumentError('Media must be an image or video');
 };
 
+/**
+ * Discard all request parameters
+ */
 const emptyReq = new RequestTemplate([]);
 
+/**
+ * Discard all request parameters. Keep the accountID from authentication
+ */
 const accountIDOnly = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
     conditions: [IsPosInt],
 }]);
+
+/******************************************* START OF SCHEMAS ******************************************/
 
 const createAccountTemplate = new RequestTemplate([{
     in_name: 'email',
@@ -393,6 +443,11 @@ const viewConversationTemplate = new RequestTemplate([{
     conditions: [IsPosInt],
 }]);
 
+/******************************************* END OF SCHEMAS ******************************************/
+
+/**
+ * Dictionary of request templates
+ */
 const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,

@@ -2,6 +2,13 @@ const express = require('express');
 const pipes = require('./pipeline');
 
 class App {
+    /**
+     * Constructs the app and connects endpoints to pipelines
+     * @param {Database} db Represents the database service
+     * @param {Object} logger Represents the logging service
+     * @param {Object} emailTransporter Represents the email service
+     * @param {Object} mediaHandler Represents the media handling service
+     */
     constructor(db, logger, emailTransporter, mediaHandler) {
         let app = express();
         app.use(express.json({limit: '50mb'}));
@@ -13,7 +20,7 @@ class App {
         const RegenerateToken = NA;
         const RequestReset = NA;
         const ExecuteReset = NA;
-        const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger); // TODO media (per item, icons)
+        const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger);
         const CreateAccount = new pipes.CreateEntityPipeline('account', {}, db, logger, emailTransporter, mediaHandler); // (in question - see issue #25)
         const CloseAccount = new pipes.CloseEntityPipeline('account', {}, db, logger);
         const Login = new pipes.LoginPipeline(db, logger);
@@ -74,6 +81,11 @@ class App {
         this.listen = this.listen.bind(this);
     }
 
+    /**
+     * Binds the app to a port
+     * @param {Number} port Port number to bind the app to
+     * @param {CallableFunction} cb Callback to execute when the app is bound
+     */
     listen(port, cb) {
         this.app.listen(port, cb);
     }

@@ -1,6 +1,13 @@
 const { QueryExecutionError, ForeignKeyError, UniqueConstraintError, FailedUploadError } = require('./errors');
 
 class Pipeline {
+    /**
+     * Constructs a Pipeline object
+     * @param {Database} db Represents the database service
+     * @param {Object} logger Represents the logging service. Default is console
+     * @param {Object} emailTransporter Represents the email service. Default is null, if unneeded
+     * @param {Object} mediaHandler Represents the media handling service. Default is null, if unneeded
+     */
     constructor(db, logger=console, emailTransporter=null, mediaHandler=null) {
         this.db = db; // expected to implement simpleQuery and complexQuery
         this.emailTransporter = emailTransporter;
@@ -173,6 +180,11 @@ class Pipeline {
         });
     }
 
+    /**
+     * Uploads media to an external service
+     * @param {Array<String>} mediaObjects List of data URI strings to upload
+     * @returns List of objects representing the media, with {mimetype: String, url: String, index: Number}
+     */
     MediaHandle(mediaObjects) {
         return new Promise((resolve, reject) => {
             if (mediaObjects.length === 0) resolve([]);
