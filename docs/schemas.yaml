@@ -296,14 +296,14 @@ components:
       required:
       - email
       - password
-      - registrationToken ## this is what FCM calls it
+      - deviceToken ## this is what FCM calls it
       properties:
         email:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-        registrationToken:
-          $ref: '#/components/schemas/id'
+        deviceToken:
+          $ref: '#/components/schemas/device-token'
 
 
     account-close:
@@ -625,3 +625,6 @@ components:
       type: string
       format: hex rgba
 
+    device-token:
+      type: string
+      format: FCM token
