@@ -57,6 +57,13 @@ class EmailTransporter {
         return config;
     }
 
+    /**
+     * Sets up a `nodemailer SMTP transport` object which handles the sending of email requests to the target smtp service
+     * @async
+     * @param {boolean} defaultconf - If false, `EmailTransporter.setup()` reads the configuration file whose location is stored in the static attribute `EmailTransporter.emailConfigLocation`. 
+     * Otherwise, if true, then a default configuration is created on the fake SMTP service `smtp.ethereal.email`
+     * @returns {Promise<Object>} - Returns a promise that when resolved returns an `SMTP Transport` object created by nodemailer
+    **/
     static async setup(defaultconf=false){
         // TODO: Setup an email address and replace default account
         // TODO: Add secure transport to the transporter
@@ -81,6 +88,10 @@ class EmailTransporter {
 
 
 class EmailRespond {
+    /**
+     * Constructs a EmailRespond object (similar to a Template that is used in other classes/*.js) and validates it
+     * @param {string} templateType A string that directs the construction of the EmailRespond object that is created (this argument is validated)
+     */
     constructor(templateType){
         let supportedTemplateTypes = ['Account-Modify', 'Account-Create', 'Password-Reset'];
         if (!templateType){
@@ -166,7 +177,16 @@ class EmailRespond {
         });
     }
 
-
+    /**
+    * Sends an email request to an SMTP service defined in `/secrets/emailconnection.js`
+    * @async
+    * @param {object} emailTransporter - An object that is an SMTP transport (or implements equiv interface) as defined by nodemailer
+    * @param {object} inputObject - An object containing the parameters and replacement-values that replaces the placeholder
+    * parameters in the email template string definitions, (which is then used as the htmlcontent or textcontent for the email request)
+    * @param {string} email - A string whose value is the target email-address we wish to send an email message to
+    * @returns {promise<object>} - Returns a promise that when resolved should return a nodemailer response object that acts
+    * as a confirmation receipt and lists what email addresses rejected/accepted the request
+    **/
     async process(emailTransporter, email, inputObject){
         // First we check the input object to see if the inputObject contains the correct attributes
         // --> This can check the emailTemplate's accepted arguments to check
@@ -176,7 +196,7 @@ class EmailRespond {
         let [textcontent, htmlcontent] = await this.templateReplace(inputObject);
         // Finally, we use the emailTransport to execute the request
         // --> Using sendMail in nodemailer, we fill in using the html template we replaced aswell as other information
-        this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
+        return this.sendEmail(emailTransporter, email, textcontent, htmlcontent);
     }
 }
 
