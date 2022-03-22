@@ -222,7 +222,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
             
     listing-modify:
       description: The listing has been successfully modified

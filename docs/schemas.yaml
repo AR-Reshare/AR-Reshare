@@ -171,29 +171,57 @@ components:
 
 
     listing-create:
+      oneOf:
+        - $ref: '#/components/schemas/listing-create-address-object'
+        - $ref: '#/components/schemas/listing-create-address-id'
+
+    listing-create-address-object:
+      title: object (with new address)
       type: object
       required:
       - title
       - description
+      - location
       - categoryID
       - condition
-      - media ## this will encompass videos, photos and what other
-      oneOf:
-      - $ref: '#/components/schemas/address' # The name of the attribute is "location"
-      - $ref: '#/components/schemas/id' # The name of this attribute is "addressID"
+      - media
       properties:
+        title:
+          $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
         categoryID:
           $ref: '#/components/schemas/id'
-        media:
-          $ref: '#/components/schemas/media-content-list'
         condition:
           $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+
+    listing-create-address-id:
+      title: object (re-using address)
+      type: object
+      required:
+      - title
+      - description
+      - location
+      - categoryID
+      - condition
+      - media
+      properties:
         title:
           $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/id'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
 
 
     listing-close:
@@ -515,6 +543,12 @@ components:
       properties:
         success:
           $ref: '#/components/schemas/boolean'
+          
+    post-response-success-with-id:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/id'
 
 
     post-response-error:
