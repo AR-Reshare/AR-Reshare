@@ -320,14 +320,19 @@ components:
       required:
       # accountID not neccessary since we should be able to retrieve the accountId from a valid and verified JWT token
       - password
-      anyOf:
-      - $ref: '#/components/schemas/name'  ## 'name'
-      - $ref: '#/components/schemas/email' ## 'email'
-      - $ref: '#/components/schemas/date'  ## 'dob'
-      - $ref: '#/components/schemas/password'  ## 'newPassword'
       properties:
         password:
           $ref: '#/components/schemas/password'
+        name:
+          $ref: '#/components/schemas/name'
+        email:
+          $ref: '#/components/schemas/email'
+        dob:
+          $ref: '#/components/schemas/date'
+        newPassword:
+          $ref: '#/components/schemas/password'
+        picture:
+          $ref: '#/components/schemas/media-content'
 
 
     account-address-list:
