@@ -5,6 +5,7 @@ const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
 const ResponseTemplateDict = require('./schemas/response-schemas');
 const PushTemplateDict = require('./schemas/push-schemas');
+const EmailTemplateDict = require('./schemas/email-schemas');
 const { AuthenticationHandler } = require('./classes/securityvalidation');
 
 class GeneralPipe extends Pipeline {
@@ -13,7 +14,7 @@ class GeneralPipe extends Pipeline {
      * @param {String} operation Operation to perform e.g. "create"
      * @param {String} defaultMethod Default location to search for request parameters, "query" or "body"
      * @param {String} entityType Entity type to perform operation on e.g. "listing"
-     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
+     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), email (false, 'affected', or 'self') method ('query' or 'body')
      * @param  {...any} args Arguments to provide to the base Pipeline constructor
      */
     constructor(operation, defaultMethod, entityType, options, ...args) {
@@ -22,12 +23,24 @@ class GeneralPipe extends Pipeline {
             throw new PipelineInitialisationError('entityType must be a non-empty string');
         }
         this.actionType = `${operation}-${entityType}`;
+        this.email = false;
         this.notify = false;
+        
+        // TODO: The 'notify' and 'email' need to be modified when integrating the components into the pipeline
+
         if ('notify' in options) {
             if (options['notify'] === 'affected' || options['notify'] === 'self' || options['notify'] === false) {
                 this.notify = options['notify'];
             } else {
                 throw new PipelineInitialisationError('Invalid option for notify');
+            }
+        }
+
+        if ('email' in options) {
+            if (options['email'] === 'affected' || options['email'] === 'self' || options['email'] === false) {
+                this.email = options['email'];
+            } else {
+                throw new PipelineInitialisationError('Invalid option for email');
             }
         }
 
@@ -65,6 +78,14 @@ class GeneralPipe extends Pipeline {
             this.pushTemplate = PushTemplateDict[this.actionType];
             if (this.pushTemplate === undefined) {
                 throw new MissingTemplateError(`Unable to find push notification template for ${this.actionType}`);
+            }
+        }
+
+        this.emailTemplate = null;
+        if (this.email) {
+            this.emailTemplate = EmailTemplateDict[this.actionType];
+            if (this.emailTemplate === undefined) {
+                throw new MissingTemplateError(`Unable to find email request template for ${this.actionType}`);
             }
         }
 
@@ -115,6 +136,8 @@ class GeneralPipe extends Pipeline {
             // database operations
             return this.Store(this.sqlTemplate, validated_out);
         }).then(results => {
+            // TODO: These will need to be modified as we integrate PushRespond and EmailRespond components
+            
             // send notifications as needed
             if (this.notify) {
                 let targetAccounts;
@@ -125,6 +148,18 @@ class GeneralPipe extends Pipeline {
                     // Queries should always have the last row be of affected users' IDs
                 }
                 this.PushRespond(this.pushTemplate, results, targetAccounts);
+            }
+
+            // send emails as needed
+            if (this.email) {
+                let targetAccounts;
+                if (this.email === 'self') {
+                    targetAccounts = [user_accountID];
+                } else { // this.email === 'affected'
+                    targetAccounts = results[results.length - 1].map(row => row['userid']);
+                    // Queries should always have the last row be of affected users' IDs
+                }
+                this.EmailRespond(this.EmailTemplate, results, targetAccounts);
             }
             result_final = results;
             return;
