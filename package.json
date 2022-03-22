@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/jshepherd01/AR-Reshare#readme",
   "devDependencies": {
+    "@redocly/openapi-cli": "^1.0.0-beta.89",
     "eslint": "^8.2.0",
     "jest": "^27.5.1",
     "supertest": "^6.2.2"
