@@ -291,7 +291,7 @@ components:
       required:
       - email
       - password
-      - deviceToken ## this is what FCM calls it
+      - registrationToken ## this is what FCM calls it
       properties:
         email:
           $ref: '#/components/schemas/email'
