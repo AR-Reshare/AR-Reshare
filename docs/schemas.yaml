@@ -331,21 +331,25 @@ components:
 
 
     account-address-list:
-      type: array
-      items:
-        $ref: '#/components/schemas/account-address'
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/account-address'
 
 
     account-address:
       type: object
-      required:
-        - addressID
-        - address
       properties:
         addressID:
           $ref: '#/components/schemas/id'
-        address:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
 
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
