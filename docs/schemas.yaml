@@ -471,20 +471,43 @@ components:
 
     conversation:
       type: object
-      required:
-      - receiver
-      - listing
-      - messages
       properties:
-        listing:
-          $ref: '#/components/schemas/listing-descriptor'
-        receiver:
-          $ref: '#/components/schemas/user'
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+        receiverID:
+          $ref: '#/components/schemas/id'
+        receiverName:
+          $ref: '#/components/schemas/name'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        contributorName:
+          $ref: '#/components/schemas/name'
+        closedDate:
+          $ref: '#/components/schemas/date'
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/conversation-message'
+            - $ref: '#/components/schemas/message'
 
+    message:
+      type: object
+      properties:
+        senderID:
+          $ref: '#/components/schemas/id'
+        sentTime:
+          $ref: '#/components/schemas/datetime'
+        textContent:
+          $ref: '#/components/schemas/text-content'
+        mediaContentMimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        mediaContent:
+          $ref: '#/components/schemas/media-url'
 
     conversation-message:
       type: object
