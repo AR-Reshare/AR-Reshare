@@ -236,20 +236,51 @@ components:
         
 
     listing-modify:
+      oneOf:
+        - $ref: '#/components/schemas/listing-modify-address-object'
+        - $ref: '#/components/schemas/listing-modify-address-id'
+
+    listing-modify-address-object:
+      title: object (with new address)
       type: object
       required:
       - listingID
-      anyOf:
-      - $ref: '#/components/schemas/title' ## title
-      - $ref: '#/components/schemas/condition' ## condition
-      - $ref: '#/components/schemas/description' ## description
-      - $ref: '#/components/schemas/address' ## location
-      - $ref: '#/components/schemas/id' ## categoryID
-      # - $ref: '#/components/schemas/media-id-list' ## deletedMedia
-      # - $ref: '#/components/schemas/media-content-list' ## uploadedMedia
       properties:
         listingID:
           $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/address'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+          
+    listing-modify-address-id:
+      title: object (re-using address)
+      type: object
+      required:
+      - listingID
+      properties:
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/id'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
 
 
     category-descriptor:
