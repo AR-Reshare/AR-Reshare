@@ -44,7 +44,7 @@ const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, Unauthentic
 
 // TODO: Hand over definitions to the pipeline
 
-// TODO: We have since provided authorization tasks to the `Store` component. Therefore, there isn't a need for both the AA_TAP and AA_TOC type requests
+// TODO: We have since provided authorization tasks to the `Store` component. Therefore, AA_TAP and AA_TO would be more aptly described as A_TAP and A_TO (just Authenticate instead of Authenticate and Authorise)
 // These could be considered the same within this component
 
 // Split up into (Token Creation and Token Generation) && (evnerything else)
