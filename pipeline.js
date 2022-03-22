@@ -311,19 +311,14 @@ class RegenerateTokenPipeline extends Pipeline {
 
         // no Security Schema, as only AuthenticationHandler is used
 
-        this.requestTemplate = RequestTemplateDict['regenerateToken'];
+        this.requestTemplate = RequestTemplateDict['regenerate-token'];
         if (this.requestTemplate === undefined) {
-            throw new MissingTemplateError('Unable to find request template for regenerateToken');
+            throw new MissingTemplateError('Unable to find request template for regenerate-token');
         }
 
-        this.sqlTemplate = SQLTemplateDict['regenerateToken'];
-        if (this.sqlTemplate === undefined) {
-            throw new MissingTemplateError('Unable to find SQL template for regenerateToken');
-        }
-
-        this.responseTemplate = ResponseTemplateDict['regenerateToken'];
+        this.responseTemplate = ResponseTemplateDict['regenerate-token'];
         if (this.responseTemplate === undefined) {
-            throw new MissingTemplateError('Unable to find response template for regenerateToken');
+            throw new MissingTemplateError('Unable to find response template for regenerate-token');
         }
         
         // no Push Notifications for now, might want to consider implementing them
@@ -338,21 +333,18 @@ class RegenerateTokenPipeline extends Pipeline {
      * @returns Promise representing the pipeline's progress
      */
     Execute(req, res) {
-        let validated_final = null;
         let result_final = null;
         let error_final = null;
 
-        let authObject = {Authorization: req.headers['Authorization']};
-
+        // NOTE: The headers in http are case insensitive. request object seems to lowercase them
+        let authObject = {authorization: req.headers['authorization']};
         // validate request
         return this.DataValidate(this.requestTemplate, authObject).then(validated => {
-            validated_final = validated;
             // check validated jwt
-            return AuthenticationHandler.regenerateToken(this.db, validated);
+            return AuthenticationHandler.regenerateToken(validated['authorization']);
         }).then(jwt => {
             result_final = jwt;
-            // store device token
-            return this.Store(this.sqlTemplate, validated_final);
+            return;
         }).catch(err => {
             error_final = err;
             return;

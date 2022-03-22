@@ -196,10 +196,10 @@ const loginTemplate = new RequestTemplate([{
 }]);
 
 const regenerateTokenTemplate = new RequestTemplate([{
-    in_name: 'Authorization',
+    in_name: 'authorization',
     required: true,
     conditions: [
-        (jwt) => (jwt.length >= 5 && DoesCharOccur(jwt, '.', 2)),
+        (jwt) => (jwt !== undefined && jwt !== null && jwt.length >= 5 && DoesCharOccur(jwt, '.', 2)),
     ],
 }]);
 

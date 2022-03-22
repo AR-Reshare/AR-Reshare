@@ -97,6 +97,7 @@ const ResponseTemplateDict = {
         'EmptyQueryError': 400,
         'EmptyResponseError': 403,
     }),
+    'regenerate-token': new ResponseTemplate([], {}),
     'view-accountListing': listingDetails,
     'search-accountListing': new ResponseTemplate([{
         out_name: 'listings',
