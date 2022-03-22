@@ -112,8 +112,8 @@ const DoesCharOccur = (aString, char, times) => {
     let occurences = 0;
     for(let letter of aString){
         occurences = letter === char ? occurences+1: occurences;
-    return occurences === times;
     }
+    return occurences === times;
 };
 
 /**
