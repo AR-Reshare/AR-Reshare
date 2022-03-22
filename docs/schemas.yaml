@@ -239,29 +239,28 @@ components:
 
     category-descriptor:
       type: object
-      required:
-      - categoryID
-      - categoryName
-      - categoryPath
-      - icon
-      - color
       properties:
         categoryID:
           $ref: '#/components/schemas/id'
         categoryName:
-          $ref: '#/components/schemas/category'
-        categoryPath: ## This can be used to derived parent categories
-          $ref: '#/components/schemas/path'
+          $ref: '#/components/schemas/category-name'
+        prompt:
+          $ref: '#/components/schemas/description'
+        parentCategoryID:
+          $ref: '#/components/schemas/id-or-null'
         icon:
           $ref: '#/components/schemas/photo'
-        color:
+        colour:
           $ref: '#/components/schemas/color'
 
 
     category-descriptors:
-      type: array
-      items:
-        $ref: '#/components/schemas/category-descriptor'
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/category-descriptor'
       
 
     ######################## ACCOUNT SCHEMAS ###########################
@@ -559,6 +558,9 @@ components:
     id:
       type: integer
 
+    id-or-null:
+      type: [integer, 'null']
+
 
     name:
       type: string
@@ -602,9 +604,8 @@ components:
       format: email
     
 
-    category:
+    category-name:
       type: string
-      format: enum
 
 
     condition:
@@ -619,5 +620,5 @@ components:
 
     color:
       type: string
-      format: hex
+      format: hex rgba
 
