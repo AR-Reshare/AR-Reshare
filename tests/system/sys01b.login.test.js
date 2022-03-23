@@ -114,7 +114,7 @@ describe('System Test 1b - /account/login', () => {
         let data = {
             email: 'testy@testingtons.net',
             password: 'Password123',
-            deviceToken: 'AAAAAAAAAA',
+            registrationToken: 'AAAAAAAAAA',
         };
 
         return request(app.app)

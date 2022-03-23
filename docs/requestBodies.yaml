@@ -8,11 +8,13 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-signup'
     
+
     account-login:
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-login'
+
 
     account-close:
       content:
@@ -20,12 +22,14 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-close'
 
+
     account-modify:
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-modify'          
-          
+
+
    #################### COMMUNICATIONS #######################    
     conversation-create:
       content:
@@ -33,11 +37,13 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/conversation-create'
 
+
     conversation-close:
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/conversation-close'
+
 
     conversation-message:
       content:
@@ -53,12 +59,14 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-create'
 
+
     listing-close:
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-close'
-  
+
+
     listing-modify:
       content:
         'application/json':
@@ -83,6 +91,7 @@ components:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/password-reset-request'
+
 
     password-reset-execute:
       content:

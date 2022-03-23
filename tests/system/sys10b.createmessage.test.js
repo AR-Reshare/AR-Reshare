@@ -189,7 +189,7 @@ describe('System Test 10b - /conversation/message', () => {
         let data = {
             conversationID: 4,
             textContent: 'Hello',
-            media: [readFileSync('tests/data/b64_img.txt').toString()],
+            mediaContent: [readFileSync('tests/data/b64_img.txt').toString()],
         };
 
         return request(app.app)
@@ -204,7 +204,7 @@ describe('System Test 10b - /conversation/message', () => {
         let data = {
             conversationID: 4,
             textContent: 'Hello',
-            media: ['data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB'],
+            mediaContent: ['data:picture/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAAB'],
         };
 
         return request(app.app)

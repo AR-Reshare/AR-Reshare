@@ -1,32 +1,24 @@
 components:
   parameters:
     maxResults:
-      name: max
+      name: maxResults
       in: query
       description: Returns <= max results
       required: true
       schema:
         type: integer
         format: int32
+
       
     startResults:
-      name: start
+      name: startResults
       in: query
       description: Returns results starting and including from the nth result
       required: true
       schema:
         type: integer
         format: int32
-    
-    endResults:
-      name: end
-      in: query
-      description: Returns results up to but not including the nth result
-      required: false
-      schema:
-        type: integer
-        format: int32
-    
+
     queryString:
       name: q
       in: query
@@ -36,26 +28,27 @@ components:
         type: string
         format: string
 
+
     listingID:
       name: listingID
       in: query
-      description: The id used to identify any listing
+      description: The ID used to identify any listing
       required: true
       schema:
-        type: string
-        format: string
+        $ref: 'schemas.yaml#/components/schemas/id'
+
 
     ## To get available category descriptors use the category-descriptor-list endpoint
     categoryId:
-      name: categoryId
+      name: categoryID
       in: query
-      description: Describes the categoryId when selecting results,
+      description: Describes the categoryID when selecting results,
       required: false
       schema:
-        type: string
-        format: string
-    
-    reset-token:
+        $ref: 'schemas.yaml#/components/schemas/id'
+
+
+    resetToken:
       name: token
       in: query
       description: The token required in order to execute the password reset
@@ -64,21 +57,24 @@ components:
         type: string
         format: id
 
+
     userID:
       name: userID
       in: query
-      description: The User's id
+      description: The User's ID
       required: true
       schema:
         $ref: 'schemas.yaml#/components/schemas/id'
 
+
     conversationID:
       name: conversationID
       in: query
-      description: The conversation's id
+      description: The conversation's ID
       required: true
       schema:
         $ref: 'schemas.yaml#/components/schemas/id'
+
 
     region:
       name: region
