@@ -128,7 +128,7 @@ components:
             $ref: 'schemas.yaml#/components/schemas/post-response-success'
       headers:
         Authorization:
-          $ref: 'headers.yaml#/headers/auth-token'
+          $ref: 'headers.yaml#/headers/authorization'
 
 
     account-modify:

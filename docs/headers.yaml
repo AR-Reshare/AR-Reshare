@@ -1,5 +1,5 @@
 headers:
-  auth-token:
+  authorization:
     description: Used to authenticate requests
     schema:
-      type: JWT Token # Room for change
+      type: string # This is a base64 encoded JWT token
