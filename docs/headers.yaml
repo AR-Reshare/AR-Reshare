@@ -1,4 +1,5 @@
-## This header is already defined with Security related objects for request objects
 headers:
   auth-token:
-    $ref: 'oas.yaml#/components/securitySchemes/bearerAuth'
+    description: Used to authenticate requests
+    schema:
+      type: JWT Token # Room for change
