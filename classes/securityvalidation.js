@@ -152,10 +152,7 @@ class PasswordResetHandler{
                 return resetObj;
             }
             return false;
-        }).catch(err => {
-            // do something
         });
-
     }
 
     static async _generateResetToken(db, userID){
