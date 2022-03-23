@@ -45,9 +45,9 @@ paths:
         '201':
           $ref: 'responses.yaml#/components/responses/token-regeneration'
         '400':
-          description: A valid old token wasn't provided in the header of the HTTP request
-          ## NOTE: 401 type responses are returned as 400 responses for this endpoint
           $ref: 'responses.yaml#/components/responses/bad-request'
+        '401':
+          $ref: 'responses.yaml#/components/responses/unauthorised'
 
 
   /passwordResetRequest:

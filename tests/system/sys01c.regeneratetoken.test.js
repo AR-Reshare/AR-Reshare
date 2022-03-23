@@ -123,7 +123,7 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
                 'Accept': 'application/json'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(400); 
+        expect(response.status).toEqual(401); 
         expect(response.body).toEqual({'error': 'authorization is not valid'});
 
 
@@ -144,7 +144,7 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
                 'Accept': 'application/json'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(400); 
+        expect(response.status).toEqual(401); 
         expect(response.body).toEqual({'error': 'authorization is not valid'});
 
 
@@ -166,7 +166,7 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
             .send({post: 'junk information'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(400); 
+        expect(response.status).toEqual(401); 
         expect(response.body).toEqual({'error': 'authorization is not valid'});
 
     });
@@ -189,7 +189,7 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
         expect(typeof returnedToken).toBe('string');
         decodedToken = jwt.verify(returnedToken, key);
         expect(decodedToken['userID'] = payload['userID']);
-        expect(response.status).toEqual(200); 
+        expect(response.status).toEqual(201); 
         expect(response.body).toEqual({success: true});
 
     });
@@ -212,7 +212,7 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
         expect(typeof returnedToken).toBe('string');
         decodedToken = jwt.verify(returnedToken, key);
         expect(decodedToken['userID'] = payload['userID']);
-        expect(response.status).toEqual(200); 
+        expect(response.status).toEqual(201); 
         expect(response.body).toEqual({success: true});
     });
 
