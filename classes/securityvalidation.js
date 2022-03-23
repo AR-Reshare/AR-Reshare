@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const passgen = require('secure-random-password');
 const {check, validationResult} = require('express-validator');
 const {DirtyArgumentError, AbsentArgumentError, PrivateKeyReadError, UnauthenticatedUserError, InvalidCredentialsError,
     InvalidTokenError, TamperedTokenError, ExpiredTokenError, NotBeforeTokenError, ServerException, QueryExecutionError, TemplateError} = require('./errors.js');
@@ -92,6 +93,7 @@ class SecurityValMethods{
 
 //TODO: Add some sort of security question 
 class PasswordResetHandler{
+    static tokenLifeDuration = 30;
     /**
      * Performs the password-reset-request for the corresponding endpoint
      * @async @static
@@ -130,7 +132,7 @@ class PasswordResetHandler{
     }
 
     static async _resetRequest(db, email){
-        let resetObj;
+        let resetObj = {};
         // First we check with the database, then we use the emailRespond component
         const getHash = 'SELECT UserID FROM account WHERE email = $1';
         db.simpleQuery(getHash, [email]).then(res => {
@@ -146,7 +148,7 @@ class PasswordResetHandler{
                 resetObj['UserID'] = userID;
                 resetObj['Email'] = email;
                 // then we perform token creation using db interactions again.
-                resetObj['Token'] = await PasswordResetHandler._generateResetToken(db, email, userID); // TODO Implement function to generate this
+                resetObj['Token'] = await PasswordResetHandler._generateResetToken(db, userID); // TODO Implement function to generate this
                 return resetObj;
             }
             return false;
@@ -156,7 +158,32 @@ class PasswordResetHandler{
 
     }
 
-    static async _generateResetToken(db, email, userID){}
+    static async _generateResetToken(db, userID){
+        // So here we want to ensure that there is only at most one userID token in the 'ConfirmActionTable'
+        let resetTokenHash = passgen.randomPassword({
+            length: 8,
+            characters: [passgen.lower, passgen.upper, passgen.digits]
+        });
+
+        let IssuedTimestamp = new Date();
+        let ExpirationTimestamp = new Date();
+        ExpirationTimestamp.setMinutes(IssuedTimestamp.getMinutes() + PasswordResetHandler.tokenLifeDuration);
+        
+        const args = [userID, resetTokenHash, IssuedTimestamp, ExpirationTimestamp];
+        // NOTE: It is possible that ttl for tokens may be modified, which makes the expirationTimestamp no longer redundant
+        const queryTemplate = 'REPLACE INTO ConfirmActionTable (UserID, ResetTokenHash, IssuedTimestamp, ExpirationTimestamp) VALUES ($1, $2, $3, $4)';
+
+        return db.simpleQuery(queryTemplate, args).then(res => {
+            // res should be an integer containing the number of modified rows
+            if (res == 1){
+                return true; // a single insert has been performed (i.e. the token didn't exist)
+            } else if (res == 2){
+                return true; // a deletion and insertion has been performed (i.e. the userID's token has been replaced with new timestamp and resetTokenHash)
+            } else {
+                throw new QueryExecutionError();
+            }
+        });
+    }
 
     static async resetExecute(){}
 }
