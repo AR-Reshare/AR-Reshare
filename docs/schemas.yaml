@@ -34,7 +34,8 @@ components:
         name:
           $ref: '#/components/schemas/name'
         profilePics:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
+
 
     user-view:
       type: object
@@ -53,28 +54,16 @@ components:
         profilePicture:
           $ref: '#/components/schemas/photo'
 
+
     user-search:
       type: array
       items:
         $ref: '#/components/schemas/user-view'
 
 
-
-
     ############### LISTING SCHEMAS #########################
     listing-own:
       type: object
-      required: 
-      - listingID # the id of the listing
-      - contributorID # the id of the contributor
-      - title
-      - description
-      - location
-      - categoryID
-      - condition
-      - media ## this will encompass videos, photos and what other
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -84,37 +73,30 @@ components:
           $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
         categoryID:
           $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
         media:
-          $ref: '#/components/schemas/media'
+          $ref: '#/components/schemas/media-url-list'
         creationDate:
           $ref: '#/components/schemas/date'
-        modificationDate:
+        modificationDate: # Ignoring archived date, and last modified
           $ref: '#/components/schemas/date'
         closedDate:
           $ref: '#/components/schemas/date'
         receiverID:
           $ref: '#/components/schemas/id'
 
+
     listing-view:
       type: object
-      # these are the required parameters
-      required:
-      - listingID # the id of the listing
-      - contributorID # the id of the contributor
-      - title
-      - description
-      - location
-      - categoryID
-      - condition
-      - creationDate
-      - modificationDate # Ignoring archived date, and last modified
-      - media ## this will encompass videos, photos and what other
       properties:
         listingID:
           $ref: '#/components/schemas/id'
@@ -124,83 +106,123 @@ components:
           $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
-        location:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
         categoryID:
           $ref: '#/components/schemas/id'
         condition:
           $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-url-list'
         creationDate:
           $ref: '#/components/schemas/date'
-        modificationDate:
+        modificationDate: # Ignoring archived date, and last modified
           $ref: '#/components/schemas/date'
-        media:
-          $ref: '#/components/schemas/media'
+
 
     listing-descriptor:
       type: object
-      required:
-      - listingID
-      - contributorID
-      - title
-      - location
-      - categoryID
-      - media
       properties:
         listingID:
           $ref: '#/components/schemas/id'
-        contributorID:
-          $ref: '#/components/schemas/id'
-        location:
-          $ref: '#/components/schemas/address'
-        media:
-          $ref: '#/components/schemas/media'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
         condition:
           $ref: '#/components/schemas/condition'
         categoryID:
           $ref: '#/components/schemas/id'
-        title:
-          $ref: '#/components/schemas/title'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+
 
     listings-private:
       type: array
       items:
         $ref: '#/components/schemas/listing-own'
-        
+
+
     listings-public:
       type: array
       items:
         $ref: '#/components/schemas/listing-view'
 
+
     listings-descriptor:
-      type: array
-      items:
-        $ref: '#/components/schemas/listing-descriptor'
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: '#/components/schemas/listing-descriptor'
+
 
     listing-create:
+      oneOf:
+        - $ref: '#/components/schemas/listing-create-address-object'
+        - $ref: '#/components/schemas/listing-create-address-id'
+
+    listing-create-address-object:
+      title: object (with new address)
       type: object
       required:
       - title
       - description
+      - location
       - categoryID
       - condition
-      - media ## this will encompass videos, photos and what other
-      oneOf:
-      - $ref: '#/components/schemas/address' # The name of the attribute is "location"
-      - $ref: '#/components/schemas/id' # The name of this attribute is "addressID"
+      - media
       properties:
+        title:
+          $ref: '#/components/schemas/title'
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
         categoryID:
           $ref: '#/components/schemas/id'
-        media:
-          $ref: '#/components/schemas/media'
         condition:
           $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+
+    listing-create-address-id:
+      title: object (re-using address)
+      type: object
+      required:
+      - title
+      - description
+      - location
+      - categoryID
+      - condition
+      - media
+      properties:
         title:
           $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/id'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+
 
     listing-close:
       type: object
@@ -214,56 +236,77 @@ components:
         
 
     listing-modify:
+      oneOf:
+        - $ref: '#/components/schemas/listing-modify-address-object'
+        - $ref: '#/components/schemas/listing-modify-address-id'
+
+    listing-modify-address-object:
+      title: object (with new address)
       type: object
       required:
       - listingID
-      - modifiedDetails
       properties:
-        variable-modification:
-          $ref: '#/components/schemas/listing-modifiedDetails'
         listingID:
           $ref: '#/components/schemas/id'
-    
-    listing-modifiedDetails:
-      type: object
-      properties:
         title:
           $ref: '#/components/schemas/title'
-        condition:
-          $ref: '#/components/schemas/condition'
         description:
           $ref: '#/components/schemas/description'
         location:
           $ref: '#/components/schemas/address'
         categoryID:
           $ref: '#/components/schemas/id'
-        # media:
-        #   $ref: '#/components/schemas/media'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+          
+    listing-modify-address-id:
+      title: object (re-using address)
+      type: object
+      required:
+      - listingID
+      properties:
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        location:
+          $ref: '#/components/schemas/id'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        condition:
+          $ref: '#/components/schemas/condition'
+        media:
+          $ref: '#/components/schemas/media-content-list'
+
 
     category-descriptor:
       type: object
-      required:
-      - categoryID
-      - categoryName
-      - categoryPath
-      - icon
-      - color
       properties:
         categoryID:
           $ref: '#/components/schemas/id'
         categoryName:
-          $ref: '#/components/schemas/category'
-        categoryPath: ## This can be used to derived parent categories
-          $ref: '#/components/schemas/path'
+          $ref: '#/components/schemas/category-name'
+        prompt:
+          $ref: '#/components/schemas/description'
+        parentCategoryID:
+          $ref: '#/components/schemas/id-or-null'
         icon:
           $ref: '#/components/schemas/photo'
-        color:
+        colour:
           $ref: '#/components/schemas/color'
 
+
     category-descriptors:
-      type: array
-      items:
-        $ref: '#/components/schemas/category-descriptor'
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/category-descriptor'
       
 
     ######################## ACCOUNT SCHEMAS ###########################
@@ -273,7 +316,7 @@ components:
       - name
       - email
       - password
-      - dob # DoB (keeping lowecase for consistency on naming)
+      - dob 
       properties:
         name:
           $ref: '#/components/schemas/name'
@@ -281,15 +324,19 @@ components:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-        dob:
+        dob: # DoB (keeping lowecase for consistency on naming)
           $ref: '#/components/schemas/date'
         address:
           $ref: '#/components/schemas/address'
+        picture:
+          $ref: '#/components/schemas/media-content'
       example:
         name: Sam Sepiol
         email: sspeiol@protonmail.org
+        password: 'Pa$$w0rd'
         dob: '1986-09-17'
-        
+
+
     account-login:
       type: object
       required:
@@ -301,8 +348,9 @@ components:
           $ref: '#/components/schemas/email'
         password:
           $ref: '#/components/schemas/password'
-        registrationToken:
-          $ref: '#/components/schemas/id'
+        deviceToken:
+          $ref: '#/components/schemas/device-token'
+
 
     account-close:
       type: object
@@ -312,45 +360,48 @@ components:
         password:
           $ref: '#/components/schemas/password'
 
+
     account-modify:
       type: object
       required:
       # accountID not neccessary since we should be able to retrieve the accountId from a valid and verified JWT token
       - password
-      - modifiedDetails
       properties:
         password:
           $ref: '#/components/schemas/password'
-        variable-modification:
-          $ref: '#/components/schemas/account-modifiedDetails'
-
-    account-modifiedDetails:
-      type: object
-      properties:
         name:
           $ref: '#/components/schemas/name'
         email:
           $ref: '#/components/schemas/email'
         dob:
           $ref: '#/components/schemas/date'
-        password:
+        newPassword:
           $ref: '#/components/schemas/password'
+        picture:
+          $ref: '#/components/schemas/media-content'
+
 
     account-address-list:
-      type: array
-      items:
-        $ref: '#/components/schemas/account-address'
+      type: object
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/account-address'
+
 
     account-address:
       type: object
-      required:
-        - addressID
-        - address
       properties:
         addressID:
           $ref: '#/components/schemas/id'
-        address:
-          $ref: '#/components/schemas/address'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
+
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
     ## when viewing future data
@@ -377,6 +428,7 @@ components:
         email:
           $ref: '#/components/schemas/email'
     
+
     password-reset-execute:
       type: object
       required:
@@ -387,7 +439,7 @@ components:
         email:
           $ref: '#/components/schemas/email'
         resetToken:
-          $ref: '#/components/schemas/resetToken'
+          $ref: '#/components/schemas/reset-token'
         password:
           $ref: '#/components/schemas/password'
           
@@ -396,52 +448,81 @@ components:
     # TODO: There may be media links such as user profile picture to be included here
     conversation-descriptor:
       type: object
-      required:
-      - conversationID
-      - receiver
-      - listing
       properties:
         conversationID:
           $ref: '#/components/schemas/id'
-        listing:
-          $ref: '#/components/schemas/listing-descriptor'
-        receiver:
-          $ref: '#/components/schemas/user'
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        receiverID:
+          $ref: '#/components/schemas/id'
+        receiverName:
+          $ref: '#/components/schemas/name'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        contributorName:
+          $ref: '#/components/schemas/name'
+
 
     conversation:
       type: object
-      required:
-      - receiver
-      - listing
-      - messages
       properties:
-        listing:
-          $ref: '#/components/schemas/listing-descriptor'
-        receiver:
-          $ref: '#/components/schemas/user'
+        listingID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+        receiverID:
+          $ref: '#/components/schemas/id'
+        receiverName:
+          $ref: '#/components/schemas/name'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        contributorName:
+          $ref: '#/components/schemas/name'
+        closedDate:
+          $ref: '#/components/schemas/date'
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/conversation-message'
+            - $ref: '#/components/schemas/message'
+
+    message:
+      type: object
+      properties:
+        senderID:
+          $ref: '#/components/schemas/id'
+        sentTime:
+          $ref: '#/components/schemas/datetime'
+        textContent:
+          $ref: '#/components/schemas/text-content'
+        mediaContentMimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        mediaContent:
+          $ref: '#/components/schemas/media-url'
 
     conversation-message:
       type: object
       required:
       # senderID and receiverID was removed - this is because converstaions are on a per item basis (therefore, a receiver and buyer may have multiple ongoing discussions about different items)
-      - receiverID
       - conversationID
-      # - mediaContent
-      - textContent
       properties:
-        receiverID:
-          $ref: '#/components/schemas/id'
         conversationID:
           $ref: '#/components/schemas/id'
-        # mediaContent:
-        #   $ref: '#/components/schemas/mediaContent'
         textContent:
-          $ref: '#/components/schemas/textContent'
-     
+          $ref: '#/components/schemas/text-content'
+        mediaContent:
+          $ref: '#/components/schemas/media-content'
+
+
     conversation-create:
       type: object
       required:
@@ -450,6 +531,7 @@ components:
         listingID:
           $ref: 'schemas.yaml#/components/schemas/id'
   
+
     conversation-close:
       type: object
       required:
@@ -460,17 +542,7 @@ components:
 
 
     ########################### LOWER LEVEL SCHEMAS ####################################
-
-    # TODO: This schema's structure is very likely to be changed in the near future
-    mediaContent:
-      type: object
-      properties:
-        media:
-          $ref: '#/components/schemas/media-resource'
-        description:
-          $ref: '#/components/schemas/description'
-
-    textContent:
+    text-content:
       type: string
 
 
@@ -489,30 +561,62 @@ components:
         postcode:
           $ref: '#/components/schemas/postcode'
 
-    media: # i.e media = ["url1", "url2", ...]
+
+    ## This is used for uploads
+    media-content-list: # i.e media = ["url1", "url2", ...]
       type: array
       items:
-      - $ref: '#/components/schemas/mediaContent'
+      - $ref: '#/components/schemas/media-content'
 
-    media-resource:
+
+    ## This is used to load from the client app
+    media-url-list:
+      type: array
+      items:
+      - $ref: '#/components/schemas/media-out'
+
+    media-out:
+      type: object
+      properties:
+        url:
+          $ref: '#/components/schemas/media-url'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+
+    media-mimetype:
+      type: string
+      format: mimetype
+
+    media-url:
       type: string
       format: url
 
+
+    media-content:
+      type: string
+      format: data URI scheme
+      ## data:[<media type>][;base64],<data>
+
+
     post-response-success:
       type: object
-      required:
-      - success
       properties:
         success:
           $ref: '#/components/schemas/boolean'
+          
+    post-response-success-with-id:
+      type: object
+      properties:
+        success:
+          $ref: '#/components/schemas/id'
+
 
     post-response-error:
       type: object
-      required:
-      - error
       properties:
         error:
           $ref: '#/components/schemas/error-message'
+
 
     post-response:
       type: string
@@ -522,77 +626,102 @@ components:
     error-message:
       type: string
 
+
     boolean:
       type: boolean
+
 
     country:
       type: string
 
+
     ##NOTE:  This is no longer used since not everyone lives in a city
     # city:
     #   type: string
+
 
     ## This is replaceing the city attribute in address-related schemas
     region:
       type: string
       # current proposal is that the value should be enum of counties
 
+
     postcode:
       type: string
+
 
     street:
       type: string
 
+
     ## we'll define formats for these types below soon (e.g. sizes and other attributes)
     id:
-      type: string
+      type: integer
+
+    id-or-null:
+      type: [integer, 'null']
+
 
     name:
       type: string
 
+
     description:
       type: string
+
 
     photo:
       type: string
       format: url
     
+
     title:
       type: string
+
 
     date:
       type: string
       format: ISO Date (8601) # can be changed
 
+
     datetime:
       type: string
       format: ISO Datetime (8601) # can be changed
+
 
     password:
       type: string
       format: password
 
-    resetToken:
+
+    reset-token:
       type: string
-      ## TODO: Update the type/format when completeing the design of passwordReset
+      ## TODO: Update the type/format when completeing the design of password-reset
+
 
     email:
       type: string
       format: email
     
-    category:
+
+    category-name:
       type: string
-      format: enum
+
 
     condition:
       type: string
       format: enum
 
+
     path:
       type: string
       format: path
     
+
     color:
       type: string
-      format: hex
+      format: hex rgba
 
+    device-token:
+      type: string
+      format: FCM token

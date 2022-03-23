@@ -172,7 +172,8 @@ const loginTemplate = new RequestTemplate([{
     required: true,
     conditions: [IsNonEmptyString],
 }, {
-    in_name: 'deviceToken',
+    in_name: 'registrationToken',
+    out_name: 'deviceToken',
     required: false,
 }]);
 
@@ -403,7 +404,7 @@ const createMessageTemplate = new RequestTemplate([{
     required: true,
     conditions: [IsNonEmptyString],
 }, {
-    in_name: 'media',
+    in_name: 'mediaContent',
     required: false,
     conditions: [
         Array.isArray,
