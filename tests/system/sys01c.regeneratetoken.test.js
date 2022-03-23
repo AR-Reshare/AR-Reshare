@@ -123,8 +123,8 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
                 'Accept': 'application/json'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(401); 
-        expect(response.body).toEqual({'error': 'ExpiredTokenError'});
+        expect(response.status).toEqual(400); 
+        expect(response.body).toEqual({'error': 'authorization is not valid'});
 
 
     });
@@ -144,8 +144,8 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
                 'Accept': 'application/json'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(401); 
-        expect(response.body).toEqual({'error': 'InvalidTokenError'});
+        expect(response.status).toEqual(400); 
+        expect(response.body).toEqual({'error': 'authorization is not valid'});
 
 
     });
@@ -166,8 +166,8 @@ describe('System Test 01c - Testing valid tokens that should not be successfully
             .send({post: 'junk information'});
 
         expect(response.headers['Authorization']).toEqual(undefined);
-        expect(response.status).toEqual(401); 
-        expect(response.body).toEqual({'error': 'InvalidTokenError'});
+        expect(response.status).toEqual(400); 
+        expect(response.body).toEqual({'error': 'authorization is not valid'});
 
     });
 

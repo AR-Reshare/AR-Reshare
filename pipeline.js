@@ -355,6 +355,9 @@ class RegenerateTokenPipeline extends Pipeline {
             if (status === 200) {
                 res.set('Authorization', result_final);
                 res.send({success: true});
+            } else if ((status - 400) < 100){
+                res.status(400);
+                res.send({error: 'authorization is not valid'});
             } else {
                 res.send({error: error_final.message || error_final.name});
             }
@@ -419,7 +422,7 @@ module.exports = {
     ViewEntityPipeline,
     SearchEntityPipeline,
     LoginPipeline,
-    RegenerateTokenPipeline, // Needs to be tested
+    RegenerateTokenPipeline,
     // ...
     // add other pipeline types here as they are defined
     NotImplementedPipeline,
