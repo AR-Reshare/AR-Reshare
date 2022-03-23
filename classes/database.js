@@ -139,6 +139,9 @@ class Database {
         });
     }
 
+    /**
+     * Closes the connection with the database
+     */
     end() {
         this.pool.end();
     }

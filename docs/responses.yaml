@@ -1,52 +1,151 @@
 components:
   responses:
 
-    #NOTE: Error message is subject to change soon
-    post:
-      description: The response to a post request
+    ################### ERROR RESPONSES #######################
+    bad-request:
+      description: The request was missing required parameters, or was formatted incorrectly
       content:
         'application/json':
           schema:
-            type: object
-            oneOf:
-            - $ref: 'schemas.yaml#/components/schemas/post-response-success' # THis attribute is named "success"
-            - $ref: 'schemas.yaml#/components/schemas/post-response-error' # This attribute is named "error"
-            examples:
-            - post-success:
-                success: true
-            - post-failure:
-                success: false
-                error: this is an error message
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
 
+    unauthorised:
+      description: The authentication token was missing or invalid
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    unauthorised-optional:
+      description: The authentication token provided was invalid
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    unauthorised-password:
+      description: The authentication token was missing or invalid or the password was incorrect
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+            
+    unauthorised-creds:
+      description: That email and password combination does not match an account
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    not-found:
+      description: The requested resource does not exist or is unavailable to you
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+            
+    not-found-auxiliary:
+      description: A requested auxiliary resource (category, address) does not exist or is unavailable to you
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    conflict-email:
+      description: That email address is already registered to another account
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+            
+    conflict-close:
+      description: That resource is already closed
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    conflict-save:
+      description: The user has already bookmarked that listing
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    conflict-create:
+      description: That resource already exists
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+    unprocessable:
+      description: The request does not match our standards (for password security, age limits, etc.)
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+            
+    unprocessable-media:
+      description: The media provided is not a supported file type
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-error'
+
+
+    ################### SUCCESS RESPONSES ###########################
+    categories-list:
+      description: The categories list was successfully retrieved
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/category-descriptors'
 
     ################### ACCOUNT RESPONSES #####################
-
     account-close:
-      description: The account was requested to be closed
-      $ref: '#/components/responses/post'
+      description: The account has been queued for close - the user no longer has access
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
 
     account-create:
-      description: The account was requested to be created
-      $ref: '#/components/responses/post'
+      description: The account has been created successfully
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
 
     # TODO: I believe authentication information can be removed from here and put into a seperate security component
     account-login:
-      description: The account was sign in
-      $ref: '#/components/responses/post'
+      description: Logs into the requested account
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
       headers:
         Authorization:
-          $ref: 'headers.yaml#/headers/auth-token'
+          $ref: 'headers.yaml#/headers/authorization'
+
 
     account-modify:
-      description: Returns whether an account detail was modified successfully
-      $ref: '#/components/responses/post'
+      description: The details has been successfully modified
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
 
     account-address-list:
-      description: Returns a set of addresses
+      description: The address list was successfully retrieved
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/account-address-list'
+
 
     token-regeneration:
       description: The new token has been successfully generated
@@ -54,96 +153,131 @@ components:
         Authorization:
           $ref: 'headers.yaml#/headers/auth-token'
 
-    category-descriptors:
-      description: A list of the currently available category descriptors
-      content:
-        'application/json':
-          schema:
-            $ref: 'schemas.yaml#/components/schemas/category-descriptors'
 
     ####################### COMMS RESPONSES #######################
     conversation-descriptors:
-      description: Returns a list of conversation descriptors
+      description: Returns a set of the descriptors of the most recent converstaions
       content:
         'application/json':
           schema:
             type: object
-            required:
-            - conversations
             properties:
               conversations:
                 type: array
                 items:
                   $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
 
+
     conversation-create:
-      description: Returns the conversation-descriptor if successful
+      description: The conversation has been initiated
       content:
         'application/json':
           schema:
-            type: object
-            required:
-            - success
-            properties:
-              conversation:
-                $ref: 'schemas.yaml#/components/schemas/conversation-descriptor'
-              success:
-                type: boolean
-     
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
+
     conversation-view:
-      description: Returns the conversation of a given conversationID
+      description: The conversation exists and it has been returned
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/conversation'
 
+
     conversation-close:
-      description: Returns whether the conversation was closed successfully
-      $ref: '#/components/responses/post'
+      description: The conversation has been closed
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
 
     conversation-message:
-      description: Returns whether a message was successfully delivered
-      $ref: '#/components/responses/post'
+      description: The message has been successfully delivered
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
     
 
    ###################### LISTING RESPONSES ######################
+    listing-save:
+      description: The listing has been bookmarked for that user
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
+    listing-forget:
+      description: The listing is no longer bookmarked for that user
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
+    listing-create:
+      description: The listing has been successfully created
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
+            
+    listing-modify:
+      description: The listing has been successfully modified
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            
+    listing-close:
+      description: The listing has been successfully closed
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+
     listings-private:
-      description: Returns a set of listings
+      description: Returns a number of listings which match the given filters
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-private'
 
+
     listings-public:
-      description: Returns a set of listings
+      description: Returns a number of listings which match the given filters
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-public'
-    
+
+
     listings-descriptor:
-      description: Returns a set of listings
+      description: Returns a number of listings which match the given filters
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-descriptor'
 
+
     listing-private:
-      description: Returns a listing
+      description: The listing exists and it is returned
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-own'
 
+
     listing-public:
-      description: Returns a listing
+      description: The listing exists and it is returned
       content:
         'application/json':
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-view'
 
+
     listing-descriptor:
-      description: Returns a listing
+      description: The listing exists and it is returned
       content:
         'application/json':
           schema:

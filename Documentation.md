@@ -1,8 +1,31 @@
 ## Router (app.js)
+Exports a class representing the application. The constructor takes four arguments: `db`, the Database object representing the database to use; `logger`, the object to use for logging requests; `emailTransporter`, the object representing the email service; and `mediaHandler`, the object representing the media upload service. The class contains several pipeline objects which are bound to endpoints as per the API specification.
+
+The class has a single method, `listen`, which takes a port number and callback function. It binds the app service to the given port, and then executes the callback.
 
 ## Pipelines (pipeline.js)
+Exports a collection of pipeline classes. Most pipelines inherit from `GenericPipe`, a child of `Pipeline` (see below), which takes in its constructor the following arguments:
+
+| argument | type | description |
+|----------|------|-------------|
+| operation | string | The operation type to perform, such as `"create"` or `"search"` |
+| defaultMethod | string | The location that the request parameters can be found by default. Either `"query"` or `"body"` |
+| entityType | string | The type of entity to perform the operation on, such as `"account"` or `"listing"`. Can also be a pseudo-entity, such as `"accountListing"` |
+| options | object | Options to apply to the pipeline, including `"notify"` (who to send push notifications to, either `false`, `"self"`, or `"affected"`) and `"method"` (to override the `defaultMethod` of the pipeline) |
+| ...args | objects | Objects to pass to the base `Pipeline` class' constructor |
+
+The method then fetches schemas for its components at the dictionary keys `` `${operation}-${entityType}` ``.
+
+The class has all of the class methods of `Pipeline`, plus an `Execute` method which takes Request and Response objects and performs the pipeline's operations on them.
+
+The `CreateEntityPipeline`, `ModifyEntityPipeline`, `CloseEntityPipeline`, `ViewEntityPipeline`, and `SearchEntityPipeline` classes extend this class, providing values for `operation` and `defaultMethod` so that only `entityType` and onwards need to be supplied to their constructors.
+
+`LoginPipeline` is also exported, but does not inherit from `GenericPipe`. It's constructor takes only the arguments needed for the `Pipeline` base constructor. It also includes an `Execute` method as described above.
+
+`NotImplementedPipeline` and `UnknownEndpointPipeline` also inherit directly from `Pipeline`. These discard the request and respond immediately with status codes 501 (Not Implemented) and 404 (Not Found), respectively.
 
 ## Pipeline Base (classes/pipeline.js)
+Exports a `Pipeline` class, which takes in its constructor the arguments: `db`, a Database object representing the postgres database instance to connect to; `logger` (default `console`), which represents the object to log messages to; `emailTransporter` (default `null`), an object representing the external email service; and `mediaHandler` (default `null`), an object representing the external media handling service.
 
 ### Pipeline.SecurityValidate
 Takes three inputs, `securitySchema`, `token` and `query`. `token` is the token to validate, and `query` is the object, possibly containing a password, that goes with it. `securitySchema` must be an instance of `SecuritySchema`, as defined in classes/securityvalidation.js
@@ -130,7 +153,66 @@ The method will look up the appropriate status code based on the `err` argument 
 
 The method returns a promise object which should always resolve. When it does so, it will resolve with an object containing properties `statusCode` and `result`, which contain the status and object, respectively, which were transmitted. If `result` is null, then no object was transmitted.
 
-### PushRespond
+### PushRespond (Under Development)
+Takes a single input `templateType` to instantiate, which must be a string of of one of the operations that the EmailRespond component supports - currently the supported operations are `Message-Create`, `Message-Send`, `Message-Close`.
+
+| parameter | type | 
+| ----------|------|
+| `templateType` | string enum [`Message-Create`, `Message-Send`, `Message-Close`], required | If an unsupported or null template type is provided then a `TemplateError` is thrown. |
+
+With the insantiated PushRespond object, the object's main method is called `process(...)` which takes the following list of parameters:
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `fcmApp` | FCM App Object, required | A successfully configured object that authenticates push notification requests via its interface |
+| `userID` | string, required | A userID string |
+| `inputObject` | object[string, string], required | An object with key:value such that the key is a placeholder to be replaced in the push notification template, and the value is the value that replaces the placeholder. The acceptable keys and values is dependent on static definitions in the `EmailTemplateDefinition`. |
+
+| error | description |
+|-------|-------------|
+| `InvalidArgumentError` | One of the arguments or one of the attributes of the `inputObject` is of an invalid type / unsupported value |
+| `AbsentArgumentError` | One of the arguments or one of the attributes of the `inputObject` that is required is absent |
+| `PushDeliveryError` | The push message was not delivered successfully to the FCM backend service |
+
+NOTE: `PushDeliveryError` is not yet implemented as this component is currently under development
+
+### EmailRespond
+Takes a single input `templateType` to instantiate, which must be a string of of one of the operations that the EmailRespond component supports - currently the supported operations are `Account-Modify`, `Account-Create`, `Password-Reset`.
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `templateType` | string enum [`Account-Modify`, `Account-Create`, `Password-Reset`], required | If an unsupported or null template type is provided then a `TemplateError` is thrown. |
+
+With the insantiated EmailRespond object, the object's main method is called `process(...)` which takes the following list of parameters:
+
+| parameter | type | description |
+|-----------|------|-------------|
+| `emailTransporter` | nodemailer SMTP Transport, required |  A successfully configured emailTransport that should be retreived from pipeline attributes |
+| `email` | string, required | The email address of the target user |
+| `inputObject` | object[string, string], required | An object with key:value such that the key is a placeholder to be replaced in the email template, and the value is the value that replaces the placeholder. The acceptable keys and values is dependent on static definitions in the `EmailTemplateDefinition`. |
+
+There are certain errors that may be thrown while calling the object's method `process(...)`
+
+| error | description |
+|-------|-------------|
+| `InvalidArgumentError` | One of the arguments or one of the attributes of the `inputObject` is of an invalid type / unsupported value |
+| `AbsentArgumentError` | One of the arguments or one of the attributes of the `inputObject` that is required is absent |
+| `EmailDeliveryError` | The email was not delivered successfully to the SMTP Service setup |
+
+NOTE: `EmailDeliveryError` will be implemented, as it is currently a TODO to implement additionaly error handling
+
+### MediaHandle
+Takes a single input `mediaObjects` which contains a list of strings, where each string represents a piece of media in the form:
+```
+data:<mime type>/<mime subtype>;base64,<base64-encoded file data>
+```
+e.g.
+```
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAACFCAYAAACXBiBFAAAAAXNSR0IArs4c6Q...
+```
+The media handler takes all of the strings, which are assumed to have been validated, and uploads them to the external media handling solution through their API. Currently, this media handling solution is Cloudinary, and their API documentation is available [here](https://cloudinary.com/documentation/node_image_and_video_upload#server_side_upload).
+
+The method returns a Promise. In the event that any upload fails, it immediately aborts and rejects with a `FailedUploadError`. If all uploads succeed, it resolves with a list of objects, containing for each piece of media the mimetype, index (in the original list), and url (that it was uploaded to).
 
 ## Database (classes/database.js)
 The Database class can be used to interact with the database by passing queries. It is recommended that these queries be built first by an SQLTemplate, but that is not necessary.

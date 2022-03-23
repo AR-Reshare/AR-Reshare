@@ -1,5 +1,8 @@
 const ResponseTemplate = require('../classes/responsetemplate');
 
+/**
+ * Schema for the details of a Listing entity
+ */
 const listingDetails = new ResponseTemplate([{
     out_name: 'listingID',
     field: 'listingid',
@@ -41,11 +44,9 @@ const listingDetails = new ResponseTemplate([{
     'BackreferenceError': 404, // the first query returned nothing, so the backreferences failed
 });
 
-const ListingDescArray = new ResponseTemplate([{
-    out_name: 'listings',
-    rows_with_fields: ['listingID'],
-}]);
-
+/**
+ * Schema for the details of a Conversation entity
+ */
 const ConversationDetails = new ResponseTemplate([{
     out_name: 'listingID',
     field: 'listingID'
@@ -78,6 +79,9 @@ const ConversationDetails = new ResponseTemplate([{
     rows_with_fields: 'senderID',
 }], {'BackreferenceError': 404});
 
+/**
+ * Schema dictionary, smaller schemas are inline
+ */
 const ResponseTemplateDict = {
     'search-category': new ResponseTemplate([{
         out_name: 'categories',
@@ -94,13 +98,19 @@ const ResponseTemplateDict = {
         'EmptyResponseError': 403,
     }),
     'view-accountListing': listingDetails,
-    'search-accountListing': ListingDescArray,
+    'search-accountListing': new ResponseTemplate([{
+        out_name: 'listings',
+        rows_with_fields: ['listingID'],
+    }]),
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',
         rows_with_fields: ['addressID'],
     }]),
     'view-listing': listingDetails,
-    'search-listing': ListingDescArray,
+    'search-listing': new ResponseTemplate([{
+        out_name: 'listings',
+        rows_with_fields: ['listingID'],
+    }]),
     'create-listing': new ResponseTemplate([{
         out_name: 'success',
         field: 'listingid',

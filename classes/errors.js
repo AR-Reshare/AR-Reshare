@@ -1,13 +1,30 @@
 /* This will define the custom error classes to use throughout the project
 */
 
+
+/**
+ * Represents a failure of the email handling component to send email requests
+ */
+class EmailDeliveryError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'EmailDeliveryError';
+    }
+}
+
+/**
+ * Represents a failure of the email handling component to read configuration data
+ */
 class EmailConfigurationReadError extends Error {
     constructor(message) {
         super(message);
         this.name = 'EmailConfigurationReadError';
     }
 }
-      
+
+/**
+ * Represents a failure to initialise the pipeline, likely due to invalid/missing arguments
+ */
 class PipelineInitialisationError extends Error {
     constructor(message) {
         super(message);
@@ -15,6 +32,9 @@ class PipelineInitialisationError extends Error {
     }
 }
 
+/**
+ * Represents a failure to locate a template or schema object for a particular resource
+ */
 class MissingTemplateError extends PipelineInitialisationError {
     constructor(message) {
         super(message);
@@ -22,6 +42,9 @@ class MissingTemplateError extends PipelineInitialisationError {
     }
 }
 
+/**
+ * Represents a general failure in the execution of a pipeline
+ */
 class PipelineExecutionError extends Error {
     constructor(message) {
         super(message);
@@ -29,6 +52,9 @@ class PipelineExecutionError extends Error {
     }
 }
 
+/**
+ * Represents a failure to read the server's private key for encryption purposes
+ */
 class PrivateKeyReadError extends Error {
     constructor(message) {
         super(message);
@@ -36,7 +62,9 @@ class PrivateKeyReadError extends Error {
     }
 }
 
-
+/**
+ * Represents failure to log in a user due to them already being authenticated
+ */
 class AlreadyAuthenticatedError extends Error {
     constructor(message) {
         super(message);
@@ -44,6 +72,9 @@ class AlreadyAuthenticatedError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authorise a user due to them not being authenticated
+ */
 class UnauthenticatedUserError extends Error {
     constructor(message) {
         super(message);
@@ -51,6 +82,9 @@ class UnauthenticatedUserError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authorise a user due to them having insufficient access rights
+ */
 class UnauthorizedUserError extends Error {
     constructor(message) {
         super(message);
@@ -58,6 +92,9 @@ class UnauthorizedUserError extends Error {
     }
 }
 
+/**
+ * Represents a failure to log in a user due to them not providing valid credentials
+ */
 class InvalidCredentialsError extends Error {
     constructor(message) {
         super(message);
@@ -65,6 +102,9 @@ class InvalidCredentialsError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authenticate a user due to them not providing a valid token
+ */
 class InvalidTokenError extends Error {
     constructor(message) {
         super(message);
@@ -72,6 +112,9 @@ class InvalidTokenError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authenticate a user due to them providing a token which has been tampered with
+ */
 class TamperedTokenError extends Error {
     constructor(message) {
         super(message);
@@ -79,6 +122,9 @@ class TamperedTokenError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authenticate a user due to their token being expired
+ */
 class ExpiredTokenError extends Error {
     constructor(message) {
         super(message);
@@ -86,6 +132,9 @@ class ExpiredTokenError extends Error {
     }
 }
 
+/**
+ * Represents a failure to authenticate a user due to them using their token to quickly
+ */
 class NotBeforeTokenError extends Error {
     constructor(message) {
         super(message);
@@ -93,6 +142,9 @@ class NotBeforeTokenError extends Error {
     }
 }
 
+/**
+ * Represents an error in configuring the server which was not detected until runtime
+ */
 class ServerException extends Error {
     constructor(message) {
         super(message);
@@ -100,6 +152,9 @@ class ServerException extends Error {
     }
 }
 
+/**
+ * Represents an error in configuring a template or schema object
+ */
 class TemplateError extends Error {
     constructor(message) {
         super(message);
@@ -107,6 +162,9 @@ class TemplateError extends Error {
     }
 }
 
+/**
+ * Represents any error in validating a request
+ */
 class ValidationError extends Error {
     constructor(message) {
         super(message);
@@ -114,6 +172,9 @@ class ValidationError extends Error {
     }
 }
 
+/**
+ * Represents a failure to validate a request due to a required parameter being missing
+ */
 class AbsentArgumentError extends ValidationError {
     constructor(message) {
         super(message);
@@ -121,6 +182,9 @@ class AbsentArgumentError extends ValidationError {
     }
 }
 
+/**
+ * Represents a failure to validate a request due to a condition on a parameter being exceptional
+ */
 class UnprocessableArgumentError extends ValidationError {
     constructor(message) {
         super(message);
@@ -128,6 +192,9 @@ class UnprocessableArgumentError extends ValidationError {
     }
 }
 
+/**
+ * Represents a failure to validate a request due to a condition on a parameter being false
+ */
 class InvalidArgumentError extends ValidationError {
     constructor(message) {
         super(message);
@@ -135,6 +202,9 @@ class InvalidArgumentError extends ValidationError {
     }
 }
 
+/**
+ * Represents a failure to sanitise a request
+ */
 class DirtyArgumentError extends ValidationError {
     constructor(message) {
         super(message);
@@ -142,39 +212,49 @@ class DirtyArgumentError extends ValidationError {
     }
 }
 
+/**
+ * Represents any error in constructing or executing a database transaction
+ */
 class QueryError extends Error {
-    // Represents an error in constructing or executing a query
     constructor(message) {
         super(message);
         this.name = 'QueryError';
     }
 }
 
+/**
+ * Represents a failure to establish a connection to the database
+ */
 class DatabaseConnectionError extends Error {
-    // Represents an error in establishing connection to the database
     constructor(message) {
         super(message);
         this.name = 'DatabaseConnectionError';
     }
 }
 
+/**
+ * Represents a failure to acquire a database client with which to perform a transaction
+ */
 class DBClientNotAvailableError extends Error {
-    // Represents an error in accessing a postgres client
     constructor(message) {
         super(message);
         this.name = 'DBClientNotAvailableError';
     }
 }
 
+/**
+ * Represents a failure to construct a transaction caused by the transaction's template
+ */
 class QueryTemplateError extends QueryError {
-    // Represents an error in constructing a query caused by the template
-    // rather than by the input values, DB response, etc
     constructor(message) {
         super(message);
         this.name = 'QueryTemplateError';
     }
 }
 
+/**
+ * Represents a failure to perform a transaction due to it lacking any queries
+ */
 class EmptyQueryError extends QueryError {
     constructor(message) {
         super(message);
@@ -182,6 +262,9 @@ class EmptyQueryError extends QueryError {
     }
 }
 
+/**
+ * Represents a failure to perform a transaction inferred from the response containing no rows
+ */
 class EmptyResponseError extends QueryError {
     constructor(message) {
         super(message);
@@ -189,15 +272,19 @@ class EmptyResponseError extends QueryError {
     }
 }
 
+/**
+ * Represents a failure to construct a transaction, due to a lack of query parameters or similar
+ */
 class QueryConstructionError extends QueryError {
-    // Represents an error in constructing a query
-    // i.e. Node-side
     constructor(message) {
         super(message);
         this.name = 'QueryConstructionError';
     }
 }
 
+/**
+ * Represents a failure to perform a backreference to an earlier query
+ */
 class BackreferenceError extends QueryError {
     constructor(message) {
         super(message);
@@ -205,9 +292,10 @@ class BackreferenceError extends QueryError {
     }
 }
 
+/**
+ * Represents an error in the postgres database
+ */
 class QueryExecutionError extends QueryError {
-    // Represents an error in executing a query
-    // i.e. PostgreSQL-side
     constructor(message, code) {
         super(message);
         this.name = 'QueryExecutionError';
@@ -215,6 +303,9 @@ class QueryExecutionError extends QueryError {
     }
 }
 
+/**
+ * Represents an error in the postgres database caused by failure to abide by a foreign key constraint
+ */
 class ForeignKeyError extends QueryExecutionError {
     constructor(message) {
         super(message);
@@ -222,6 +313,9 @@ class ForeignKeyError extends QueryExecutionError {
     }
 }
 
+/**
+ * Represents an error in the postgres database caused by failure to abide by a unique constraint
+ */
 class UniqueConstraintError extends QueryExecutionError {
     constructor(message) {
         super(message);
@@ -229,6 +323,9 @@ class UniqueConstraintError extends QueryExecutionError {
     }
 }
 
+/**
+ * Represents a failure to upload media to the external media handling service
+ */
 class FailedUploadError extends Error {
     constructor(message) {
         super(message);
@@ -237,6 +334,7 @@ class FailedUploadError extends Error {
 }
 
 module.exports = {
+    EmailDeliveryError,
     EmailConfigurationReadError,
     PipelineInitialisationError,
     MissingTemplateError,
