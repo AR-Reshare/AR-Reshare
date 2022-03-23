@@ -93,6 +93,7 @@ const ResponseTemplateDict = {
     }),
     'close-account': new ResponseTemplate([], {}),
     'login': new ResponseTemplate([], {}),
+    'request-reset': new ResponseTemplate([], {}),
     'modify-account': new ResponseTemplate([], {
         'EmptyQueryError': 400,
         'EmptyResponseError': 403,

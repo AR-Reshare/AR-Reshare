@@ -176,6 +176,15 @@ const loginTemplate = new RequestTemplate([{
     required: false,
 }]);
 
+const requestResetTemplate = new RequestTemplate([{
+    in_name: 'email',
+    required: true,
+    conditions: [
+        IsNonEmptyString,
+        (email) => (email.length >= 3 && email.includes('@')),
+    ],
+}]);
+
 const modifyAccountTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
@@ -452,7 +461,7 @@ const RequestTemplateDefinitions = {
     'get-index': null,
     'regenerate-token': null,
 
-    'request-reset': null,
+    'request-reset': requestResetTemplate,
     'execute-reset': null,
 
     'search-category': emptyReq,
