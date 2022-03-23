@@ -90,6 +90,77 @@ class SecurityValMethods{
 
 }
 
+//TODO: Add some sort of security question 
+class PasswordResetHandler{
+    /**
+     * Performs the password-reset-request for the corresponding endpoint
+     * @async @static
+     * @param {object} db - An object that implements the simpleQuery and complexQuery methods for database interaction
+     * @param {string} email - The email address associated with the target that a unauthenticated user wishes to perform a password reset
+     * @returns {promise<object|bool>} Returns a promise that when resolves returns an object containing the neccesary information to provide to the
+     * emailRespond component to replace the password-reset email template and send the email message. The promise can also reject if the email is unregistered
+     * in the database, (in this case it returns false)
+    **/
+    static async resetRequest(db, email){
+        // We don't want to allow for fuzzing so regardless of the success of email transmission
+        // we return a true (unless the emailTransporter back-end service is down)
+        
+        // We need to check whether the email is valid
+        if (inputToken){
+            throw new InvalidTokenError();
+        }
+        // Checking existence
+        if (!query){
+            throw new AbsentArgumentError();
+        } else if (query.email === undefined){
+            throw new AbsentArgumentError();
+        } else if (query.password === undefined){
+            throw new AbsentArgumentError();
+        } 
+        // Checking format
+        check(query.email).isEmail()
+        // The main format validation/sanitaiton should be performed by the db execution
+        const errors = validationResult({'email': email});
+        if (!errors.isEmpty()){
+            throw new DirtyArgumentError();
+        } else {
+            return await passwordResetHandler._resetRequest(db, email);
+        }
+        
+    }
+
+    static async _resetRequest(db, email){
+        let resetObj;
+        // First we check with the database, then we use the emailRespond component
+        const getHash = 'SELECT UserID FROM account WHERE email = $1';
+        db.simpleQuery(getHash, [email]).then(res => {
+            if (res.length === 0){
+                return false;
+            } else if (res.length == 1) {
+                return res[0]['UserID'];
+            } else {
+                throw new QueryExecutionError();
+            }
+        }).then(userID => {
+            if(userID){
+                resetObj['UserID'] = userID;
+                resetObj['Email'] = email;
+                // then we perform token creation using db interactions again.
+                resetObj['Token'] = await PasswordResetHandler._generateResetToken(db, email, userID); // TODO Implement function to generate this
+                return resetObj;
+            }
+            return false;
+        }).catch(err => {
+            // do something
+        });
+
+    }
+
+    static async _generateResetToken(db, email, userID){}
+
+    static async resetExecute(){}
+}
+
 // TODO: Review the exception propogation and fix any issues
 class AuthenticationHandler extends SecurityValMethods{
     static async emailValidation(email){}
@@ -300,5 +371,6 @@ class SecuritySchema extends SecurityValMethods{
 
 module.exports = {
     SecuritySchema,
-    AuthenticationHandler
+    AuthenticationHandler,
+    PasswordResetHandler
 }
