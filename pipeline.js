@@ -352,13 +352,12 @@ class RegenerateTokenPipeline extends Pipeline {
             // build response
             let status = this.responseTemplate.getStatus(error_final);
             res.status(status);
-            if ((status - 200) < 100) {
-                res.status(201); // responseTemplate.getStatus returns a 200 - This oeprations needs to return a 201
+            if (status === 201) {
                 res.set('Authorization', result_final);
                 res.send({success: true});
-            } else if ((status - 400) < 100){
+            } else if (status < 500){ // 4XX error
                 res.send({error: 'authorization is not valid'});
-            } else {
+            } else { // 5XX error
                 res.send({error: error_final.message || error_final.name});
             }
             return;
