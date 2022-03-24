@@ -174,6 +174,16 @@ const SaveListingTemplate = new SQLTemplate({
     }
 }, ['save_listing'], {error_on_empty_response: true});
 
+const ForgetListingTemplate = new SQLTemplate({
+    forget_listing: {
+        text: 'DELETE FROM SavedListing WHERE UserID = $1 AND ListingID = $2 RETURNING UserID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
+    }
+}, ['forget_listing'], {error_on_empty_response: true})
+
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
         text: 'SELECT AddressID AS "addressID", Country, Region, Postcode FROM Address WHERE UserID = $1',
@@ -449,6 +459,7 @@ const sqlTemplatesDict = {
     'view-accountListing': ViewAccountListingTemplate,
     'search-accountListing': SearchAccountListingTemplate,
     'create-savedListing': SaveListingTemplate,
+    'close-savedListing': ForgetListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,

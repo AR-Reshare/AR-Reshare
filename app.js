@@ -28,8 +28,8 @@ class App {
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
         const SearchAccountListing = new pipes.SearchEntityPipeline('accountListing', {}, db, logger);
         const SearchSavedListing = NA; //SearchEntity
-        const SaveListing = new pipes.CreateEntityPipeline('savedListing', {}, db, logger); // CreateEntity
-        const ForgetListing = NA; // CloseEntity
+        const SaveListing = new pipes.CreateEntityPipeline('savedListing', {}, db, logger);
+        const ForgetListing = new pipes.CloseEntityPipeline('savedListing', {}, db, logger);
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger);
         const SearchListing = new pipes.SearchEntityPipeline('listing', {}, db, logger);

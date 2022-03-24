@@ -249,18 +249,16 @@ paths:
       summary: deleteSavedListing
       description: Un-saves a listing
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     $ref: 'responses.yaml#/components/responses/listing-forget'
-      #   '400': # Bad Request
-      #     $ref: 'responses.yaml#/components/responses/bad-request'
-      #   '401': # Unauthorised
-      #     $ref: 'responses.yaml#/components/responses/unauthorised'
-      #   '404': # Not Found
-      #     $ref: 'responses.yaml#/components/responses/not-found'
-      # parameters:
-      #   - $ref: 'parameters.yaml#/components/parameters/listingID'
+        '200': # Success
+          $ref: 'responses.yaml#/components/responses/listing-forget'
+        '400': # Bad Request
+          $ref: 'responses.yaml#/components/responses/bad-request'
+        '401': # Unauthorised
+          $ref: 'responses.yaml#/components/responses/unauthorised'
+        '404': # Not Found
+          $ref: 'responses.yaml#/components/responses/not-found'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
 
   /account/addresses/list:
