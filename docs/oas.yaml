@@ -202,28 +202,24 @@ paths:
         ##NOTE: Didn't add region parameter since I find it unneccessary for when searching your own listin gs
 
 
-  ## NOTE: Listings owned by the user cannot be saved!! (hence listings-public instead of listings-private)
+  ## NOTE: Saved listings will normally not be the user's own (hence listings-public instead of listings-private)
   /account/saved-listings/search:
     get:
       operationId: searchSavedListings
       summary: searchSavedListings
       description: Returns the user's saved listings
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '200': # Success
-      #     $ref: 'responses.yaml#/components/responses/listings-public'
-      #   '400':
-      #     $ref: 'responses.yaml#/components/responses/bad-request'
-      # parameters:
-      #   - $ref: 'parameters.yaml#/components/parameters/maxResults'
-      #   - $ref: 'parameters.yaml#/components/parameters/startResults'
-      #   - $ref: 'parameters.yaml#/components/parameters/categoryId'
-      #   - $ref: 'parameters.yaml#/components/parameters/region'
+        '200': # Success
+          $ref: 'responses.yaml#/components/responses/listings-public'
+        '400':
+          $ref: 'responses.yaml#/components/responses/bad-request'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
+        - $ref: 'parameters.yaml#/components/parameters/categoryId'
+        - $ref: 'parameters.yaml#/components/parameters/region'
 
 
-  ## Potential Unsuspecting Vulnerability (Make sure to validate that the listing
-  ## that is saved is public) -- otherwise adversary has access to archived listings
   ## NOTE: This isn't a create endpoint, but it's just to keep with the format
   /account/saved-listings/create:
     post:

@@ -164,6 +164,19 @@ const SearchAccountListingTemplate = new SQLTemplate({
     }
 }, ['get_listing']);
 
+const SearchSavedListingTemplate = new SQLTemplate({
+    get_listing: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM SavedListing INNER JOIN Listing ON SavedListing.ListingID = Listing.ListingID INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (SavedListing.UserID = $1) AND (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'categoryID'},
+            {from_input: 'region'},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
+        ],
+    },
+}, ['get_listing']);
+
 const SaveListingTemplate = new SQLTemplate({
     save_listing: {
         text: 'INSERT INTO SavedListing (UserID, ListingID) SELECT $1, $2 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL RETURNING UserID',
@@ -458,6 +471,7 @@ const sqlTemplatesDict = {
     'modify-account': ModifyAccountTemplate,
     'view-accountListing': ViewAccountListingTemplate,
     'search-accountListing': SearchAccountListingTemplate,
+    'search-savedListing': SearchSavedListingTemplate,
     'create-savedListing': SaveListingTemplate,
     'close-savedListing': ForgetListingTemplate,
     'search-address': AddressTemplate,
