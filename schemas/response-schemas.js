@@ -105,6 +105,7 @@ const ResponseTemplateDict = {
         out_name: 'listings',
         rows_with_fields: ['listingID'],
     }]),
+    'create-savedListing': new ResponseTemplate([], {}),
     'search-address': new ResponseTemplate([{
         out_name: 'addresses',
         rows_with_fields: ['addressID'],

@@ -231,18 +231,16 @@ paths:
       summary: createSavedListing
       description: Saves a listing
       responses:
-        '501':
-          description: This action is not yet supported
-      #   '201': # Succesfully created
-      #     $ref: 'responses.yaml#/components/responses/listing-save'
-      #   '400': # Bad Request
-      #     $ref: 'responses.yaml#/components/responses/bad-request'
-      #   '404': # Not Found
-      #     $ref: 'responses.yaml#/components/responses/not-found'
-      #   '409': # Conflict
-      #     $ref: 'responses.yaml#/components/responses/conflict-save'
-      # parameters:
-      #   - $ref: 'parameters.yaml#/components/parameters/listingID'
+        '201': # Succesfully created
+          $ref: 'responses.yaml#/components/responses/listing-save'
+        '400': # Bad Request
+          $ref: 'responses.yaml#/components/responses/bad-request'
+        '404': # Not Found
+          $ref: 'responses.yaml#/components/responses/not-found'
+        '409': # Conflict
+          $ref: 'responses.yaml#/components/responses/conflict-save'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/listingID'
 
 
   /account/saved-listings/delete:

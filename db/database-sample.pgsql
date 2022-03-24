@@ -105,3 +105,5 @@ INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https:
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 12);
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 25);
 INSERT INTO Media (MimeType, URL, MessageID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 4);
+
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 12);

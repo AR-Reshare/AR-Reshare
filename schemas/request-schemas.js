@@ -251,7 +251,7 @@ const modifyAccountTemplate = new RequestTemplate([{
     sanitise: (media) => [media],
 }]);
 
-const viewAccountListingTemplate = new RequestTemplate([{
+const accountListingIDTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
     conditions: [IsPosInt],
@@ -490,9 +490,11 @@ const RequestTemplateDefinitions = {
     'close-account': accountIDOnly,
     'login': loginTemplate,
     'modify-account': modifyAccountTemplate,
-    'view-accountListing': viewAccountListingTemplate,
+    'view-accountListing': accountListingIDTemplate,
     'search-accountListing': searchAccountListingTemplate,
     'search-savedListing': null,
+    'create-savedListing': accountListingIDTemplate,
+    'close-savedListing': accountListingIDTemplate,
     'search-address': accountIDOnly,
 
     'view-listing': viewListingTemplate,

@@ -164,6 +164,16 @@ const SearchAccountListingTemplate = new SQLTemplate({
     }
 }, ['get_listing']);
 
+const SaveListingTemplate = new SQLTemplate({
+    save_listing: {
+        text: 'INSERT INTO SavedListing (UserID, ListingID) SELECT $1, $2 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL RETURNING UserID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
+    }
+}, ['save_listing'], {error_on_empty_response: true});
+
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
         text: 'SELECT AddressID AS "addressID", Country, Region, Postcode FROM Address WHERE UserID = $1',
@@ -438,6 +448,7 @@ const sqlTemplatesDict = {
     'modify-account': ModifyAccountTemplate,
     'view-accountListing': ViewAccountListingTemplate,
     'search-accountListing': SearchAccountListingTemplate,
+    'create-savedListing': SaveListingTemplate,
     'search-address': AddressTemplate,
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
