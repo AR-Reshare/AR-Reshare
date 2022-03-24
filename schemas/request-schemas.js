@@ -97,6 +97,25 @@ const IsImageOrVideo = (aString) => {
     throw new UnprocessableArgumentError('Media must be an image or video');
 };
 
+
+/**
+ * Checks whether a parameter contains a certain number of occurences of a given value
+ * @param {String} aString - the string we want to test
+ * @param {String} char - the character we want to search for
+ * @param {Number} times - the number of integer times we want to test
+ * @returns {Boolean}
+ */ 
+const DoesCharOccur = (aString, char, times) => {
+    if (!IsNonEmptyString(aString)) return false;
+    if (!(IsNonEmptyString(char) && char.length == 1)) throw new UnprocessableArgumentError('char argument must be a string of length 1');
+    if (!Number.isInteger(times)) throw new UnprocessableArgumentError('times argument must be an integer');
+    let occurences = 0;
+    for(let letter of aString){
+        occurences = letter === char ? occurences+1: occurences;
+    }
+    return occurences === times;
+};
+
 /**
  * Discard all request parameters
  */
@@ -175,6 +194,14 @@ const loginTemplate = new RequestTemplate([{
     in_name: 'registrationToken',
     out_name: 'deviceToken',
     required: false,
+}]);
+
+const regenerateTokenTemplate = new RequestTemplate([{
+    in_name: 'authorization',
+    required: true,
+    conditions: [
+        (jwt) => (jwt !== undefined && jwt !== null && jwt.length >= 5 && DoesCharOccur(jwt, '.', 2)),
+    ],
 }]);
 
 const modifyAccountTemplate = new RequestTemplate([{
@@ -451,7 +478,7 @@ const viewConversationTemplate = new RequestTemplate([{
  */
 const RequestTemplateDefinitions = {
     'get-index': null,
-    'regenerate-token': null,
+    'regenerate-token': regenerateTokenTemplate,
 
     'request-reset': null,
     'execute-reset': null,

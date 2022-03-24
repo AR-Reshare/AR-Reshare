@@ -1,0 +1,2 @@
+/* This file will define email notification schemas
+*/

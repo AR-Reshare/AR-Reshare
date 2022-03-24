@@ -151,7 +151,7 @@ components:
       description: The new token has been successfully generated
       headers:
         Authorization:
-          $ref: 'headers.yaml#/headers/auth-token'
+          $ref: 'headers.yaml#/headers/authorization'
 
 
     ####################### COMMS RESPONSES #######################
