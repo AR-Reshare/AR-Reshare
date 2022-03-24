@@ -42,12 +42,12 @@ paths:
       summary: requestRegeneratedToken
       description: Regenerates a new token based off of a currently valid token (that is about to expire)
       responses:
-        '501':
-          description: This action is not yet supported
-        # '201':
-        #   $ref: 'responses.yaml#/components/responses/token-regeneration'
-        # '400':
-        #   description: A valid old token wasn't provided in the header of the HTTP request
+        '201':
+          $ref: 'responses.yaml#/components/responses/token-regeneration'
+        '400':
+          $ref: 'responses.yaml#/components/responses/bad-request'
+        '401':
+          $ref: 'responses.yaml#/components/responses/unauthorised'
 
 
   /passwordResetRequest:

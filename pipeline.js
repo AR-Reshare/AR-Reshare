@@ -5,6 +5,7 @@ const RequestTemplateDict = require('./schemas/request-schemas');
 const SQLTemplateDict = require('./schemas/sql-templates');
 const ResponseTemplateDict = require('./schemas/response-schemas');
 const PushTemplateDict = require('./schemas/push-schemas');
+const EmailTemplateDict = require('./schemas/email-schemas');
 const { AuthenticationHandler } = require('./classes/securityvalidation');
 
 class GeneralPipe extends Pipeline {
@@ -13,7 +14,7 @@ class GeneralPipe extends Pipeline {
      * @param {String} operation Operation to perform e.g. "create"
      * @param {String} defaultMethod Default location to search for request parameters, "query" or "body"
      * @param {String} entityType Entity type to perform operation on e.g. "listing"
-     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), method ('query' or 'body')
+     * @param {Object} options Dictionary of options to pass, including notify (false, 'affected', or 'self'), email (false, 'affected', or 'self') method ('query' or 'body')
      * @param  {...any} args Arguments to provide to the base Pipeline constructor
      */
     constructor(operation, defaultMethod, entityType, options, ...args) {
@@ -22,12 +23,24 @@ class GeneralPipe extends Pipeline {
             throw new PipelineInitialisationError('entityType must be a non-empty string');
         }
         this.actionType = `${operation}-${entityType}`;
+        this.email = false;
         this.notify = false;
+        
+        // TODO: The 'notify' and 'email' need to be modified when integrating the components into the pipeline
+
         if ('notify' in options) {
             if (options['notify'] === 'affected' || options['notify'] === 'self' || options['notify'] === false) {
                 this.notify = options['notify'];
             } else {
                 throw new PipelineInitialisationError('Invalid option for notify');
+            }
+        }
+
+        if ('email' in options) {
+            if (options['email'] === 'affected' || options['email'] === 'self' || options['email'] === false) {
+                this.email = options['email'];
+            } else {
+                throw new PipelineInitialisationError('Invalid option for email');
             }
         }
 
@@ -65,6 +78,14 @@ class GeneralPipe extends Pipeline {
             this.pushTemplate = PushTemplateDict[this.actionType];
             if (this.pushTemplate === undefined) {
                 throw new MissingTemplateError(`Unable to find push notification template for ${this.actionType}`);
+            }
+        }
+
+        this.emailTemplate = null;
+        if (this.email) {
+            this.emailTemplate = EmailTemplateDict[this.actionType];
+            if (this.emailTemplate === undefined) {
+                throw new MissingTemplateError(`Unable to find email request template for ${this.actionType}`);
             }
         }
 
@@ -115,6 +136,8 @@ class GeneralPipe extends Pipeline {
             // database operations
             return this.Store(this.sqlTemplate, validated_out);
         }).then(results => {
+            // TODO: These will need to be modified as we integrate PushRespond and EmailRespond components
+            
             // send notifications as needed
             if (this.notify) {
                 let targetAccounts;
@@ -125,6 +148,18 @@ class GeneralPipe extends Pipeline {
                     // Queries should always have the last row be of affected users' IDs
                 }
                 this.PushRespond(this.pushTemplate, results, targetAccounts);
+            }
+
+            // send emails as needed
+            if (this.email) {
+                let targetAccounts;
+                if (this.email === 'self') {
+                    targetAccounts = [user_accountID];
+                } else { // this.email === 'affected'
+                    targetAccounts = results[results.length - 1].map(row => row['userid']);
+                    // Queries should always have the last row be of affected users' IDs
+                }
+                this.EmailRespond(this.EmailTemplate, results, targetAccounts);
             }
             result_final = results;
             return;
@@ -266,6 +301,73 @@ class LoginPipeline extends Pipeline {
     }
 }
 
+class RegenerateTokenPipeline extends Pipeline {
+    /**
+     * Initialises the regenerateToken pipeline
+     * @param  {...any} args Arguments to pass to the default pipeline constructor
+     */
+    constructor(...args) {
+        super(...args);
+
+        // no Security Schema, as only AuthenticationHandler is used
+
+        this.requestTemplate = RequestTemplateDict['regenerate-token'];
+        if (this.requestTemplate === undefined) {
+            throw new MissingTemplateError('Unable to find request template for regenerate-token');
+        }
+
+        this.responseTemplate = ResponseTemplateDict['regenerate-token'];
+        if (this.responseTemplate === undefined) {
+            throw new MissingTemplateError('Unable to find response template for regenerate-token');
+        }
+        
+        // no Push Notifications for now, might want to consider implementing them
+
+        this.Execute = this.Execute.bind(this);
+    }
+
+    /**
+     * Executes the login pipeline on a request
+     * @param {Request} req Request object generated by Express
+     * @param {Respones} res Response object generated by Express
+     * @returns Promise representing the pipeline's progress
+     */
+    Execute(req, res) {
+        let result_final = null;
+        let error_final = null;
+
+        // NOTE: The headers in http are case insensitive. request object seems to lowercase them
+        let authObject = {authorization: req.headers['authorization']};
+        // validate request
+        return this.DataValidate(this.requestTemplate, authObject).then(validated => {
+            // check validated jwt
+            return AuthenticationHandler.regenerateToken(validated['authorization']);
+        }).then(jwt => {
+            result_final = jwt;
+            return;
+        }).catch(err => {
+            error_final = err;
+            return;
+        }).finally(() => {
+            // build response
+            let status = this.responseTemplate.getStatus(error_final);
+            res.status(status);
+            if (status === 201) {
+                res.set('Authorization', result_final);
+                res.send({success: true});
+            } else if (status < 500){ // 4XX error
+                res.send({error: 'authorization is not valid'});
+            } else { // 5XX error
+                res.send({error: error_final.message || error_final.name});
+            }
+            return;
+        });
+
+    }
+}
+
+
+
 class NotImplementedPipeline extends Pipeline {
     /**
      * Initialises the NotImplemented pipeline
@@ -319,6 +421,7 @@ module.exports = {
     ViewEntityPipeline,
     SearchEntityPipeline,
     LoginPipeline,
+    RegenerateTokenPipeline,
     // ...
     // add other pipeline types here as they are defined
     NotImplementedPipeline,

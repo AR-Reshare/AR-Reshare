@@ -26,7 +26,7 @@ class App {
         const NF = new pipes.UnknownEndpointPipeline(db, logger);
 
         // one pipeline instance per endpoint
-        const RegenerateToken = NA;
+        const RegenerateToken = new pipes.RegenerateTokenPipeline(db, logger);
         const RequestReset = NA;
         const ExecuteReset = NA;
         const ListCategories = new pipes.SearchEntityPipeline('category', {}, db, logger);
