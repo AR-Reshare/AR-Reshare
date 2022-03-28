@@ -173,7 +173,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
 
 
     conversation-view:
@@ -197,7 +197,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
     
 
    ###################### LISTING RESPONSES ######################
