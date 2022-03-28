@@ -279,6 +279,20 @@ const searchAccountListingTemplate = new RequestTemplate([{
     conditions: [IsPosInt],
 }]);
 
+const viewProfileTemplate = new RequestTemplate([{
+    in_name: 'userID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}]);
+
 const viewListingTemplate = new RequestTemplate([{
     in_name: 'listingID',
     required: true,
@@ -494,6 +508,8 @@ const RequestTemplateDefinitions = {
     'search-accountListing': searchAccountListingTemplate,
     'search-savedListing': null,
     'search-address': accountIDOnly,
+
+    'view-account': viewProfileTemplate,
 
     'view-listing': viewListingTemplate,
     'search-listing': searchListingTemplate,

@@ -173,6 +173,29 @@ const AddressTemplate = new SQLTemplate({
     },
 }, ['get_addresses']);
 
+const ViewAccountTemplate = new SQLTemplate({
+    get_account: {
+        text: 'SELECT UserID, FullName AS "name" FROM Account WHERE UserID = $1',
+        values: [{
+            from_input: 'userID',
+        }],
+    },
+    get_picture: {
+        text: 'SELECT MimeType AS "pfpmimetype", URL AS "pfpurl" FROM Media WHERE UserID = $1',
+        values: [{
+            from_query: ['get_account', 'userid'],
+        }],
+    },
+    get_listings: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE ClosedDate IS NULL AND ContributorID = $1 ORDER BY Listing.ListingID LIMIT $2 OFFSET $3',
+        values: [
+            {from_query: ['get_account', 'userid']},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
+        ],
+    }
+}, ['get_account', 'get_picture', 'get_listings'], {error_on_empty_response: true});
+
 const ViewListingTemplate = new SQLTemplate({
     get_listing: {
         text: 'SELECT ListingID, ContributorID, Title, Description, Condition, AddressID, CategoryID, CreationDate, ModificationDate FROM Listing WHERE ListingID = $1 AND ClosedDate IS NULL',
@@ -439,6 +462,7 @@ const sqlTemplatesDict = {
     'view-accountListing': ViewAccountListingTemplate,
     'search-accountListing': SearchAccountListingTemplate,
     'search-address': AddressTemplate,
+    'view-account': ViewAccountTemplate,
     'view-listing': ViewListingTemplate,
     'search-listing': SearchListingTemplate,
     'create-listing': CreateListingTemplate,

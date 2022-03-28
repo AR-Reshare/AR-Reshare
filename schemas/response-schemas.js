@@ -1,6 +1,23 @@
 const ResponseTemplate = require('../classes/responsetemplate');
 
 /**
+ * Schema for the details of an Account entity
+ */
+const accountDetails = new ResponseTemplate([{
+    out_name: 'name',
+    field: 'name',
+}, {
+    out_name: 'mimetype',
+    field: 'pfpmimetype',
+}, {
+    out_name: 'url',
+    field: 'pfpurl',
+}, {
+    out_name: 'listings',
+    rows_with_fields: ['listingid'],
+}])
+
+/**
  * Schema for the details of a Listing entity
  */
 const listingDetails = new ResponseTemplate([{
@@ -109,6 +126,7 @@ const ResponseTemplateDict = {
         out_name: 'addresses',
         rows_with_fields: ['addressID'],
     }]),
+    'view-account': accountDetails,
     'view-listing': listingDetails,
     'search-listing': new ResponseTemplate([{
         out_name: 'listings',
