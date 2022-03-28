@@ -175,7 +175,7 @@ const AddressTemplate = new SQLTemplate({
 
 const ViewAccountTemplate = new SQLTemplate({
     get_account: {
-        text: 'SELECT UserID, FullName AS "name" FROM Account WHERE UserID = $1',
+        text: 'SELECT UserID, FullName AS "name" FROM Account WHERE UserID = $1 AND DeletionDate IS NULL',
         values: [{
             from_input: 'userID',
         }],

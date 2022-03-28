@@ -14,8 +14,8 @@ const accountDetails = new ResponseTemplate([{
     field: 'pfpurl',
 }, {
     out_name: 'listings',
-    rows_with_fields: ['listingid'],
-}])
+    rows_with_fields: ['listingID'],
+}], {'BackreferenceError': 404});
 
 /**
  * Schema for the details of a Listing entity
