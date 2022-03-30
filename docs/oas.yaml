@@ -284,7 +284,23 @@ paths:
 
 
 
-
+  /profile/view:
+    get:
+      operationId: getProfileByID
+      summary: getProfileByID
+      description: Returns the user profile which matches the value of the parameter "userID", and up to maxResults of their listings
+      security: []
+      responses:
+        '200': # Success
+          $ref: 'responses.yaml#/components/responses/profile-public'
+        '400': # Bad Request
+          $ref: 'responses.yaml#/components/responses/bad-request'
+        '404': # Not Found
+          $ref: 'responses.yaml#/components/responses/not-found'
+      parameters:
+        - $ref: 'parameters.yaml#/components/parameters/userID'
+        - $ref: 'parameters.yaml#/components/parameters/maxResults'
+        - $ref: 'parameters.yaml#/components/parameters/startResults'
 
 
   #NOTE: I've deleted single-variable modification paths into a generic path that handles all modification

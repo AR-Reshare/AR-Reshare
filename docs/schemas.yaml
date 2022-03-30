@@ -402,6 +402,20 @@ components:
         postcode:
           $ref: '#/components/schemas/postcode'
 
+    profile-public:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/name'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+        listings:
+          type: array
+          items:
+            $ref: '#/components/schemas/listing-descriptor'
+
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
     ## when viewing future data
