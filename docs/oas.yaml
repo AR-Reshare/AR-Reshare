@@ -286,7 +286,7 @@ paths:
 
   /profile/view:
     get:
-      operationID: getProfileByID
+      operationId: getProfileByID
       summary: getProfileByID
       description: Returns the user profile which matches the value of the parameter "userID", and up to maxResults of their listings
       security: []
