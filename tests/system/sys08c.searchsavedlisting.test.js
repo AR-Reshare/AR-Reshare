@@ -188,4 +188,20 @@ describe('System Test 8 - /account/saved-listings/search', () => {
                 expect(res.body['listings']).toHaveLength(2);
             });
     });
+
+    test('Class 13: Valid search with omitted results', () => {
+        let token = validToken;
+        let data = {
+            startResults: 5,
+            maxResults: 5,
+        };
+        return request(app.app)
+            .get(`/account/saved-listings/search?startResults=${data.startResults}&maxResults=${data.maxResults}`)
+            .set('Authorization', token)
+            .expect(200)
+            .expect(res => {
+                if (res.body['listings'].length == 5) throw new Error();
+                // Can't get an exact number because I don't know when this, 09c, and 09d will run relative to each other
+            });
+    });
 });
