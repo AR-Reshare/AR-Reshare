@@ -106,7 +106,8 @@ describe('System Test 10 - /conversation/create', () => {
             .put('/conversation/create')
             .set('Authorization', token)
             .send(data)
-            .expect(409);
+            .expect(201)
+            .expect({success: 1});
     });
     
     test('Class 8: ID matches a listing this user created', () => {

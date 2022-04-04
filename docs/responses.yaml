@@ -169,7 +169,7 @@ components:
 
 
     conversation-create:
-      description: The conversation has been initiated
+      description: The conversation has been initiated, or an identical conversation was found. Either way, the ID is returned
       content:
         'application/json':
           schema:
