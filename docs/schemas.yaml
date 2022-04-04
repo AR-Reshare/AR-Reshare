@@ -129,6 +129,33 @@ components:
       properties:
         listingID:
           $ref: '#/components/schemas/id'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        condition:
+          $ref: '#/components/schemas/condition'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
+
+    
+    profile-listing:
+      type: object
+      properties:
+        listingID:
+          $ref: '#/components/schemas/id'
         title:
           $ref: '#/components/schemas/title'
         description:
@@ -414,7 +441,7 @@ components:
         listings:
           type: array
           items:
-            $ref: '#/components/schemas/listing-descriptor'
+            $ref: '#/components/schemas/profile-listing'
 
 
     ## The intention of this path is for the client to locally store this data so that it can be reused
