@@ -27,12 +27,14 @@ INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'chang
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme13@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme14@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
 INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Change Me', 'changeme15@yahoo.net', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '2000-01-01');
+INSERT INTO Account (FullName, Email, PassHash, DoB) VALUES ('Bob Robertson', 'aaaa@example.com', '$2a$12$q03Ju4LTKCxeo3A6.Pxgh.wIW.GwiMCUtJBcn2DtrInPAB8kJrUJG', '1982-08-16');
 
 INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ('UK', 'Durham', 'AB1 2CD', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, GH', 'asdfgh', 2);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Bristol', 'BR15 7OL', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Location', 'PL ACE', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Nowhere, NV', 'asdfgh', 2);
+INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Slough', 'AS1 2DF', 25);
 
 INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Misc', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/samples/cloudinary-icon.png', 'FFFFFFFF', 'Remember to do the things');
 INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Searchtest', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387117/samples/sheep.jpg', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
@@ -75,6 +77,10 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark4', 'Some stuff', 'good', 5, 4);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark5', 'Some stuff', 'good', 5, 4);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark6', 'Some stuff', 'good', 2, 4);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'One Fish', 'A single trout', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Two Fish', 'A pair of trout', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Red Fish', 'A very important clue', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Blue Fish', 'That one off Finding Robert De Nemo', 'good', 6, 1);
 
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
 INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 24, CURRENT_TIMESTAMP);
@@ -124,3 +130,5 @@ INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 33);
 INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 34);
 INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 35);
 INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 36);
+INSERT INTO Media (MimeType, URL, UserID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 25);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 37);

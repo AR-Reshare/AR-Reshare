@@ -173,7 +173,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
 
 
     conversation-view:
@@ -197,7 +197,7 @@ components:
       content:
         'application/json':
           schema:
-            $ref: 'schemas.yaml#/components/schemas/post-response-success'
+            $ref: 'schemas.yaml#/components/schemas/post-response-success-with-id'
     
 
    ###################### LISTING RESPONSES ######################
@@ -283,4 +283,10 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listing-descriptor'
   
-
+   ###################### PROFILE RESPONSES ######################
+    profile-public:
+      description: The user exists and their profile is returned
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/profile-public'

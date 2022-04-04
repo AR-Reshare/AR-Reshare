@@ -32,6 +32,8 @@ const securitySchemaDefinitions = {
     'close-savedListing': new SecuritySchema('AA_TO'),
     'search-address': new SecuritySchema('AA_TO'),
 
+    'view-account': new SecuritySchema('NA'),
+
     'view-listing': new SecuritySchema('NA'),
     'search-listing': new SecuritySchema('NA'),
     'create-listing': new SecuritySchema('AA_TO'),
