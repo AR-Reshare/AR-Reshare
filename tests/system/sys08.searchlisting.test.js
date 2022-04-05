@@ -8,7 +8,6 @@ const request = require('supertest');
 const db = new Database(credentials['test']);
 const logger = console;
 const app = new App(db, logger);
-let validToken;
 
 beforeAll(() => {
     return AuthenticationHandler.createNewToken(db, 'testy@testingtons.net', 'Password123').then(res => {
@@ -95,6 +94,7 @@ describe('System Test 8 - /listings/search', () => {
                 expect(res.body['listings'][0]).toMatchObject({
                     listingID: 6,
                     title: 'Cup', // I was getting a bit bored of writing test cases by this point
+                    contributorID: 1,
                     description: 'For drinking',
                     condition: 'poor',
                     categoryID: 2,
