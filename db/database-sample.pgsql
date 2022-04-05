@@ -33,11 +33,13 @@ INSERT INTO Address (Country, Region, Postcode, UserID) VALUES ('UK', 'Durham', 
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Abcdef, GH', 'asdfgh', 2);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Bristol', 'BR15 7OL', 1);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Location', 'PL ACE', 1);
+INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('US', 'Nowhere, NV', 'asdfgh', 2);
 INSERT INTO Address (Country, Region, PostCode, UserID) VALUES ('UK', 'Slough', 'AS1 2DF', 25);
 
 INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Misc', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/samples/cloudinary-icon.png', 'FFFFFFFF', 'Remember to do the things');
 INSERT INTO Category (CategoryName, Icon, Colour, Prompt) VALUES ('Searchtest', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387117/samples/sheep.jpg', 'AAAAAAAA', 'This category is just for testing the category filter on /listings/search');
 INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('New Category', 'BBBBBBBB', 'This category is for testing changing of categories');
+INSERT INTO Category (CategoryName, Colour, Prompt) VALUES ('Another New Category', 'CCCCCCCC', 'This category is for testing category filter on SavedListing');
 
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate, ReceiverID) VALUES (1, 'Things', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP, 3);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Stuff', 'Some things', 'poor', 2, 1);
@@ -69,10 +71,16 @@ INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, Ca
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'A thing', 'Some stuff', 'good', 2, 1);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID, ClosedDate) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1, CURRENT_TIMESTAMP);
 INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (1, 'A thing', 'Some stuff', 'good', 1, 1);
-INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'One Fish', 'A single trout', 'good', 5, 1);
-INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Two Fish', 'A pair of trout', 'good', 5, 1);
-INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Red Fish', 'A very important clue', 'good', 5, 1);
-INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Blue Fish', 'That one off Finding Robert De Nemo', 'good', 5, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark1', 'Some stuff', 'good', 2, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark2', 'Some stuff', 'good', 5, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark3', 'Some stuff', 'good', 2, 4);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark4', 'Some stuff', 'good', 5, 4);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark5', 'Some stuff', 'good', 5, 4);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (2, 'Bookmark6', 'Some stuff', 'good', 2, 4);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'One Fish', 'A single trout', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Two Fish', 'A pair of trout', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Red Fish', 'A very important clue', 'good', 6, 1);
+INSERT INTO Listing (ContributorID, Title, Description, Condition, AddressID, CategoryID) VALUES (25, 'Blue Fish', 'That one off Finding Robert De Nemo', 'good', 6, 1);
 
 INSERT INTO Conversation (ReceiverID, ListingID) VALUES (1, 12);
 INSERT INTO Conversation (ReceiverID, ListingID, ClosedDate) VALUES (1, 24, CURRENT_TIMESTAMP);
@@ -111,5 +119,16 @@ INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/png', 'https:
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 1, 12);
 INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 25);
 INSERT INTO Media (MimeType, URL, MessageID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 4);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg', 0, 33);
+
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 12);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 18);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (2, 7);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 31);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 32);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 33);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 34);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 35);
+INSERT INTO SavedListing (UserID, ListingID) VALUES (1, 36);
 INSERT INTO Media (MimeType, URL, UserID) VALUES ('image/png', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647439009/waybqdplrqim13mapgx1.png', 25);
-INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 31);
+INSERT INTO Media (MimeType, URL, Index, ListingID) VALUES ('image/jpeg', 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387134/cld-sample.jpg', 0, 37);

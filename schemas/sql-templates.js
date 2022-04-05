@@ -164,6 +164,39 @@ const SearchAccountListingTemplate = new SQLTemplate({
     }
 }, ['get_listing']);
 
+const SearchSavedListingTemplate = new SQLTemplate({
+    get_listing: {
+        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM SavedListing INNER JOIN Listing ON SavedListing.ListingID = Listing.ListingID INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (SavedListing.UserID = $1) AND (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'categoryID'},
+            {from_input: 'region'},
+            {from_input: 'maxResults'},
+            {from_input: 'startResults'},
+        ],
+    },
+}, ['get_listing']);
+
+const SaveListingTemplate = new SQLTemplate({
+    save_listing: {
+        text: 'INSERT INTO SavedListing (UserID, ListingID) SELECT $1, $2 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL RETURNING UserID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
+    }
+}, ['save_listing'], {error_on_empty_response: true});
+
+const ForgetListingTemplate = new SQLTemplate({
+    forget_listing: {
+        text: 'DELETE FROM SavedListing WHERE UserID = $1 AND ListingID = $2 RETURNING UserID',
+        values: [
+            {from_input: 'accountID'},
+            {from_input: 'listingID'},
+        ],
+    }
+}, ['forget_listing'], {error_on_empty_response: true})
+
 const AddressTemplate = new SQLTemplate({
     get_addresses: {
         text: 'SELECT AddressID AS "addressID", Country, Region, Postcode FROM Address WHERE UserID = $1',
@@ -219,7 +252,7 @@ const ViewListingTemplate = new SQLTemplate({
 
 const SearchListingTemplate = new SQLTemplate({
     get_listing: {
-        text: 'SELECT Listing.ListingID AS "listingID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL AND (ContributorID != $1 OR $1 IS NULL) ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
+        text: 'SELECT Listing.ListingID AS "listingID", ContributorID AS "contributorID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL AND (ContributorID != $1 OR $1 IS NULL) ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
         values: [
             {from_input: 'accountID'},
             {from_input: 'categoryID'},
@@ -381,7 +414,7 @@ const CloseListingTemplate = new SQLTemplate({
 
 const CreateConversationTemplate = new SQLTemplate({
     create_conversation: {
-        text: 'INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) RETURNING ConversationID',
+        text: 'WITH e AS (INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) ON CONFLICT(ReceiverID, ListingID) DO NOTHING RETURNING ConversationID) SELECT * FROM e UNION SELECT ConversationID FROM Conversation WHERE ReceiverID = $1 AND ListingID = $2',
         values: [
             {from_input: 'accountID'},
             {from_input: 'listingID'},
@@ -461,6 +494,9 @@ const sqlTemplatesDict = {
     'modify-account': ModifyAccountTemplate,
     'view-accountListing': ViewAccountListingTemplate,
     'search-accountListing': SearchAccountListingTemplate,
+    'search-savedListing': SearchSavedListingTemplate,
+    'create-savedListing': SaveListingTemplate,
+    'close-savedListing': ForgetListingTemplate,
     'search-address': AddressTemplate,
     'view-account': ViewAccountTemplate,
     'view-listing': ViewListingTemplate,

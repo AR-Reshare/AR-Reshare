@@ -36,9 +36,9 @@ class App {
         const ModifyAccount = new pipes.ModifyEntityPipeline('account', {}, db, logger, emailTransporter, mediaHandler);
         const ViewAccountListing = new pipes.ViewEntityPipeline('accountListing', {}, db, logger);
         const SearchAccountListing = new pipes.SearchEntityPipeline('accountListing', {}, db, logger);
-        const SearchSavedListing = NA; //SearchEntity
-        const SaveListing = NA; // CreateEntity
-        const ForgetListing = NA; // CloseEntity
+        const SearchSavedListing = new pipes.SearchEntityPipeline('savedListing', {}, db, logger);
+        const SaveListing = new pipes.CreateEntityPipeline('savedListing', {}, db, logger);
+        const ForgetListing = new pipes.CloseEntityPipeline('savedListing', {}, db, logger);
         const ListAddresses = new pipes.SearchEntityPipeline('address', {}, db, logger);
         const ViewProfile = new pipes.ViewEntityPipeline('account', {}, db, logger);
         const ViewListing = new pipes.ViewEntityPipeline('listing', {}, db, logger);
