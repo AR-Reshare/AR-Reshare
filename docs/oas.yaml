@@ -423,8 +423,6 @@ paths:
           $ref: 'responses.yaml#/components/responses/unauthorised'
         '404': # Not Found
           $ref: 'responses.yaml#/components/responses/not-found'
-        '409': # Conflict
-          $ref: 'responses.yaml#/components/responses/conflict-create'
       requestBody:
         $ref: 'requestBodies.yaml#/components/requestBodies/conversation-create'
 
