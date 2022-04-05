@@ -251,7 +251,7 @@ const modifyAccountTemplate = new RequestTemplate([{
     sanitise: (media) => [media],
 }]);
 
-const viewAccountListingTemplate = new RequestTemplate([{
+const accountListingIDTemplate = new RequestTemplate([{
     in_name: 'accountID',
     required: true,
     conditions: [IsPosInt],
@@ -277,6 +277,28 @@ const searchAccountListingTemplate = new RequestTemplate([{
     in_name: 'categoryID',
     required: false,
     conditions: [IsPosInt],
+}]);
+
+const searchSavedListingTemplate = new RequestTemplate([{
+    in_name: 'accountID',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'maxResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'startResults',
+    required: true,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'categoryID',
+    required: false,
+    conditions: [IsPosInt],
+}, {
+    in_name: 'region',
+    required: false,
+    conditions: [IsNonEmptyString],
 }]);
 
 const viewProfileTemplate = new RequestTemplate([{
@@ -504,9 +526,11 @@ const RequestTemplateDefinitions = {
     'close-account': accountIDOnly,
     'login': loginTemplate,
     'modify-account': modifyAccountTemplate,
-    'view-accountListing': viewAccountListingTemplate,
+    'view-accountListing': accountListingIDTemplate,
     'search-accountListing': searchAccountListingTemplate,
-    'search-savedListing': null,
+    'search-savedListing': searchSavedListingTemplate,
+    'create-savedListing': accountListingIDTemplate,
+    'close-savedListing': accountListingIDTemplate,
     'search-address': accountIDOnly,
 
     'view-account': viewProfileTemplate,

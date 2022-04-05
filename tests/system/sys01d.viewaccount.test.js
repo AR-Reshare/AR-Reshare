@@ -98,7 +98,7 @@ describe('System Test 1d - /profile/view', () => {
                 expect(res.body).toHaveProperty('listings');
                 expect(res.body['listings']).toHaveLength(4);
                 expect(res.body['listings'][0]).toMatchObject({
-                    listingID: 31,
+                    listingID: 37,
                     title: 'One Fish',
                     description: 'A single trout',
                     condition: 'good',
