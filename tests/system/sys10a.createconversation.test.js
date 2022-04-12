@@ -136,4 +136,18 @@ describe('System Test 10 - /conversation/create', () => {
             .expect(201)
             .expect(/success/);
     });
+
+    test('Class 10: ID matches a listing this user already closed a conversation about', () => {
+        let token = validToken;
+        let data = {
+            listingID: 20,
+        };
+
+        return request(app.app)
+            .put('/conversation/create')
+            .set('Authorization', token)
+            .send(data)
+            .expect(201)
+            .expect({success: 7});
+    });
 });
