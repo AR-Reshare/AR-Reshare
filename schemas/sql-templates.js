@@ -414,7 +414,7 @@ const CloseListingTemplate = new SQLTemplate({
 
 const CreateConversationTemplate = new SQLTemplate({
     create_conversation: {
-        text: 'WITH e AS (INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) ON CONFLICT(ReceiverID, ListingID) DO NOTHING RETURNING ConversationID) SELECT * FROM e UNION SELECT ConversationID FROM Conversation WHERE ReceiverID = $1 AND ListingID = $2',
+        text: 'INSERT INTO Conversation (ReceiverID, ListingID) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM Listing WHERE ListingID = $2 AND ClosedDate IS NULL AND ContributorID != $1) ON CONFLICT(ReceiverID, ListingID) DO UPDATE SET ClosedDate = NULL RETURNING ConversationID',
         values: [
             {from_input: 'accountID'},
             {from_input: 'listingID'},
