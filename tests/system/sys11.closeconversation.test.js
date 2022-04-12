@@ -86,7 +86,7 @@ describe('System Test 11 - /conversation/close', () => {
     test('Class 6: ID matches a closed conversation', () => {
         let token = validToken;
         let data = {
-            conversationID: 7,
+            conversationID: 2,
         };
 
         return request(app.app)
