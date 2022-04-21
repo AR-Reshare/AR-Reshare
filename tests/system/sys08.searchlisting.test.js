@@ -103,6 +103,7 @@ describe('System Test 8 - /listings/search', () => {
                     postcode: 'AB1 2CD',
                     mimetype: 'image/jpeg',
                     url: 'https://res.cloudinary.com/dtdvwembb/image/upload/v1647387110/sample.jpg',
+                    saved: false,
                 });
             });
     });

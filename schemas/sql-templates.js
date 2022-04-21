@@ -252,7 +252,7 @@ const ViewListingTemplate = new SQLTemplate({
 
 const SearchListingTemplate = new SQLTemplate({
     get_listing: {
-        text: 'SELECT Listing.ListingID AS "listingID", ContributorID AS "contributorID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) WHERE (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL AND (ContributorID != $1 OR $1 IS NULL) ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
+        text: 'SELECT Listing.ListingID AS "listingID", ContributorID AS "contributorID", Title, Description, Condition, CategoryID AS "categoryID", Country, Region, PostCode, MimeType, URL, SavedListing.UserID IS NOT NULL AS "saved" FROM Listing INNER JOIN Address ON Listing.AddressID = Address.AddressID LEFT JOIN Media ON Media.MediaID = (SELECT Media.MediaID FROM Media WHERE ListingID = Listing.ListingID ORDER BY Index LIMIT 1) LEFT JOIN SavedListing ON (Listing.ListingID = SavedListing.ListingID AND SavedListing.UserID = $1) WHERE (CategoryID = $2 OR $2 IS NULL) AND (Region = $3 OR $3 IS NULL) AND ClosedDate IS NULL AND (ContributorID != $1 OR $1 IS NULL) ORDER BY Listing.ListingID LIMIT $4 OFFSET $5',
         values: [
             {from_input: 'accountID'},
             {from_input: 'categoryID'},
