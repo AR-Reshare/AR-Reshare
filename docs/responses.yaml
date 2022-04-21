@@ -259,6 +259,13 @@ components:
           schema:
             $ref: 'schemas.yaml#/components/schemas/listings-descriptor'
 
+    my-listings-descriptor:
+      description: Returns a number of listings which match the given filters
+      content:
+        'application/json':
+          schema:
+            $ref: 'schemas.yaml#/components/schemas/my-listings-descriptor'
+
 
     listing-private:
       description: The listing exists and it is returned
