@@ -192,7 +192,7 @@ paths:
       description: Returns the listings that match the criteria provided by the requests parameter
       responses:
         '200': # Success
-          $ref: 'responses.yaml#/components/responses/listings-descriptor'
+          $ref: 'responses.yaml#/components/responses/my-listings-descriptor'
         '400': # Bad Request
           $ref: 'responses.yaml#/components/responses/bad-request'
       parameters:

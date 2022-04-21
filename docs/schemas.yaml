@@ -149,6 +149,34 @@ components:
           $ref: '#/components/schemas/media-mimetype'
         url:
           $ref: '#/components/schemas/media-url'
+        saved:
+          $ref: '#/components/schemas/boolean'
+
+    my-listing-descriptor:
+      type: object
+      properties:
+        listingID:
+          $ref: '#/components/schemas/id'
+        contributorID:
+          $ref: '#/components/schemas/id'
+        title:
+          $ref: '#/components/schemas/title'
+        description:
+          $ref: '#/components/schemas/description'
+        condition:
+          $ref: '#/components/schemas/condition'
+        categoryID:
+          $ref: '#/components/schemas/id'
+        country:
+          $ref: '#/components/schemas/country'
+        region:
+          $ref: '#/components/schemas/region'
+        postcode:
+          $ref: '#/components/schemas/postcode'
+        mimetype:
+          $ref: '#/components/schemas/media-mimetype'
+        url:
+          $ref: '#/components/schemas/media-url'
 
     
     profile-listing:
@@ -195,6 +223,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/listing-descriptor'
+
+    my-listings-descriptor:
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: '#/components/schemas/my-listing-descriptor'
 
 
     listing-create:
